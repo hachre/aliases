@@ -4,8 +4,20 @@
 # hachre's Aliases
 #
 
-# Version: 0.3.20140616.4
 # Author: Harald Glatt code@hachre.de
+# URL: https://github.com/hachre/aliases
+# Version:
+hachreAliasesVersion=0.4.20140616.5
+
+# Welcome!
+function hachreAliases() {
+	echo "hachreAliases Version $hachreAliasesVersion installed and running!"
+	return 0
+}
+alias hachre="hachreAliases"
+alias hachrealiases="hachreAliases"
+alias hachrealias="hachreAliases"
+alias hachreAlias="hachreAliases"
 
 # Default editor
 EDITOR="nano"
@@ -32,9 +44,7 @@ function halt() {
 function reboot() {
 	$hachreAliasesRoot $hachreAliasesSystemctl reboot
 }
-function poweroff() {
-	halt
-}
+alias poweroff="halt"
 
 # Bring some color into your life!
 alias egrep="egrep --color=auto"
