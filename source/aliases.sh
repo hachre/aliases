@@ -4,7 +4,7 @@
 # hachre's Aliases
 #
 
-# Version: (N/A, newest version at: https://github.com/hachre/aliases)
+# Version: 0.3.20140616.3
 # Author: Harald Glatt code@hachre.de
 
 # Default editor
