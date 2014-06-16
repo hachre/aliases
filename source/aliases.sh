@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.11.20140616.12
+hachreAliasesVersion=0.11.20140616.13
 
 #
 ### hachreAliases internal stuff
@@ -197,7 +197,7 @@ fi
 function setupArchAliases() {
 	alias pm="$root $hachreAliasesArchPM"
 	alias pmc="$root $hachreAliasesArchPM -Sc"
-	alias pmcc="$root $hachreAliasesArchPM -Scc; $root rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1; $root rm -Rf /var/abs/* >/dev/null 2>&1"
+	alias pmcc="$root $hachreAliasesArchPM -Scc; sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1; sudo rm -Rf /var/abs/* >/dev/null 2>&1"
 	alias pmi="$root $hachreAliasesArchPM -Suy"
 	alias pmii="$root $hachreAliasesArchPM -S"
 	alias pmin="$root $hachreAliasesArchPM -S --needed"
