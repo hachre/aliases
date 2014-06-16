@@ -30,7 +30,6 @@ function poweroff() {
 }
 
 # Bring some color into your life!
-alias ls="ls --color"
 alias egrep="egrep --color=auto"
 alias grep="grep --color=auto"
 
@@ -40,8 +39,8 @@ alias da="du -hd 0"
 alias cps="echo 'Usage: cps <source> <destination>'; rsync -aHh --numeric-ids --progress --delete"
 alias scpi='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
 alias sshi='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
+alias ls="ls -F --color"
 alias lsd="ls -alh"
-alias ls="ls -F"
 alias l="ls -l"
 alias ll="ls -l"
 alias la="ls -la"
