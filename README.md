@@ -4,4 +4,17 @@ Collection of personal shell aliases that I like.
 
 ## Usage
 
-This is meant to be used by adding something like 'source aliases.sh' to the end of your /etc/profile file.
+The relevant file with the aliases is 'source/aliases.sh'.
+You can simply source the aliases.sh file to make your shell use it.
+
+Add 'source /path/to/aliases.sh' to the end of one of the following files:
+
+- /etc/profile
+- /etc/bashrc
+- /etc/zsh/zshrc
+- ~/.bashrc
+- ~/.zshrc
+- ~/.profile
+- ~/.zprofile
+
+...and so on.
