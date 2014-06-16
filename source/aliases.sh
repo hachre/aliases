@@ -7,7 +7,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.4.20140616.5
+hachreAliasesVersion=0.5.20140616.6
 
 # Welcome!
 function hachreAliases() {
@@ -76,6 +76,8 @@ alias sublime="subl"
 alias sub="subl"
 
 # GIT commands
+alias gits="git status"
+alias gitl="git log"
 alias gitrev="git rev-list --all | wc -l"
 alias gitedit="echo 'Usage: gitedit HEAD~N'; git rebase --interactive"
 alias gitlookup="echo 'Usage: gitlookup id'; git rev-list --objects --all | grep"
