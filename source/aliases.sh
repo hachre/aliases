@@ -4,26 +4,33 @@
 # hachre's Aliases
 #
 
-# Version: 0.3.20140616.3
+# Version: 0.3.20140616.4
 # Author: Harald Glatt code@hachre.de
 
 # Default editor
 EDITOR="nano"
 
-# Shutdown Poweroff Halt Reboot
-function halt() {
-	if [ `whoami` != "root" ]; then
-		sudo systemctl poweroff
-	else
-		systemctl poweroff
+# If a script needs root access, you can now call it via $hachreAliasesRoot
+hachreAliasesRoot=""
+if [ `whoami` != "root" ]; then
+	which sudo >/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		hachreAliasesRoot="sudo"
 	fi
+fi
+
+# Shutdown Poweroff Halt Reboot
+hachreAliasesSystemctl=""
+which systemctl >/dev/null 2>&1
+if [ "$?" == "0" ]; then
+	hachreAliasesSystemctl="systemctl"
+fi
+
+function halt() {
+	$hachreAliasesRoot $hachreAliasesSystemctl poweroff
 }
 function reboot() {
-	if [ `whoami` != "root" ]; then
-		sudo systemctl reboot
-	else
-		systemctl reboot
-	fi
+	$hachreAliasesRoot $hachreAliasesSystemctl reboot
 }
 function poweroff() {
 	halt
