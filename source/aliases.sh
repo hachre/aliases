@@ -1,13 +1,14 @@
 #!/bin/bash
 
-#
 # hachre's Aliases
-#
-
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.5.20140616.6
+hachreAliasesVersion=0.6.20140616.7
+
+#
+### hachreAliases internal stuff
+#
 
 # Welcome!
 function hachreAliases() {
@@ -19,9 +20,6 @@ alias hachrealiases="hachreAliases"
 alias hachrealias="hachreAliases"
 alias hachreAlias="hachreAliases"
 
-# Default editor
-EDITOR="nano"
-
 # If a script needs root access, you can now call it via $hachreAliasesRoot
 hachreAliasesRoot=""
 if [ `whoami` != "root" ]; then
@@ -31,7 +29,21 @@ if [ `whoami` != "root" ]; then
 	fi
 fi
 
-# Shutdown Poweroff Halt Reboot
+#
+### Settings
+#
+
+# Set the default editor
+EDITOR="nano"
+
+#
+### Aliases
+#
+
+#
+# Shutdown Poweroff Halt Reboot ###
+#
+
 hachreAliasesSystemctl=""
 which systemctl >/dev/null 2>&1
 if [ "$?" == "0" ]; then
@@ -46,16 +58,20 @@ function reboot() {
 }
 alias poweroff="halt"
 
-# Bring some color into your life!
+#
+# Color Settings
+#
+
 alias egrep="egrep --color=auto"
 alias grep="grep --color=auto"
 
-# Filesystem helpers
+#
+# Filesystem Helpers
+#
+
 alias duhs="du -hsx * .* | sort -h"
 alias da="du -hd 0"
 alias cps="echo 'Usage: cps <source> <destination>'; rsync -aHh --numeric-ids --progress --delete"
-alias scpi='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
-alias sshi='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
 alias ls="ls -F --color"
 alias lsd="ls -alh"
 alias l="ls -l"
@@ -69,13 +85,36 @@ alias laa="lsa -l"
 alias laah="lsa -lh"
 alias lsl="ls -l *(@)"
 alias mdstat="cat /proc/mdstat"
+function mkcd() {
+	mkdir -p "$1"
+	cd "$1"
+}
 
-# Editor Aliases
+#
+# Various
+#
+
+alias flushdns="dscacheutil -flushcache"
+
+#
+# SSH
+#
+
+alias scpi='scp -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
+alias sshi='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
+
+#
+# Editors
+#
+
 alias nano="nano -w"
 alias sublime="subl"
 alias sub="subl"
 
-# GIT commands
+#
+# GIT
+#
+
 alias gits="git status"
 alias gitl="git log"
 alias gitrev="git rev-list --all | wc -l"
@@ -126,7 +165,10 @@ function gitrm() {
 	gitrmDelete "$1"
 }
 
-# Ubuntu Package Management Aliases
+#
+# Ubuntu / Debian Package Management
+#
+
 which apt-get >/dev/null 2>&1
 if [ "$?" == "0" ]; then
 	alias aga="sudo apt-get autoremove"
@@ -141,4 +183,19 @@ if [ "$?" == "0" ]; then
 	alias amsm="apt-mark showmanual"
 	alias amsa="apt-mark showauto"
 	alias amsh="apt-mark showhold"
+fi
+
+#
+# Arch Package Management
+#
+
+which pacman >/dev/null 2>&1
+if [ "$?" = "0" ]; then
+	alias pm="$root pacman"
+	alias pmc="$root pacman -Sc"
+	alias pmcc="$root pacman -Scc; $root rm -R /var/cache/pkgfile >/dev/null 2>&1"
+	alias pmi="$root pacman -Suy"
+	alias pmr="$root pacman -R"
+	alias pmii="$root pacman -S"
+	alias pmin="$root pacman -S --needed"
 fi
