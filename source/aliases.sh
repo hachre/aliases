@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.7.20140616.8
+hachreAliasesVersion=0.8.20140616.9
 
 #
 ### hachreAliases internal stuff
@@ -193,13 +193,24 @@ fi
 # Arch Package Management
 #
 
+function setupArchAliases() {
+	alias pm="$root $hachreAliasesArchPM"
+	alias pmc="$root $hachreAliasesArchPM -Sc"
+	alias pmcc="$root $hachreAliasesArchPM -Scc; $root rm -R /var/cache/pkgfile >/dev/null 2>&1"
+	alias pmi="$root $hachreAliasesArchPM -Suy"
+	alias pmr="$root $hachreAliasesArchPM -R"
+	alias pmii="$root $hachreAliasesArchPM -S"
+	alias pmin="$root $hachreAliasesArchPM -S --needed"
+}
+
 which pacman >/dev/null 2>&1
-if [ "$?" = "0" ]; then
-	alias pm="$root pacman"
-	alias pmc="$root pacman -Sc"
-	alias pmcc="$root pacman -Scc; $root rm -R /var/cache/pkgfile >/dev/null 2>&1"
-	alias pmi="$root pacman -Suy"
-	alias pmr="$root pacman -R"
-	alias pmii="$root pacman -S"
-	alias pmin="$root pacman -S --needed"
+if [ "$?" == "0" ]; then
+	hachreAliasesArchPM="pacman"
+
+	which pacaur >/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		hachreAliasesArchPM="pacaur"
+	fi
+
+	setupArchAliases
 fi
