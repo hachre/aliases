@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.6.20140616.7
+hachreAliasesVersion=0.7.20140616.8
 
 #
 ### hachreAliases internal stuff
@@ -163,6 +163,10 @@ function gitrm() {
 	fi
 
 	gitrmDelete "$1"
+}
+function gitreset() {
+	git fetch --all
+	git reset --hard origin/master
 }
 
 #
