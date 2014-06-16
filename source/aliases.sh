@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.8.20140616.9
+hachreAliasesVersion=0.9.20140616.10
 
 #
 ### hachreAliases internal stuff
@@ -196,11 +196,31 @@ fi
 function setupArchAliases() {
 	alias pm="$root $hachreAliasesArchPM"
 	alias pmc="$root $hachreAliasesArchPM -Sc"
-	alias pmcc="$root $hachreAliasesArchPM -Scc; $root rm -R /var/cache/pkgfile >/dev/null 2>&1"
+	alias pmcc="$root $hachreAliasesArchPM -Scc; $root rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1; $root rm -Rf /var/abs/* >/dev/null 2>&1"
 	alias pmi="$root $hachreAliasesArchPM -Suy"
-	alias pmr="$root $hachreAliasesArchPM -R"
 	alias pmii="$root $hachreAliasesArchPM -S"
 	alias pmin="$root $hachreAliasesArchPM -S --needed"
+	alias pmif="$root $hachreAliasesArchPM -U"
+	alias pmie="$root $hachreAliasesArchPM -Suy --asexplicit"
+	alias pmid="$root $hachreAliasesArchPM -Suy --asdeps"
+	alias pmq="$root $hachreAliasesArchPM -Q"
+	alias pmqi="$root $hachreAliasesArchPM -Qi"
+	alias pmqe="$root $hachreAliasesArchPM -Q --explicit"
+	alias pmqd="$root $hachreAliasesArchPM -Q --deps"
+	alias pmql="$root $hachreAliasesArchPM -Ql"
+	alias pmqm="$root $hachreAliasesArchPM -Qm"
+	alias pmme="$root $hachreAliasesArchPM -D --asexplicit"
+	alias pmmd="$root $hachreAliasesArchPM -D --asdeps"
+	alias pmr="$root $hachreAliasesArchPM -Rc"
+	alias pmdepclean="$root $hachreAliasesArchPM -Qdtq | $root $hachreAliasesArchPM -Rs -"
+	alias pmdc="pmdepclean"
+	alias pmar="pmdepclean"
+	alias pmrs="$root $hachreAliasesArchPM -Rcs"
+	alias pmrss="$root $hachreAliasesArchPM -Rcss"
+	alias pms="$root $hachreAliasesArchPM -Ss"
+	alias pmsi="$root $hachreAliasesArchPM -Si"
+	alias pmowns="$root $hachreAliasesArchPM -Qo"
+	alias pmprovides="$root pkgfile"
 }
 
 which pacman >/dev/null 2>&1
@@ -209,7 +229,8 @@ if [ "$?" == "0" ]; then
 
 	which pacaur >/dev/null 2>&1
 	if [ "$?" == "0" ]; then
-		hachreAliasesArchPM="pacaur"
+		root="sudo -u archbuild -s"
+		hachreAliasesArchPM="pacaur --noedit"
 	fi
 
 	setupArchAliases
