@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.13.20140617.1
+hachreAliasesVersion=0.14.20140617.2
 
 #
 ### hachreAliases internal stuff
@@ -62,8 +62,8 @@ alias poweroff="halt"
 # Color Settings
 #
 
-alias egrep="egrep --color=auto"
-alias grep="grep --color=auto"
+alias egrep="egrep --color=always"
+alias grep="grep --color=always"
 
 #
 # Filesystem Helpers
@@ -245,8 +245,15 @@ fi
 
 which systemctl >/dev/null 2>&1
 if [ "$?" == "0" ]; then
+	alias start="systemctl start"
 	alias stop="systemctl stop"
 	alias restart="systemctl restart"
 	alias reload="systemctl reload"
-	alias start="systemctl start"
+	alias status="systemctl status"
+	alias sstatus="systemctl --type=service"
+	alias sdisable="systemctl disable"
+	function senable() {
+		systemctl enable -f "$1"
+		systemctl reenable "$1"
+	}
 fi
