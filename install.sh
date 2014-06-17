@@ -30,5 +30,5 @@ if [ "$?" != "0" ]; then
    exit 1
 fi
 
-source /etc/profile
-echo "Installation succeeded! You can type 'hachreAliases' to verify."
+echo "Installation succeeded!"
+echo "Do 'source /etc/profile' followed by 'hachreAliases' to verify installation."
