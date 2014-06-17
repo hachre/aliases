@@ -9,6 +9,6 @@ fi
 
 cd /usr/local/hachre/aliases
 git pull
-source /etc/profile
 
 echo "Update complete"
+echo "Do 'source /etc/profile' followed by 'hachreAliases' to verify."
