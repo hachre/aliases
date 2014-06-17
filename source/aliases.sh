@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.15.20140617.7
+hachreAliasesVersion=0.16.20140617.8
 
 #
 ### hachreAliases internal stuff
@@ -250,7 +250,7 @@ if [ "$?" == "0" ]; then
 	alias restart="systemctl restart"
 	alias reload="systemctl reload"
 	alias status="systemctl status"
-	alias sstatus="systemctl --type=service"
+	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
 	function sdisable {
 		tmpfile=`mktemp`
 		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
