@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.12.20140616.15
+hachreAliasesVersion=0.13.20140617.1
 
 #
 ### hachreAliases internal stuff
@@ -237,4 +237,16 @@ if [ "$?" == "0" ]; then
 	fi
 
 	setupArchAliases
+fi
+
+#
+# Systemctl
+#
+
+which systemctl >/dev/null 2>&1
+if [ "$?" == "0" ]; then
+	alias stop="systemctl stop"
+	alias restart="systemctl restart"
+	alias reload="systemctl reload"
+	alias start="systemctl start"
 fi
