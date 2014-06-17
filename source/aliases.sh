@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.14.20140617.2
+hachreAliasesVersion=0.14.20140617.3
 
 #
 ### hachreAliases internal stuff
@@ -251,9 +251,31 @@ if [ "$?" == "0" ]; then
 	alias reload="systemctl reload"
 	alias status="systemctl status"
 	alias sstatus="systemctl --type=service"
-	alias sdisable="systemctl disable"
+	function sdisable {
+		tmpfile=`mktemp`
+		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
+		if [ "$?" != "0" ]; then
+			if [ -z "$hachreAliasesSystemctlOutput" ]; then
+				# Output was 1, and there was no stdout means the unit file cannot be found.
+				cat "$tmpfile"
+				rm "$tmpfile" >/dev/null 2>&1
+				return 1
+			else
+				# Output was 1 but there was stdout, means the unit is already disabled
+				echo "Warning: The given unit was already disabled."
+				rm "$tmpfile" >/dev/null 2>&1
+				return 0
+			fi
+		fi
+
+		# The output is 0, we can now simply disable the unit.
+		systemctl disable "$1"
+		systemctl reset-failed "$1" >/dev/null 2>&1
+		systemctl disable "$1" >/dev/null 2>&1
+	}
 	function senable() {
+		systemctl reset-failed "$1" >/dev/null 2>&1
 		systemctl enable -f "$1"
-		systemctl reenable "$1"
+		systemctl reenable "$1" >/dev/null 2>&1
 	}
 fi
