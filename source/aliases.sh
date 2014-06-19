@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.17.20140619.1
+hachreAliasesVersion=0.18.20140619.2
 
 #
 ### hachreAliases internal stuff
@@ -200,6 +200,9 @@ function setupArchAliases() {
 	alias pmc="$root $hachreAliasesArchPM -Sc"
 	alias pmcc="echo 'This will remove the pkgfile, abs and pacman caches... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1"
 	alias pmi="$root $hachreAliasesArchPM -Suy"
+	function pmif() {
+		$root $hachreAliasesArchPM -Suy --needed $($root $hachreAliasesArchPM -Ssq "$@")
+	}
 	alias pmii="$root $hachreAliasesArchPM -S"
 	alias pmin="$root $hachreAliasesArchPM -S --needed"
 	alias pmif="$root $hachreAliasesArchPM -U"
@@ -215,6 +218,9 @@ function setupArchAliases() {
 	alias pmme="$root $hachreAliasesArchPM -D --asexplicit"
 	alias pmmd="$root $hachreAliasesArchPM -D --asdeps"
 	alias pmr="$root $hachreAliasesArchPM -Rc"
+	function pmrf() {
+		$root $hachreAliasesArchPM -Rcs $($root $hachreAliasesArchPM -Qqs "$@")
+	}
 	alias pmdepclean="$root $hachreAliasesArchPM -Qdtq | $root $hachreAliasesArchPM -Rs -"
 	alias pmdc="pmdepclean"
 	alias pmar="pmdepclean"
@@ -251,6 +257,21 @@ if [ "$?" == "0" ]; then
 	alias reload="systemctl reload"
 	alias status="systemctl status"
 	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
+	function sfind {
+		if [ -z "$1" ]; then
+			echo "Usage: sfind <pattern>"
+			return 1
+		fi
+
+		for word in "$@"; do
+			searchstring="${searchstring}*${word}*"
+		done
+
+		# Remove double *
+		searchstring=`echo $searchstring | sed "s/\*\*/\*/g"`
+
+		find /lib/systemd -iname $searchstring
+	}
 	function sdisable {
 		tmpfile=`mktemp`
 		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
