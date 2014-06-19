@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.18.20140619.2
+hachreAliasesVersion=0.18.20140619.3
 
 #
 ### hachreAliases internal stuff
@@ -201,7 +201,7 @@ function setupArchAliases() {
 	alias pmcc="echo 'This will remove the pkgfile, abs and pacman caches... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1"
 	alias pmi="$root $hachreAliasesArchPM -Suy"
 	function pmif() {
-		$root $hachreAliasesArchPM -Suy --needed $($root $hachreAliasesArchPM -Ssq "$@")
+		$root $hachreAliasesArchPM -Suy --needed $(pacman -Ssq "$@")
 	}
 	alias pmii="$root $hachreAliasesArchPM -S"
 	alias pmin="$root $hachreAliasesArchPM -S --needed"
@@ -219,7 +219,7 @@ function setupArchAliases() {
 	alias pmmd="$root $hachreAliasesArchPM -D --asdeps"
 	alias pmr="$root $hachreAliasesArchPM -Rc"
 	function pmrf() {
-		$root $hachreAliasesArchPM -Rcs $($root $hachreAliasesArchPM -Qqs "$@")
+		$root $hachreAliasesArchPM -Rcs $(pacman -Qqs "$@")
 	}
 	alias pmdepclean="$root $hachreAliasesArchPM -Qdtq | $root $hachreAliasesArchPM -Rs -"
 	alias pmdc="pmdepclean"
@@ -263,6 +263,7 @@ if [ "$?" == "0" ]; then
 			return 1
 		fi
 
+		searchstring=""
 		for word in "$@"; do
 			searchstring="${searchstring}*${word}*"
 		done
