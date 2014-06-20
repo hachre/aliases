@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.20.20140620.7
+hachreAliasesVersion=0.20.20140620.8
 
 #
 ### hachreAliases internal stuff
@@ -261,7 +261,7 @@ function setupArchAliases() {
 		pmii --needed --noconfirm sudo
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 		pmii --needed --noconfirm curl
-		$hachreAliasesRoot mytemp=`mktemp`
+		mytemp=`$hachreAliasesRoot mktemp`
 		$hachreAliasesRoot rm "$mytemp"
 		$hachreAliasesRoot mkdir -p "$mytemp"
 		cd "$mytemp"
