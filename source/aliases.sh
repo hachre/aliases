@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.20.20140620.6
+hachreAliasesVersion=0.20.20140620.7
 
 #
 ### hachreAliases internal stuff
@@ -265,7 +265,7 @@ function setupArchAliases() {
 		$hachreAliasesRoot rm "$mytemp"
 		$hachreAliasesRoot mkdir -p "$mytemp"
 		cd "$mytemp"
-		hachreAliasesaursh cowler
+		hachreAliasesaursh cower
 		hachreAliasesaursh pacaur
 		cd /
 		$hachreAliasesRoot rm -Rf "$mytemp"
