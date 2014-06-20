@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.20.20140620.5
+hachreAliasesVersion=0.20.20140620.6
 
 #
 ### hachreAliases internal stuff
@@ -249,9 +249,9 @@ function setupArchAliases() {
 	   for p in ${@##-*}
 	   do
 	   cd $d
-	   curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz |tar xz
+	   $hachreAliasesRoot curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz |tar xz
 	   cd $p
-	   makepkg -si --asroot --needed --noconfirm ${@##[^\-]*}
+	   $hachreAliasesRoot makepkg -si --asroot --needed --noconfirm ${@##[^\-]*}
 	   done
 	}
 	function pmsetup() {
@@ -261,14 +261,14 @@ function setupArchAliases() {
 		pmii --needed --noconfirm sudo
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 		pmii --needed --noconfirm curl
-		mytemp=`mktemp`
-		rm "$mytemp"
-		mkdir -p "$mytemp"
+		$hachreAliasesRoot mytemp=`mktemp`
+		$hachreAliasesRoot rm "$mytemp"
+		$hachreAliasesRoot mkdir -p "$mytemp"
 		cd "$mytemp"
 		hachreAliasesaursh cowler
 		hachreAliasesaursh pacaur
 		cd /
-		rm -Rf "$mytemp"
+		$hachreAliasesRoot rm -Rf "$mytemp"
 		echo "Everything should be set up!"
 	}
 }
