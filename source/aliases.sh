@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.18.20140619.3
+hachreAliasesVersion=0.19.20140620.1
 
 #
 ### hachreAliases internal stuff
@@ -96,7 +96,13 @@ function mkcd() {
 #
 
 alias flushdns="dscacheutil -flushcache"
-alias psall="ps aux | grep -v '\[' | grep -v '\]'"
+function psall() {
+	if [ -z "$1" ]; then
+		ps aux | grep -v '\[' | grep -v '\]'
+	else
+		ps aux | grep -v '\[' | grep -v '\]' | grep -i "$1" | grep -v "grep"
+	fi
+}
 
 #
 # SSH
