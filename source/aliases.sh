@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.22.20140621.3
+hachreAliasesVersion=0.22.20140621.4
 
 #
 ### hachreAliases internal stuff
@@ -287,7 +287,10 @@ function setupArchAliases() {
 					if [ "$entry" == "pacman.log" ]; then
 						continue
 					fi
-					if [ "$entry" == "portage.log" ]; then
+					if [ "$entry" == "emerge.log" ]; then
+						continue
+					fi
+					if [ "$entry" == "emerge-fetch.log" ]; then
 						continue
 					fi
 
@@ -300,6 +303,10 @@ function setupArchAliases() {
 				continue
 			fi
 			if [ -d "$entry" ]; then
+				if [ "$entry" == "portage" ]; then
+					continue
+				fi
+
 				echo "Emptying dir: '$entry'"
 				/bin/rm -Rf "$entry"/* >/dev/null 2>&1
 				continue
