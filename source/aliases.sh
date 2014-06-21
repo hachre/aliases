@@ -272,15 +272,18 @@ function setupArchAliases() {
 
 	function hachreAliasesCleanLogs() {
 		echo "Cleaning all logs, you can CTRL+C within 5 seconds..."
-		sleep 5
+		sleep 1
 		cd /var/log
 		for entry in `ls /var/log`; do
 			if [ -f "$entry" ]; then
 				echo "file: '$entry'"
+				continue
 			fi
 			if [ -d "$entry" ]; then
 				echo "dir: '$entry'"
+				continue
 			fi
+			echo "unknown: '$entry'"
 		done
 	}
 	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
