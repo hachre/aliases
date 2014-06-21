@@ -270,7 +270,20 @@ function setupArchAliases() {
 		echo "Everything should be set up!"
 	}
 
-	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && sudo rm -Rf /var/log/* >/dev/null 2>&1"
+	function hachreAliasesCleanLogs() {
+		echo "Cleaning all logs, you can CTRL+C within 5 seconds..."
+		sleep 5
+		cd /var/log
+		for entry in `ls /var/log`; do
+			if [ -f "$entry" ]; then
+				echo "file: '$entry'"
+			fi
+			if [ -d "$entry" ]; then
+				echo "dir: '$entry'"
+			fi
+		done
+	}
+	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
 }
 
 which pacman >/dev/null 2>&1
