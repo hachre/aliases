@@ -271,13 +271,24 @@ function setupArchAliases() {
 	}
 
 	function hachreAliasesCleanLogs() {
-		echo "Cleaning all logs, you can CTRL+C within 5 seconds..."
-		sleep 1
+		echo "Cleaning all logs, you can CTRL+C within 10 seconds..."
+		echo ""
+		echo " -> We will empty all files in the first pass and then if"
+		echo "    you run this again we will delete the 0 size files."
+		echo " -> This means you are expected to reboot and let some time"
+		echo "    pass between two clean calls."
+		echo ""
+		sleep 10
 		cd /var/log
 		for entry in `/bin/ls /var/log`; do
 			if [ -f "$entry" ]; then
-				echo "Erasing file: '$entry'"
-				echo "" > "$entry"
+				if [ ! -s "$entry" ];
+					echo "Emptying file: '$entry'"
+					echo "" > "$entry"
+					continue
+				fi
+				echo "Removing file: '$entry'"
+				rm "$entry" >/dev/null 2>&1
 				continue
 			fi
 			if [ -d "$entry" ]; then
@@ -289,6 +300,7 @@ function setupArchAliases() {
 			echo " -> didn't do anything with this"
 		done
 	}
+	alias logclean="hachreAliasesCleanLogs"
 	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
 }
 
