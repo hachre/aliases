@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.20.20140620.14
+hachreAliasesVersion=0.21.20140621.1
 
 #
 ### hachreAliases internal stuff
@@ -270,7 +270,38 @@ function setupArchAliases() {
 		echo "Everything should be set up!"
 	}
 
-	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && sudo rm -Rf /var/log/* >/dev/null 2>&1"
+	function hachreAliasesCleanLogs() {
+		echo "Cleaning all logs, you can CTRL+C within 10 seconds..."
+		echo ""
+		echo " -> We will empty all files in the first pass and then if"
+		echo "    you run this again we will delete the 0 size files."
+		echo " -> This means you are expected to reboot and let some time"
+		echo "    pass between two clean calls."
+		echo ""
+		sleep 10
+		cd /var/log
+		for entry in `/bin/ls /var/log`; do
+			if [ -f "$entry" ]; then
+				if [ ! -s "$entry" ]; then
+					echo "Emptying file: '$entry'"
+					echo "" > "$entry"
+					continue
+				fi
+				echo "Removing file: '$entry'"
+				rm "$entry" >/dev/null 2>&1
+				continue
+			fi
+			if [ -d "$entry" ]; then
+				echo "Emptying dir: '$entry'"
+				/bin/rm -Rf "$entry"/* >/dev/null 2>&1
+				continue
+			fi
+			echo "Unknown: '$entry'"
+			echo " -> didn't do anything with this"
+		done
+	}
+	alias logclean="hachreAliasesCleanLogs"
+	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
 }
 
 which pacman >/dev/null 2>&1
