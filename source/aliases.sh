@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.20.20140620.13
+hachreAliasesVersion=0.20.20140620.14
 
 #
 ### hachreAliases internal stuff
@@ -211,7 +211,6 @@ fi
 function setupArchAliases() {
 	alias pm="$root $hachreAliasesArchPM"
 	alias pmc="$root $hachreAliasesArchPM -Sc"
-	alias pmcc="echo 'This will remove the pkgfile, abs and pacman caches... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1"
 	alias pmi="$root $hachreAliasesArchPM -Suy"
 	function pmif() {
 		$root $hachreAliasesArchPM -Suy --needed $(pacman -Ssq "$@")
@@ -270,6 +269,8 @@ function setupArchAliases() {
 		$hachreAliasesRoot rm -Rf "$mytemp"
 		echo "Everything should be set up!"
 	}
+
+	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && sudo rm -Rf /var/log/* >/dev/null 2>&1"
 }
 
 which pacman >/dev/null 2>&1
