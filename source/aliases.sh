@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.21.20140621.2
+hachreAliasesVersion=0.22.20140621.3
 
 #
 ### hachreAliases internal stuff
@@ -243,6 +243,7 @@ function setupArchAliases() {
 	alias pmowns="$root $hachreAliasesArchPM -Qo"
 	alias pmqo="pmowns"
 	alias pmprovides="$root pkgfile"
+	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
 	function hachreAliasesaursh() {
 	   d=${BUILDDIR:-$PWD}
 	   for p in ${@##-*}
@@ -283,6 +284,13 @@ function setupArchAliases() {
 		for entry in `/bin/ls /var/log`; do
 			if [ -f "$entry" ]; then
 				if [ ! -s "$entry" ]; then
+					if [ "$entry" == "pacman.log" ]; then
+						continue
+					fi
+					if [ "$entry" == "portage.log" ]; then
+						continue
+					fi
+
 					echo "Emptying file: '$entry'"
 					echo "" > "$entry"
 					continue
