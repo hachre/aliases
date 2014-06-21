@@ -278,10 +278,12 @@ function setupArchAliases() {
 			if [ -f "$entry" ]; then
 				echo "Erasing file: '$entry'"
 				echo "" > "$entry"
+				continue
 			fi
 			if [ -d "$entry" ]; then
 				echo "Emptying dir: '$entry'"
-				rm -Rf "$entry"/* >/dev/null 2>&1
+				/bin/rm -Rf "$entry"/* >/dev/null 2>&1
+				continue
 			fi
 			echo "Unknown: '$entry'"
 			echo " -> didn't do anything with this"
