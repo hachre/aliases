@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.22.20140621.4
+hachreAliasesVersion=0.23.20140621.5
 
 #
 ### hachreAliases internal stuff
@@ -221,6 +221,8 @@ function setupArchAliases() {
 	alias pmie="$root $hachreAliasesArchPM -Suy --asexplicit"
 	alias pmid="$root $hachreAliasesArchPM -Suy --asdeps"
 	alias pmq="$root $hachreAliasesArchPM -Q"
+	alias pmqs="$hachreAliasesRoot pacsysclean"
+	alias pmsize="pmqs"
 	alias pmqq="$root $hachreAliasesArchPM -Qq"
 	alias pmqi="$root $hachreAliasesArchPM -Qi"
 	alias pmqe="$root $hachreAliasesArchPM -Q --explicit"
