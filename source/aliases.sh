@@ -282,7 +282,7 @@ function setupArchAliases() {
 		cd /var/log
 		for entry in `/bin/ls /var/log`; do
 			if [ -f "$entry" ]; then
-				if [ ! -s "$entry" ];
+				if [ ! -s "$entry" ]; then
 					echo "Emptying file: '$entry'"
 					echo "" > "$entry"
 					continue
