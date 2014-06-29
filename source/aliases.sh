@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.23.20140621.6
+hachreAliasesVersion=0.24.20140629.1
 
 #
 ### hachreAliases internal stuff
@@ -79,7 +79,7 @@ alias grep="grep --color=always"
 alias duhs="du -hsx * .* --exclude "proc" | sort -h"
 alias dfh="df -h"
 alias da="du -hd 0"
-alias cps="echo 'Usage: cps <source> <destination>'; rsync -aHh --numeric-ids --progress --delete"
+alias cps="echo 'rsync -aHhP --numeric-ids --delete"
 alias ls="ls -F --color"
 alias lsd="ls -alh"
 alias l="ls -l"
