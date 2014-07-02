@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.24.20140629.1
+hachreAliasesVersion=0.25.20140702.1
 
 #
 ### hachreAliases internal stuff
@@ -136,6 +136,8 @@ alias gitrev="git rev-list --all | wc -l"
 alias gitedit="echo 'Usage: gitedit HEAD~N'; git rebase --interactive"
 alias gitlookup="echo 'Usage: gitlookup id'; git rev-list --objects --all | grep"
 alias gitlargest="git verify-pack -v .git/objects/pack/pack-*.idx | sort -k 3 -n | tail -5"
+alias gitdiff="git diff HEAD~1 HEAD"
+alias gitlog="git log"
 function gitit() {
 	commit="dev"
 	if [ -e "version.txt" ]; then
