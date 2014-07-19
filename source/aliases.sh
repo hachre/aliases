@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.25.20140702.2
+hachreAliasesVersion=0.26.20140719.1
 
 #
 ### hachreAliases internal stuff
@@ -138,6 +138,34 @@ alias gitlookup="echo 'Usage: gitlookup id'; git rev-list --objects --all | grep
 alias gitlargest="git verify-pack -v .git/objects/pack/pack-*.idx | sort -k 3 -n | tail -5"
 alias gitdiff="git diff HEAD~1 HEAD"
 alias gitlog="git log"
+function gitbranch() {
+	if [ -z "$1" ]; then
+		echo "Usage: gitbranch <branchname>"
+		return 1
+	fi
+	git checkout -b $1
+	git push -u origin $1
+}
+function gitmerge() {
+	if [ -z "$1" ]; then
+		echo "Usage: gitmerge <branchname>"
+		return 1
+	fi
+	git checkout master
+	git merge $1
+	echo "Use gitbranchrm <branchname> to delete the useless branch now."
+}
+function gitbranchrm() {
+	if [ -z "$1" ]; then
+		echo "Usage: gitbranchrm <branchname>"
+		return 1
+	fi
+	git checkout master
+	git push
+	git branch -d $1
+	git push
+	git push --delete origin $1
+}
 function gitit() {
 	commit="dev"
 	if [ -e "version.txt" ]; then
