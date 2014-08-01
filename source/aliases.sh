@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.26.20140719.1
+hachreAliasesVersion=0.27.20140801.1
 
 #
 ### hachreAliases internal stuff
@@ -169,6 +169,7 @@ function gitbranchrm() {
 function gitit() {
 	commit="dev"
 	if [ -e "version.txt" ]; then
+		nano "version.txt"
 		commit=`cat version.txt | head -n 1`
 	fi
 
