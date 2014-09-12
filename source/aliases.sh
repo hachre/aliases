@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.27.20140801.1
+hachreAliasesVersion=0.28.20140912.1
 
 #
 ### hachreAliases internal stuff
@@ -262,6 +262,8 @@ function setupArchAliases() {
 	alias pmqm="$root $hachreAliasesArchPM -Qm"
 	alias pmme="$root $hachreAliasesArchPM -D --asexplicit"
 	alias pmmd="$root $hachreAliasesArchPM -D --asdeps"
+	alias pmse="pmme"
+	alias pmsd="pmmd"
 	alias pmr="$root $hachreAliasesArchPM -Rc"
 	function pmrf() {
 		$root $hachreAliasesArchPM -Rcs $(pacman -Qqs "$@")
