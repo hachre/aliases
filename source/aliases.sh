@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.28.20140912.1
+hachreAliasesVersion=0.28.20141005.1
 
 #
 ### hachreAliases internal stuff
@@ -293,7 +293,7 @@ function setupArchAliases() {
 		echo "Proceeding to set up hachre Arch Build system..."
 		$hachreAliasesRoot groupadd -g 500 archbuild
 		$hachreAliasesRoot useradd -u 500 -g 500 -d /dev/null archbuild
-		pmii --needed --noconfirm sudo curl binutils base base-devel
+		$root $hachreAliasesArchPM -S --needed --noconfirm sudo curl binutils base base-devel
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 		mytemp=`$hachreAliasesRoot mktemp`
 		$hachreAliasesRoot rm "$mytemp"
