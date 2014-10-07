@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.28.20141005.1
+hachreAliasesVersion=0.29.20141007.1
 
 #
 ### hachreAliases internal stuff
@@ -110,6 +110,7 @@ function psall() {
 		ps aux | grep -v '\[' | grep -v '\]' | grep -i "$1" | grep -v "grep"
 	fi
 }
+alias lsnet="ls /sys/class/net"
 
 #
 # SSH
