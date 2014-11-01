@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.29.20141007.1
+hachreAliasesVersion=0.30.20141101.1
 
 #
 ### hachreAliases internal stuff
@@ -424,3 +424,34 @@ if [ "$?" == "0" ]; then
 		systemctl reenable "$1" >/dev/null 2>&1
 	}
 fi
+
+#
+# hachreProjects
+#
+function packageProjects() {
+	# We assume to be in a project root directory.
+	# Traverse subfolders and search for version.txt files.
+	for project in `find * -depth 0 -type d -print`; do
+		echo " * Project: $project"
+
+		version=`cat ./$project/version.txt`
+		if [ "$?" != "0" ]; then
+			version="invalid"
+		fi
+
+		if [ "$version" == "invalid" ]; then
+			echo "   -> Version invalid, not a valid hachre Project, skipping..."
+			continue;
+		fi
+
+		echo "   -> Current Version: $version"
+
+		name="$project_$version"
+		echo "   -> Creating package: $name.tar.xz"
+
+		tar cv "$name.tar" "./$project"
+		xz -v "$name.tar"
+
+		echo "   -> Package created."
+	done
+}
