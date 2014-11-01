@@ -432,26 +432,29 @@ function packageProjects() {
 	# We assume to be in a project root directory.
 	# Traverse subfolders and search for version.txt files.
 	for project in `find * -depth 0 -type d -print`; do
-		echo " * Project: $project"
+		echo "*** Project: $project"
 
-		version=`cat ./$project/version.txt`
+		version=`cat ./$project/version.txt 2>/dev/null`
 		if [ "$?" != "0" ]; then
 			version="invalid"
 		fi
 
 		if [ "$version" == "invalid" ]; then
-			echo "   -> Version invalid, not a valid hachre Project, skipping..."
-			continue;
+			echo "  -> invalid project, skipping..."
+			continue
 		fi
 
-		echo "   -> Current Version: $version"
+		echo "  -> Current Version: $version"
 
-		name="$project_$version"
-		echo "   -> Creating package: $name.tar.xz"
+		name="${project}_${version}"
+		echo "  -> Creating package: $name.tar.xz"
 
-		tar cv "$name.tar" "./$project"
+		tar cf "$name.tar" "./$project"
 		xz -v "$name.tar"
 
-		echo "   -> Package created."
+		echo "  -> Package created."
 	done
+
+	mkdir 1_Backups > /dev/null 2>&1
+	mv *xz 1_Backups
 }
