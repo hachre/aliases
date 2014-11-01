@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.30.20141101.1
+hachreAliasesVersion=0.30.20141101.3
 
 #
 ### hachreAliases internal stuff
@@ -440,13 +440,19 @@ function packageProjects() {
 		fi
 
 		if [ "$version" == "invalid" ]; then
-			echo "  -> invalid project, skipping..."
+			echo "  -> Invalid project, skipping..."
 			continue
 		fi
 
 		echo "  -> Current Version: $version"
 
 		name="${project}_${version}"
+
+		if [ -f "1_Backups/$name.tar.xz" ]; then
+			echo "  -> Current backup for package already exists, skipping..."
+			continue
+		fi
+
 		echo "  -> Creating package: $name.tar.xz"
 
 		tar cf "$name.tar" "./$project"
