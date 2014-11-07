@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.30.20141101.4
+hachreAliasesVersion=0.31.20141107.1
 
 #
 ### hachreAliases internal stuff
@@ -464,4 +464,7 @@ function packageProjects() {
 
 	mkdir 1_Backups > /dev/null 2>&1
 	mv *xz 1_Backups > /dev/null 2>&1
+
+	# Sync the Backups to Dropbox.
+	rsync -aHhP --numeric-ids --delete 1_Backups/* ~/Dropbox/Backups/Code/Backups/
 }
