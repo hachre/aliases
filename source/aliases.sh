@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.32.20141118.1
+hachreAliasesVersion=0.33.20141118.2
 
 #
 ### hachreAliases internal stuff
@@ -57,15 +57,14 @@ function hachreAliasesExecuteCommand() {
 	fi
 	$hachreAliasesRoot $hachreAliasesSystemctl $hachreAliasesCommand
 }
-function halt() {
+#function halt() {
 #	hachreAliasesExecuteCommand "poweroff"
-	poweroff
-}
-function reboot() {
+#}
+#function reboot() {
 #	hachreAliasesExecuteCommand "reboot"
-	reboot
-}
-alias poweroff="halt"
+#}
+#alias poweroff="halt"
+alias halt="poweroff"
 
 #
 # Color Settings
