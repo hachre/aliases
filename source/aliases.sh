@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.32.20141124.5
+hachreAliasesVersion=0.32.20141124.6
 
 #
 ### hachreAliases internal stuff
@@ -46,15 +46,12 @@ EDITOR="nano"
 
 hachreAliasesSystemctl=""
 which systemctl >/dev/null 2>&1
-if [ "$?" == "0" ]; then
-	hachreAliasesSystemctl="systemctl"
-fi
+#if [ "$?" == "0" ]; then
+#	hachreAliasesSystemctl="systemctl"
+#fi
 
 function hachreAliasesExecuteCommand() {
 	hachreAliasesCommand="$1"
-	#if [ -z "$hachreAliasesSystemctl" ]; then
-		hachreAliasesCommand="$hachreAliasesCommand"
-	#fi
 	$hachreAliasesRoot $hachreAliasesSystemctl $hachreAliasesCommand
 }
 function poweroff() {
