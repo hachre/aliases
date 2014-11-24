@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.32.20141120.1
+hachreAliasesVersion=0.32.20141124.5
 
 #
 ### hachreAliases internal stuff
@@ -53,15 +53,17 @@ fi
 function hachreAliasesExecuteCommand() {
 	hachreAliasesCommand="$1"
 	#if [ -z "$hachreAliasesSystemctl" ]; then
-		hachreAliasesCommand="/sbin/$hachreAliasesCommand"
+		hachreAliasesCommand="$hachreAliasesCommand"
 	#fi
 	$hachreAliasesRoot $hachreAliasesSystemctl $hachreAliasesCommand
 }
 function poweroff() {
-	hachreAliasesExecuteCommand "poweroff"
+	location=`sh -c 'which poweroff'`
+	hachreAliasesExecuteCommand "$location"
 }
 function reboot() {
-	hachreAliasesExecuteCommand "reboot"
+	location=`sh -c 'which reboot'`
+	hachreAliasesExecuteCommand "$location"
 }
 alias halt="poweroff"
 
