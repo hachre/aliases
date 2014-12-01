@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.33.20141201.1
+hachreAliasesVersion=0.33.20141201.2
 
 #
 ### hachreAliases internal stuff
@@ -379,7 +379,13 @@ if [ "$?" == "0" ]; then
 	alias reload="systemctl reload"
 	alias status="systemctl status"
 	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
-	alias viewlog="journalctl --since today -e -u "
+	function viewlog {
+		if [ -z "$1" ]; then
+			echo "Usage: viewlog <unit name>"
+			return 1
+		fi
+		journalctl --since today --no-pager -u "$1" | less +F
+	}
 	function sfind {
 		if [ -z "$1" ]; then
 			echo "Usage: sfind <pattern>"
