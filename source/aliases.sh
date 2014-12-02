@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.34.20141201.4
+hachreAliasesVersion=0.34.20141202.1
 
 #
 ### hachreAliases internal stuff
@@ -446,6 +446,11 @@ fi
 # hachreProjects
 #
 function packageProjects() {
+	# package hachreProjects (tm)
+
+	# Configuration
+	destdir="~/Dropbox/Backups/Code/Backups/"
+
 	# We assume to be in a project root directory.
 	# Traverse subfolders and search for version.txt files.
 	for project in `find * -depth 0 -type d -print`; do
@@ -479,9 +484,6 @@ function packageProjects() {
 		echo "  -> Package created."
 	done
 
-	mkdir 1_Backups > /dev/null 2>&1
-	mv *xz 1_Backups > /dev/null 2>&1
-
-	# Sync the Backups to Dropbox.
-	rsync -aHhP --numeric-ids --delete 1_Backups/* ~/Dropbox/Backups/Code/Backups/
+	echo "Moving created packages into Dropbox..."
+	mv *xz "$destdir" > /dev/null 2>&1
 }
