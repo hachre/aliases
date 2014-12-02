@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.34.20141202.2
+hachreAliasesVersion=0.34.20141202.3
 
 #
 ### hachreAliases internal stuff
@@ -449,7 +449,7 @@ function packageProjects() {
 	# package hachreProjects (tm)
 
 	# Configuration
-	destdir="~/Dropbox/Backups/Code/Backups"
+	destdir="$HOME/Dropbox/Backups/Code/Backups"
 
 	# We assume to be in a project root directory.
 	# Traverse subfolders and search for version.txt files.
@@ -471,7 +471,8 @@ function packageProjects() {
 
 		name="${project}_${version}"
 
-		if [ -f "$destdir/$name.tar.xz" ]; then
+		#echo "${destdir}/${name}.tar.xz"
+		if [ -f "${destdir}/${name}.tar.xz" ]; then
 			echo "  -> Current backup for package already exists, skipping..."
 			continue
 		fi
