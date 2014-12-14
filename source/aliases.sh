@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.34.20141202.3
+hachreAliasesVersion=0.35.20141214.1
 
 #
 ### hachreAliases internal stuff
@@ -110,6 +110,7 @@ function psall() {
 	fi
 }
 alias lsnet="ls /sys/class/net"
+alias checkheader="curl $1 -s -D /tmp/header 1>/dev/null; cat /tmp/header; rm /tmp/header"
 
 #
 # SSH
