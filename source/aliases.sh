@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.37.20141231.1
+hachreAliasesVersion=0.38.20141231.2
 
 #
 ### hachreAliases internal stuff
@@ -287,24 +287,30 @@ function setupArchAliases() {
 	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
 	function hachreAliasesaursh() {
 	   d=${BUILDDIR:-$PWD}
-	   for p in ${@##-*}
-	   do
-	   cd $d
-	   $hachreAliasesRoot curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz |tar xz
-	   cd $p
-	   $hachreAliasesRoot makepkg -si --asroot --needed --noconfirm --skippgpcheck ${@##[^\-]*}
+		for p in ${@##-*}; do
+		   cd $d
+		   $root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
+		   cd $p
+		   $root makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}
 	   done
 	}
 	function pmsetup() {
 		echo "Proceeding to set up hachre Arch Build system..."
+		$hachreAliasesRoot userdel -rf archbuild >/dev/null 2>&1
+		$hachreAliasesRoot groupdel archbuild >/dev/null 2>&1
 		$hachreAliasesRoot groupadd -g 500 archbuild
-		$hachreAliasesRoot useradd -u 500 -g 500 -d /dev/null archbuild
+		$hachreAliasesRoot useradd -u 500 -g 500 -m archbuild
+		$root gpg --list-keys
+		$root echo "keyring /etc/pacman.d/gnupg/pubring.gpg" >> /home/archbuild/.gnupg/gpg.conf
 		$root $hachreAliasesArchPM -S --needed --noconfirm sudo curl binutils base base-devel
+		$root $hachreAliasesArchPM -R --noconfirm pacaur cower 2>/dev/null
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 		mytemp=`$hachreAliasesRoot mktemp`
 		$hachreAliasesRoot rm "$mytemp"
 		$hachreAliasesRoot mkdir -p "$mytemp"
+		$hachreAliasesRoot chown -R archbuild "$mytemp"
 		cd "$mytemp"
+		echo "$mytemp"
 		hachreAliasesaursh cower
 		hachreAliasesaursh pacaur
 		cd /
