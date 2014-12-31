@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.36.20141230.1
+hachreAliasesVersion=0.37.20141231.1
 
 #
 ### hachreAliases internal stuff
@@ -283,6 +283,7 @@ function setupArchAliases() {
 	alias pmowns="$root $hachreAliasesArchPM -Qo"
 	alias pmqo="pmowns"
 	alias pmprovides="$root pkgfile"
+	alias pmkeys="pacman-key --refresh-keys"
 	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
 	function hachreAliasesaursh() {
 	   d=${BUILDDIR:-$PWD}
