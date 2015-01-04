@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.38.20141231.2
+hachreAliasesVersion=0.39.20150104.1
 
 #
 ### hachreAliases internal stuff
@@ -115,6 +115,8 @@ function checkheader() {
 	cat /tmp/header
 	rm /tmp/header
 }
+alias lp="nice -n 18 ionice -c idle"
+alias hp="nice -n -15 ionice -c best-effort"
 
 #
 # SSH
