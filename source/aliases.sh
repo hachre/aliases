@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.40.20150106.1
+hachreAliasesVersion=0.41.20150109.1
 
 #
 ### hachreAliases internal stuff
@@ -110,11 +110,7 @@ function psall() {
 	fi
 }
 alias lsnet="ls /sys/class/net"
-function checkheader() {
-	curl "$1" -s -D /tmp/header 1>/dev/null
-	cat /tmp/header
-	rm /tmp/header
-}
+alias checkheaders="curl -I"
 alias lp="nice -n 18 ionice -c idle"
 alias hp="nice -n -15 ionice -c best-effort"
 
