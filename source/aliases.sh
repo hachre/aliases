@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.41.20150109.1
+hachreAliasesVersion=0.42.20150111.1
 
 #
 ### hachreAliases internal stuff
@@ -98,7 +98,7 @@ function mkcd() {
 }
 
 #
-# Various
+# Various / Misc
 #
 
 alias flushdns="dscacheutil -flushcache"
@@ -113,6 +113,13 @@ alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
 alias lp="nice -n 18 ionice -c idle"
 alias hp="nice -n -15 ionice -c best-effort"
+function findip() {
+	if [ -z "$1" ]; then
+		echo "Usage: findip <hostname>"
+		return 1
+	fi
+	dig +short $(dig mx +short $1)
+}
 
 #
 # SSH
