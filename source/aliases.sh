@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.42.20150111.1
+hachreAliasesVersion=0.43.20150127.1
 
 #
 ### hachreAliases internal stuff
@@ -101,7 +101,7 @@ function mkcd() {
 # Various / Misc
 #
 
-alias flushdns="dscacheutil -flushcache"
+alias flushdns="sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches;dscacheutil -flushcache"
 function psall() {
 	if [ -z "$1" ]; then
 		ps aux | grep -v '\[' | grep -v '\]'
@@ -111,6 +111,13 @@ function psall() {
 }
 alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
+function checkssl() {
+	if [ -z "$1" ]; then
+		echo "Usage: checkssl hostname"
+		return 1
+	fi
+	openssl s_client -connect $1:443 -nextprotoneg ''
+}
 alias lp="nice -n 18 ionice -c idle"
 alias hp="nice -n -15 ionice -c best-effort"
 function findip() {
