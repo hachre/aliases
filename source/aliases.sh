@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.43.20150127.1
+hachreAliasesVersion=0.44.20150210.1
 
 #
 ### hachreAliases internal stuff
@@ -127,6 +127,7 @@ function findip() {
 	fi
 	dig +short $(dig mx +short $1)
 }
+alias debugchrome="open -a /Applications/Google\ Chrome\ Canary.app --args --disable-web-security --ignore-certificate-errors --user-data-dir /dev/null"
 
 #
 # SSH
