@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.44.20150210.1
+hachreAliasesVersion=0.45.20150218.1
 
 #
 ### hachreAliases internal stuff
@@ -128,6 +128,14 @@ function findip() {
 	dig +short $(dig mx +short $1)
 }
 alias debugchrome="open -a /Applications/Google\ Chrome\ Canary.app --args --disable-web-security --ignore-certificate-errors --user-data-dir /dev/null"
+function eixupdate {
+	if [ ! -f "/etc/eix-sync.conf" ]; then
+		echo "*" > /etc/eix-sync.conf
+	fi
+	eix-remote update
+	eix-update
+	echo "EIX is ready to go! Use -R to search in layman..."
+}
 
 #
 # SSH
