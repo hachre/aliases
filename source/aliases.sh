@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.46.20150219.1
+hachreAliasesVersion=0.46.20150219.2
 
 #
 ### hachreAliases internal stuff
@@ -574,10 +574,11 @@ function dyh {
 	echo "List of unfied package management commands:"
 	echo " dyh\tThis command list"
 	echo " dyhh\tTest for supported platform"
-	echo " dyi\tInstall a package"
-	echo " dyr\tRemove a package (including its unused dependencies)"
+	echo " dyi\tInstall a package (after confirmation)"
+	echo " dyr\tRemove a package (after confirmation, including its unused dependencies)"
 	echo " dys\tSearch a package (in the main repo)"
-	echo " dyss\tSearch a package (in the extended repo)"	
+	echo " dyss\tSearch a package (in the extended repo)"
+	echo " dyx\tSync the repository"
 	return 0
 }
 function dyhh {
@@ -591,6 +592,30 @@ function dyhh {
 	echo "Grats!!! Your distro is supported and has been detected as '$distro'"
 	return 0
 }
+function dyx {
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		equo update
+		emerge --sync
+		layman -D sabayon >/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo " ------- Answer y in the following dialog!!!"
+			layman -a sabayon
+		fi
+		layman -E sabayon >/dev/null 2>&1
+		layman -D sabayon-distro >/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo " ------- Answer y in the following dialog!!!"
+			layman -a sabayon-distro
+		fi
+		layman -E sabayon-distro >/dev/null 2>&1
+		layman -S
+		eixupdate >/dev/null 2>&1 &
+		echo ""
+		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+	fi
+}
 function dyi {
 	if [ -z "$1" ]; then
 		echo "Usage: dyi <package name>"
@@ -600,7 +625,7 @@ function dyi {
 	dyDetectDistro
 
 	if [ "$distro" == "sabayon" ]; then
-		equo install $*
+		equo install -av $*
 	fi
 }
 function dyr {
@@ -612,7 +637,7 @@ function dyr {
 	dyDetectDistro
 
 	if [ "$distro" == "sabayon" ]; then
-		equo remove --deep $*
+		equo remove --deep -av $*
 	fi
 }
 function dys {
