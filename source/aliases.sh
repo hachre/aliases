@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.45.20150218.1
+hachreAliasesVersion=0.46.20150219.1
 
 #
 ### hachreAliases internal stuff
@@ -63,6 +63,35 @@ function reboot() {
 	hachreAliasesExecuteCommand "$location"
 }
 alias halt="poweroff"
+
+
+# hachre script maintenance
+function hachreupdate {
+	dir="false"
+
+	if [ -d "/usr/local/hachre/aliases" ]; then
+		dir="/usr/local/hachre/aliases"
+	fi
+
+	if [ -d "$HOME/.local/hachre/aliases" ]; then
+		dir="$HOME/.local/hachre/aliases"
+	fi
+
+	if [ "$dir" == "false" ]; then
+		echo "Error: Your hachreAliases installation is not in the usual spot. You're on your own."
+		return 1
+	fi
+
+	cur=`pwd`
+
+	cd "$dir"
+	./update.sh
+
+	cd "$cur"
+
+	echo "hachreAliases has been updated, please run . /etc/profile or relog to use it."
+	return 0
+}
 
 #
 # Color Settings
@@ -524,5 +553,97 @@ function packageProjects() {
 	mv *xz "$destdir" > /dev/null 2>&1
 	if [ "$destdir2" != "" ]; then
 		rsync -aHhP --numeric-ids --delete "$destdir"/* "$destdir2/"
+	fi
+}
+
+# hachre unified pkg commands
+function dyDetectDistro {
+	# Sabayon	
+	distro="unknown"
+
+	which equo 1>/dev/null 2>/dev/null
+	if [ "$?" == "0" ]; then
+		distro="sabayon"
+		return 0
+	fi
+
+	distro="unknown"
+	return 1
+}
+function dyh {
+	echo "List of unfied package management commands:"
+	echo " dyh\tThis command list"
+	echo " dyhh\tTest for supported platform"
+	echo " dyi\tInstall a package"
+	echo " dyr\tRemove a package (including its unused dependencies)"
+	echo " dys\tSearch a package (in the main repo)"
+	echo " dyss\tSearch a package (in the extended repo)"	
+	return 0
+}
+function dyhh {
+	dyDetectDistro
+
+	if [ "$distro" == "unknown" ]; then
+		echo "A great sadness fills my heart: Your distro is not supported."
+		return 1
+	fi
+
+	echo "Grats!!! Your distro is supported and has been detected as '$distro'"
+	return 0
+}
+function dyi {
+	if [ -z "$1" ]; then
+		echo "Usage: dyi <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		equo install $*
+	fi
+}
+function dyr {
+	if [ -z "$1" ]; then
+		echo "Usage: dyr <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		equo remove --deep $*
+	fi
+}
+function dys {
+	if [ -z "$1" ]; then
+		echo "Usage: dys <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		which eix > /dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			# Install eix
+			dyi eix
+
+			# Upgrade eix cache
+			eixupdate
+		fi
+		eix $*
+	fi
+}
+function dyss {
+	if [ -z "$1" ]; then
+		echo "Usage: dyss <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		dys -R $*
 	fi
 }

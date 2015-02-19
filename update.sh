@@ -8,6 +8,8 @@ if [ `whoami` != "root" ]; then
 fi
 
 cd /usr/local/hachre/aliases
+git fetch -f
+git reset --hard
 git pull
 
 echo "Update complete"
