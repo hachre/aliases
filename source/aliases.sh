@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.48.20150219.8
+hachreAliasesVersion=0.49.20150219.9
 
 #
 ### hachreAliases internal stuff
@@ -164,6 +164,38 @@ function eixupdate {
 	eix-remote update
 	eix-update
 	echo "EIX is ready to go! Use -R to search in layman..."
+}
+
+#
+# Btrfs
+#
+
+function btrfsDefragMeta {
+	if [ -z "$1" ]; then
+		echo "Usage: btrfsDefragMetadata <volume mountpoint>"
+		exit 1
+	fi
+
+	if [ ! -d "$1" ]; then
+		echo "Error: Given parameter is not a mount point."
+		exit 1
+	fi
+
+	find "$1" -xdev -type d -exec btrfs fi defrag -v {} \;
+}
+
+function btrfsDefragData {
+	if [ -z "$1" ]; then
+		echo "Usage: btrfsDefragMetadata <volume mountpoint>"
+		exit 1
+	fi
+
+	if [ ! -d "$1" ]; then
+		echo "Error: Given parameter is not a mount point."
+		exit 1
+	fi
+
+	btrfs fi defrag -r -v -clzo "$1"
 }
 
 #
