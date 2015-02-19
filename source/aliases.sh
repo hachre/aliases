@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.50.20150219.10
+hachreAliasesVersion=0.51.20150219.11
 
 #
 ### hachreAliases internal stuff
@@ -164,6 +164,14 @@ function eixupdate {
 	eix-remote update
 	eix-update
 	echo "EIX is ready to go! Use -R to search in layman..."
+}
+function kernelVersion {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo query installed -v "linux-sabayon" | grep -i version | awk '{ print $4 }'
+		return 0
+	fi
+
+	uname -r
 }
 
 #
