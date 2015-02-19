@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.46.20150219.3
+hachreAliasesVersion=0.46.20150219.4
 
 #
 ### hachreAliases internal stuff
@@ -557,47 +557,69 @@ function packageProjects() {
 }
 
 # hachre unified pkg commands
+dyDetectedDistro="null"
 function dyDetectDistro {
-	# Sabayon	
-	distro="unknown"
-
-	which equo 1>/dev/null 2>/dev/null
-	if [ "$?" == "0" ]; then
-		distro="sabayon"
+	if [ "$dyDetectedDistro" != "null" ]; then
 		return 0
 	fi
 
-	distro="unknown"
+	# Sabayon
+	which equo 1>/dev/null 2>/dev/null
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="sabayon"
+		dyDistroInfo="\n * The native package manager for this distro is called 'equo'.\n * You might also need to use 'emerge' in advanced circumstances.\n * Searching is best done via 'eix'."
+		function emerge {
+			echo "Warning: 'emerge' should not be used on Sabayon, unless you know what you are doing!!!"
+			echo ""
+			echo "Some pointers:"
+			echo " 1. You are not allowed to do anything involving 'world' or 'system' etc."
+			echo " 2. Any dependencies should be installed with"
+			echo "    $ equo install --bdeps --onlydeps <package>"
+			echo "    instead of emerge."
+			echo " 3. It is generally recommended to use 'dyii' instead."
+			echo ""
+			echo "If you really need 'emerge' you can get it via 'unset -f emerge'."
+			return 1
+		}
+		return 0
+	fi
+
+	# Not found
+	dyDetectedDistro="unknown"
 	return 1
 }
+dyDetectDistro
+
 function dyh {
 	echo "List of unfied package management commands:"
 	echo " dyh\tThis command list"
 	echo " dyhh\tTest for supported platform"
 	echo " dyi\tInstall a package from the primary repo (after confirmation)"
+	echo " dyif\tInstall a package forced from the primary repo (after confirmation)"
 	echo " dyii\tInstall a package from the secondary repo (after confirmation)"
 	echo " dyr\tRemove a package (after confirmation, including its unused dependencies)"
 	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
+	echo " dyu\tDo a full system upgrade (primary repo, without first syncing)"
+	echo " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
+	echo " dyx\tSync the repository"
 	echo " dys\tSearch a package (in the main repo)"
 	echo " dyss\tSearch a package (in the extended repo)"
-	echo " dyx\tSync the repository"
 	return 0
 }
 function dyhh {
-	dyDetectDistro
-
-	if [ "$distro" == "unknown" ]; then
+	if [ "$dyDetectedDistro" == "unknown" ]; then
 		echo "A great sadness fills my heart: Your distro is not supported."
 		return 1
 	fi
 
-	echo "Grats!!! Your distro is supported and has been detected as '$distro'"
+	echo "Grats!!! Your distro is supported and has been detected as '$dyDetectedDistro'"
+	if [ ! -z "${dyDistroInfo}" ]; then
+		echo "${dyDistroInfo}"
+	fi
 	return 0
 }
 function dyx {
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
 		emerge --sync
 		layman -D sabayon >/dev/null 2>&1
@@ -618,15 +640,33 @@ function dyx {
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 }
+function dyu {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo upgrade -av  $*
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+		equo conf update
+	fi
+}
+function dyuu {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		echo "Info: Automated secondary repo upgrading is not supported on this platform."
+		echo ""
+		echo "Instruction for manual update are as follows:"
+		echo " 1. Look at /etc/entropy/packages/package.mask"
+		echo " 2. Run each of those packages against emerge -pv <packagename>"
+		echo " 3. Use dyii on the packages that are outdated to update them."
+		return 1
+	fi
+}
 function dyi {
 	if [ -z "$1" ]; then
 		echo "Usage: dyi <package name>"
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo install -av $*
 		if [ "$?" != "0" ]; then
 			echo ""
@@ -634,10 +674,21 @@ function dyi {
 			echo "previously used dyii to install this package and it has been masked"
 			echo "so that equo will not overwrite it with its own version."
 			echo ""
-			echo "You can either use 'equo unmask <package>' or use dyr to uninstall first."
+			echo "You can either use dyif, 'equo unmask <package>' or dyr to uninstall first."
 			return 1
 		fi
 		equo conf update
+	fi
+}
+function dyif {
+	if [ -z "$1" ]; then
+		echo "Usage: dyif <package name>"
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo unmask $* 1>/dev/null 2>&1
+		dyi -av $*
 	fi
 }
 function dyii {
@@ -646,9 +697,7 @@ function dyii {
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: Please install only one package at once in sabayon emerge mode..."
 			return 1
@@ -661,7 +710,7 @@ function dyii {
 		fi
 
 		# Emerge the package
-		emerge -avkk --newuse $1
+		emerge -avkk $1
 		if [ "$?" != "0" ]; then
 			return 1
 		fi
@@ -705,9 +754,7 @@ function dyr {
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo remove --deep -av $*
 		equo unmask $* 1>/dev/null 2>/dev/null
 	fi
@@ -718,9 +765,7 @@ function dyrf {
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dyr --force-system $*
 	fi
 }
@@ -730,9 +775,7 @@ function dys {
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		which eix > /dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			# Install eix
@@ -750,9 +793,7 @@ function dyss {
 		return 1
 	fi
 
-	dyDetectDistro
-
-	if [ "$distro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dys -R $*
 	fi
 }
