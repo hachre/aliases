@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.51.20150219.11
+hachreAliasesVersion=0.52.20150219.12
 
 #
 ### hachreAliases internal stuff
@@ -172,6 +172,35 @@ function kernelVersion {
 	fi
 
 	uname -r
+}
+function kernelUpdate {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		kernel-switcher list
+
+		version="null"
+		largerthan=""
+
+		if [ -z "$1" ]; then
+			echo "Usage: kernelUpdate (target version)"
+			echo " If no parameter is specified a higher than current version is assumed."
+			echo ""
+			echo " -> Going to try to find a new kernel higher than `kernelVersion` in 3 secs..."
+			sleep 3
+		else
+			version="$1"
+		fi
+
+		if [ "$version" == "null" ]; then
+			version=`kernelVersion`
+			largerthan=">"
+		fi
+
+		kernel-switcher switch ${largerthan}sys-kernel/linux-sabayon-${version}
+		return 0
+	fi
+
+	echo "Error: kernelUpdate is not implemented for your platform."
+	return 1
 }
 
 #
