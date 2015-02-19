@@ -25,9 +25,12 @@ cd "$dir"
 set -e
 
 git fetch -f
+echo "Updated from:"
 git reset --hard
 git pull origin master
 git checkout master
+echo "Updated to:"
+git reset --hard
 
 cd "$prev"
 
