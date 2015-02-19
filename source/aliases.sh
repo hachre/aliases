@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.52.20150219.12
+hachreAliasesVersion=0.52.20150219.13
 
 #
 ### hachreAliases internal stuff
@@ -181,11 +181,10 @@ function kernelUpdate {
 		largerthan=""
 
 		if [ -z "$1" ]; then
-			echo "Usage: kernelUpdate (target version)"
-			echo " If no parameter is specified a higher than current version is assumed."
 			echo ""
-			echo " -> Going to try to find a new kernel higher than `kernelVersion` in 3 secs..."
-			sleep 3
+			echo "Usage: kernelUpdate (target version) [ex: 3.19.1]"
+			echo " -> If no parameter is specified a higher-than-current version is assumed."
+			echo ""
 		else
 			version="$1"
 		fi
@@ -195,7 +194,7 @@ function kernelUpdate {
 			largerthan=">"
 		fi
 
-		kernel-switcher switch ${largerthan}sys-kernel/linux-sabayon-${version}
+		kernel-switcher switch -av ${largerthan}sys-kernel/linux-sabayon-${version}
 		return 0
 	fi
 
