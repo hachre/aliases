@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.47.20150219.5
+hachreAliasesVersion=0.48.20150219.6
 
 #
 ### hachreAliases internal stuff
@@ -584,6 +584,13 @@ function dyDetectDistro {
 		return 0
 	fi
 
+	# OS X with Brew
+	which brew 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="osx-brew"
+		dyDistroInfo="\n * The native package manager is 'brew'."
+	fi
+
 	# Not found
 	dyDetectedDistro="unknown"
 	return 1
@@ -639,6 +646,10 @@ function dyx {
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew update
+	fi
 }
 function dyu {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
@@ -647,6 +658,10 @@ function dyu {
 			return 1
 		fi
 		equo conf update
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew upgrade
 	fi
 }
 function dyuu {
@@ -657,6 +672,11 @@ function dyuu {
 		echo " 1. Look at /etc/entropy/packages/package.mask"
 		echo " 2. Run each of those packages against emerge -pv <packagename>"
 		echo " 3. Use dyii on the packages that are outdated to update them."
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
 		return 1
 	fi
 }
@@ -679,6 +699,14 @@ function dyi {
 		fi
 		equo conf update
 	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		if [ ! -z "$2" ]; then
+			echo "Error: 'osx-brew' supports only one package parameter."
+			return 1
+		fi
+		brew install "$1"
+	fi
 }
 function dyif {
 	if [ -z "$1" ]; then
@@ -689,6 +717,10 @@ function dyif {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo unmask $* 1>/dev/null 2>&1
 		dyi -av $*
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		dyi $*
 	fi
 }
 function dyii {
@@ -747,6 +779,11 @@ function dyii {
 		echo ""
 		echo "It is recommended that you use emerge / dyuu or dyii to upgrade packages on that list"
 	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
+		return 1
+	fi
 }
 function dyr {
 	if [ -z "$1" ]; then
@@ -758,6 +795,14 @@ function dyr {
 		equo remove --deep -av $*
 		equo unmask $* 1>/dev/null 2>/dev/null
 	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		if [ ! -z "$2" ]; then
+			echo "Error: 'osx-brew' supports only one package parameter."
+			return 1
+		fi
+		brew uninstall "$1"
+	fi
 }
 function dyrf {
 	if [ -z "$1" ]; then
@@ -767,6 +812,14 @@ function dyrf {
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dyr --force-system $*
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		if [ ! -z "$2" ]; then
+			echo "Error: 'osx-brew' supports only one package parameter."
+			return 1
+		fi
+		brew uninstall --force "$1"
 	fi
 }
 function dys {
@@ -786,6 +839,10 @@ function dys {
 		fi
 		eix $*
 	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew search $*
+	fi
 }
 function dyss {
 	if [ -z "$1" ]; then
@@ -795,5 +852,10 @@ function dyss {
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dys -R $*
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
+		return 1
 	fi
 }
