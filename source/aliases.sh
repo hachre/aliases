@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.46.20150219.4
+hachreAliasesVersion=0.47.20150219.5
 
 #
 ### hachreAliases internal stuff
@@ -591,9 +591,21 @@ function dyDetectDistro {
 dyDetectDistro
 
 function dyh {
-	echo "List of unfied package management commands:"
-	echo " dyh\tThis command list"
-	echo " dyhh\tTest for supported platform"
+	if [ "$dyDetectedDistro" == "unknown" ]; then
+		echo "Error: Sadly, your distro is not supported."
+		return 1
+	fi
+
+	echo "dynaloop unified package managing commands"
+	echo ""
+
+	echo "Your distro is supported and has been detected as '$dyDetectedDistro'."
+	if [ ! -z "${dyDistroInfo}" ]; then
+		echo "${dyDistroInfo}"
+	fi
+
+	echo ""
+	echo "List of unified package management commands:"
 	echo " dyi\tInstall a package from the primary repo (after confirmation)"
 	echo " dyif\tInstall a package forced from the primary repo (after confirmation)"
 	echo " dyii\tInstall a package from the secondary repo (after confirmation)"
@@ -604,18 +616,6 @@ function dyh {
 	echo " dyx\tSync the repository"
 	echo " dys\tSearch a package (in the main repo)"
 	echo " dyss\tSearch a package (in the extended repo)"
-	return 0
-}
-function dyhh {
-	if [ "$dyDetectedDistro" == "unknown" ]; then
-		echo "A great sadness fills my heart: Your distro is not supported."
-		return 1
-	fi
-
-	echo "Grats!!! Your distro is supported and has been detected as '$dyDetectedDistro'"
-	if [ ! -z "${dyDistroInfo}" ]; then
-		echo "${dyDistroInfo}"
-	fi
 	return 0
 }
 function dyx {
