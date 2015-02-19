@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.48.20150219.7
+hachreAliasesVersion=0.48.20150219.8
 
 #
 ### hachreAliases internal stuff
@@ -628,7 +628,7 @@ function dyh {
 function dyx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
-		emerge --sync
+		/usr/bin/emerge --sync
 		layman -D sabayon >/dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			echo " ------- Answer y in the following dialog!!!"
@@ -737,12 +737,9 @@ function dyii {
 
 		# Install build-deps
 		equo install --bdeps --onlydeps -av $1
-		if [ "$?" != "0" ]; then
-			return 1
-		fi
 
 		# Emerge the package
-		emerge -avkk $1
+		/usr/bin/emerge -avkk $1
 		if [ "$?" != "0" ]; then
 			return 1
 		fi
@@ -852,6 +849,11 @@ function dyss {
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dys -R $*
+
+		echo ""
+		echo "Info: To install a package from this list:"
+		echo " 1. Add the repo by doing 'layman -a <reponame>'"
+		echo " 2. Use 'dyii <packagename>'"
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
