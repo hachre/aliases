@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.52.20150219.14
+hachreAliasesVersion=0.52.20150219.15
 
 #
 ### hachreAliases internal stuff
@@ -175,7 +175,8 @@ function kernelVersion {
 }
 function kernelUpdate {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		kernel-switcher list
+		#kernel-switcher list
+		dys linux-sabayon
 
 		version="null"
 		largerthan=""
