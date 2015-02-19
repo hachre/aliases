@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.46.20150219.2
+hachreAliasesVersion=0.46.20150219.3
 
 #
 ### hachreAliases internal stuff
@@ -574,8 +574,10 @@ function dyh {
 	echo "List of unfied package management commands:"
 	echo " dyh\tThis command list"
 	echo " dyhh\tTest for supported platform"
-	echo " dyi\tInstall a package (after confirmation)"
+	echo " dyi\tInstall a package from the primary repo (after confirmation)"
+	echo " dyii\tInstall a package from the secondary repo (after confirmation)"
 	echo " dyr\tRemove a package (after confirmation, including its unused dependencies)"
+	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
 	echo " dys\tSearch a package (in the main repo)"
 	echo " dyss\tSearch a package (in the extended repo)"
 	echo " dyx\tSync the repository"
@@ -626,6 +628,75 @@ function dyi {
 
 	if [ "$distro" == "sabayon" ]; then
 		equo install -av $*
+		if [ "$?" != "0" ]; then
+			echo ""
+			echo "If equo is talking about masked packages it means that you have"
+			echo "previously used dyii to install this package and it has been masked"
+			echo "so that equo will not overwrite it with its own version."
+			echo ""
+			echo "You can either use 'equo unmask <package>' or use dyr to uninstall first."
+			return 1
+		fi
+		equo conf update
+	fi
+}
+function dyii {
+	if [ -z "$1" ]; then
+		echo "Usage: dyii <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		if [ ! -z "$2" ]; then
+			echo "Error: Please install only one package at once in sabayon emerge mode..."
+			return 1
+		fi
+
+		# Install build-deps
+		equo install --bdeps --onlydeps -av $1
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+
+		# Emerge the package
+		emerge -avkk --newuse $1
+		if [ "$?" != "0" ]; then
+			return 1
+		fi
+
+		# Sync emerge state to equo
+		equo rescue spmsync
+
+		# Make equo ignore the installed package
+		#longname=`equery l -F \$category/\$name "$1"`
+		#cat /etc/entropy/packages/package.mask | grep "$longname"
+		#if [ "$?" != "0" ]; then
+		#	echo "$longname" >> /etc/entropy/packages/package.mask.d/50-hachreAliases
+		#fi
+		equo mask "$1"
+
+		# Set up equo not to downgrade emerged packages
+		cat /etc/entropy/client.conf | grep "ignore-spm-downgrades" | grep "enable"
+		if [ "$?" != "0" ]; then
+			echo "# added by hachreAliases" >> /etc/entropy/client.conf
+			echo "ignore-spm-downgrades = enable" >> /etc/entropy/client.conf
+		fi
+
+		equo conf update
+
+		echo ""
+		echo "Package '$1' is now no longer going to be handled by equo and system updates"
+		echo ""
+		echo "You can elect to add it into equo again by typing 'equo unmask $1' however if"
+		echo "the version is equal in equo's repository this will immediately switch the package"
+		echo "back to the entropy version instead of your emerged version on the next system upgrade"
+		echo ""
+		echo "The list of packages that are hidden for equo can be found in the following location:"
+		echo "/etc/entropy/packages/package.mask"
+		echo ""
+		echo "It is recommended that you use emerge / dyuu or dyii to upgrade packages on that list"
 	fi
 }
 function dyr {
@@ -638,6 +709,19 @@ function dyr {
 
 	if [ "$distro" == "sabayon" ]; then
 		equo remove --deep -av $*
+		equo unmask $* 1>/dev/null 2>/dev/null
+	fi
+}
+function dyrf {
+	if [ -z "$1" ]; then
+		echo "Usage: dyrf <package name>"
+		return 1
+	fi
+
+	dyDetectDistro
+
+	if [ "$distro" == "sabayon" ]; then
+		dyr --force-system $*
 	fi
 }
 function dys {
