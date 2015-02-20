@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.57.20150220.22
+hachreAliasesVersion=0.58.20150220.23
 
 #
 ### hachreAliases internal stuff
@@ -1068,7 +1068,7 @@ function dys {
 			# Upgrade eix cache
 			eixupdate
 		fi
-		eix $*
+		eix -F $* | less -r
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
