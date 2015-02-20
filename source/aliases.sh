@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.1
+hachreAliasesVersion=0.53.20150220.2
 
 #
 ### hachreAliases internal stuff
@@ -253,7 +253,7 @@ function btrfsMaint {
 		return 1
 	fi
 
-	if [ -f "/tmp/btrfsMaintenance" ]; then
+	if [ -f "/tmp/btrfsMaintenance" ]; then
 		lastdate=`cat /tmp/btrfsMaintenance`
 	fi
 
