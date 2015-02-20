@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.57.20150220.21
+hachreAliasesVersion=0.57.20150220.22
 
 #
 ### hachreAliases internal stuff
@@ -754,23 +754,23 @@ function dyh {
 
 	echo "Your distro is supported and has been detected as '$dyDetectedDistro'."
 	if [ ! -z "${dyDistroInfo}" ]; then
-		echo "${dyDistroInfo}"
+		echo -e "${dyDistroInfo}"
 	fi
 
 	echo ""
 	echo "List of unified package management commands:"
-	echo " dyi\tInstall a package from the primary repo (after confirmation)"
-	echo " dyif\tInstall a package forced from the primary repo (after confirmation)"
-	echo " dyii\tInstall a package from the secondary repo (after confirmation)"
-	echo " dyr\tRemove a package (after confirmation, including its unused dependencies)"
-	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
-	echo " dyu\tDo a full system upgrade (primary repo, without first syncing)"
-	echo " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
-	echo " dyv\tVerify system sanity"
-	echo " dyx\tSync the primary repository"
-	echo " dyxx\tSync the secondary repository"
-	echo " dys\tSearch a package (in the main repo)"
-	echo " dyss\tSearch a package (in the extended repo)"
+	echo -e " dyi\tInstall a package from the primary repo (after confirmation)"
+	echo -e " dyif\tInstall a package forced from the primary repo (after confirmation)"
+	echo -e " dyii\tInstall a package from the secondary repo (after confirmation)"
+	echo -e " dyr\tRemove a package (after confirmation, including its unused dependencies)"
+	echo -e " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
+	echo -e " dyu\tDo a full system upgrade (primary repo, without first syncing)"
+	echo -e " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
+	echo -e " dyv\tVerify system sanity"
+	echo -e " dyx\tSync the primary repository"
+	echo -e " dyxx\tSync the secondary repository"
+	echo -e " dys\tSearch a package (in the main repo)"
+	echo -e " dyss\tSearch a package (in the extended repo)"
 	return 0
 }
 function dyx {
