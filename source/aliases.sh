@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.56.20150220.15
+hachreAliasesVersion=0.56.20150220.16
 
 #
 ### hachreAliases internal stuff
@@ -908,7 +908,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		emerge -atvkk --quiet-build y $*
+		emerge -atvkk --quiet-build=y $*
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -931,8 +931,7 @@ function dyif {
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		echo "Not implemented yet."
-		return 1
+		emerge -atv --quiet-build=y $*
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -1015,7 +1014,7 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		emerge --unmerge --quiet-unmerge-warn y -tav $*
+		emerge --unmerge -tav $*
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
