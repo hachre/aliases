@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.56.20150220.13
+hachreAliasesVersion=0.56.20150220.14
 
 #
 ### hachreAliases internal stuff
@@ -776,6 +776,7 @@ function dyh {
 function dyx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
+
 		eix-update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
@@ -783,6 +784,10 @@ function dyx {
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		emerge --sync
+
+		eix-update >/dev/null 2>&1 &
+		echo ""
+		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -814,6 +819,10 @@ function dyxx {
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		layman -S
+
+		eix-remote update >/dev/null 2>&1 &
+		echo ""
+		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
