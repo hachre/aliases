@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.6
+hachreAliasesVersion=0.54.20150220.7
 
 #
 ### hachreAliases internal stuff
@@ -756,7 +756,8 @@ function dyh {
 	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
 	echo " dyu\tDo a full system upgrade (primary repo, without first syncing)"
 	echo " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
-	echo " dyx\tSync the repository"
+	echo " dyx\tSync the primary repository"
+	echo " dyxx\tSync the secondary repository"
 	echo " dys\tSearch a package (in the main repo)"
 	echo " dyss\tSearch a package (in the extended repo)"
 	return 0
@@ -764,6 +765,18 @@ function dyh {
 function dyx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
+		eix-update >/dev/null 2>&1 &
+		echo ""
+		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew update
+	fi
+}
+
+function dyxx {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		/usr/bin/emerge --sync
 		layman -D sabayon >/dev/null 2>&1
 		if [ "$?" != "0" ]; then
@@ -778,15 +791,18 @@ function dyx {
 		fi
 		layman -E sabayon-distro >/dev/null 2>&1
 		layman -S
-		eixupdate >/dev/null 2>&1 &
+
+		eix-remote update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		brew update
+		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
+		return 1
 	fi
 }
+
 function dyu {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo upgrade -av  $*
