@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.54.20150220.7
+hachreAliasesVersion=0.54.20150220.8
 
 #
 ### hachreAliases internal stuff
@@ -809,6 +809,8 @@ function dyu {
 		if [ "$?" != "0" ]; then
 			return 1
 		fi
+		equo deptest
+		equo libtest
 		equo conf update
 	fi
 
