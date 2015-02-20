@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.57.20150220.20
+hachreAliasesVersion=0.57.20150220.21
 
 #
 ### hachreAliases internal stuff
@@ -726,7 +726,7 @@ function dyDetectDistro {
 	which emerge 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="gentoo"
-		dyDistroInfo="\n * The native package manager for this distro is called 'emerge'.\n * Searching is best done via 'eix'."
+		dyDistroInfo="\n * The native package manager for this distro is called 'emerge'.\n * You might also wanna look at 'equery'\n * Searching is best done via 'eix'."
 		return 0
 	fi
 
