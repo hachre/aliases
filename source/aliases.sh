@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.55.20150220.11
+hachreAliasesVersion=0.55.20150220.12
 
 #
 ### hachreAliases internal stuff
@@ -715,7 +715,8 @@ function dyDetectDistro {
 			echo "    instead of emerge."
 			echo " 3. It is generally recommended to use 'dyii' instead."
 			echo ""
-			echo "If you really need 'emerge' you can get it via 'unset -f emerge'."
+			echo "If you really need 'emerge', run the command again now..."
+			unset -f emerge
 			return 1
 		}
 		return 0
