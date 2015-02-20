@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.55.20150220.12
+hachreAliasesVersion=0.56.20150220.13
 
 #
 ### hachreAliases internal stuff
@@ -722,6 +722,14 @@ function dyDetectDistro {
 		return 0
 	fi
 
+	# Gentoo
+	which emerge 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="gentoo"
+		dyDistroInfo="\n * The native package manager for this distro is called 'emerge'.\n * Searching is best done via 'eix'."
+		return 0
+	fi
+
 	# OS X with Brew
 	if [ -f "/usr/local/bin/brew" ]; then
 		dyDetectedDistro="osx-brew"
@@ -773,6 +781,10 @@ function dyx {
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		emerge --sync
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew update
 	fi
@@ -800,9 +812,30 @@ function dyxx {
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		layman -S
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
 		return 1
+	fi
+}
+
+function dyv {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo deptest
+		equo libtest
+		equo conf update
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Not implemented yet."
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew doctor
 	fi
 }
 
@@ -815,20 +848,12 @@ function dyu {
 		equo conf update
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		emerge -uD -kk --newuse --with-bdeps=y @world -av
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew upgrade
-	fi
-}
-
-function dyv {
-	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		equo deptest
-		equo libtest
-		equo conf update
-	fi
-
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		brew doctor
 	fi
 }
 
@@ -841,6 +866,11 @@ function dyuu {
 		echo " 2. Run each of those packages against emerge -pv <packagename>"
 		echo " 3. Use dyii on the packages that are outdated to update them."
 		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Info: dyuu and dyu are equal on this platform."
+		dyu $*
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -868,6 +898,10 @@ function dyi {
 		equo conf update
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		emerge -avkk $*
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -885,6 +919,11 @@ function dyif {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo unmask $* 1>/dev/null 2>&1
 		dyi -av $*
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Not implemented yet."
+		return 1
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -945,6 +984,11 @@ function dyii {
 		echo "It is recommended that you use emerge / dyuu or dyii to upgrade packages on that list"
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Info: dyii and dyi are equal on this platform."
+		dyi $*
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
 		return 1
@@ -959,6 +1003,10 @@ function dyr {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo remove --deep -av $*
 		equo unmask $* 1>/dev/null 2>/dev/null
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		emerge --unmerge -av $*
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -979,6 +1027,11 @@ function dyrf {
 		dyr --force-system $*
 	fi
 
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Not implemented yet."
+		return 1
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -993,7 +1046,7 @@ function dys {
 		return 1
 	fi
 
-	if [ "$dyDetectedDistro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ] || [ "$dyDetectedDistro" == "gentoo" ]; then
 		which eix > /dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			# Install eix
@@ -1015,13 +1068,13 @@ function dyss {
 		return 1
 	fi
 
-	if [ "$dyDetectedDistro" == "sabayon" ]; then
+	if [ "$dyDetectedDistro" == "sabayon" ] || [ "$dyDetectedDistro" == "gentoo" ]; then
 		dys -R $*
 
 		echo ""
 		echo "Info: To install a package from this list:"
 		echo " 1. Add the repo by doing 'layman -a <reponame>'"
-		echo " 2. Use 'dyii <packagename>'"
+		echo " 2. Then use 'dyii <packagename>'"
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
