@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.4
+hachreAliasesVersion=0.53.20150220.5
 
 #
 ### hachreAliases internal stuff
@@ -255,6 +255,9 @@ function btrfsMaint {
 
 	if [ -f "/tmp/btrfsMaintenance" ]; then
 		lastdate=`cat /tmp/btrfsMaintenance`
+		if [ -z "$lastdate" ]; then
+			lastdate="null"
+		fi
 	fi
 
 	curdate=`date +%Y%m%d`
@@ -274,7 +277,7 @@ function btrfsMaint {
 		echo ""
 	fi
 
-	echo "Running balance with usage: '$usage'."
+	echo "Running balance with usage: '$dyTmpsage'."
 	echo " * If you want you can rerun the command with higher usage values."
 	echo " * Be careful because an increase in the usage value can lead"
 	echo "   to very long execution times."
