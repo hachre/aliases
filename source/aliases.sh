@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.55.20150220.10
+hachreAliasesVersion=0.55.20150220.11
 
 #
 ### hachreAliases internal stuff
@@ -66,7 +66,7 @@ alias halt="poweroff"
 
 
 # hachre script maintenance
-function hachreupdate {
+function hachreUpdate {
 	dir="false"
 
 	if [ -d "/usr/local/hachre/aliases" ]; then
@@ -92,6 +92,7 @@ function hachreupdate {
 	echo "hachreAliases has been updated, please run . /etc/profile or relog to use it."
 	return 0
 }
+alias hachreupdate="hachreUpdate"
 
 #
 # Color Settings
