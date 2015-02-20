@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.54.20150220.8
+hachreAliasesVersion=0.55.20150220.9
 
 #
 ### hachreAliases internal stuff
@@ -756,6 +756,7 @@ function dyh {
 	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
 	echo " dyu\tDo a full system upgrade (primary repo, without first syncing)"
 	echo " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
+	echo " dyv\Verify system sanity"
 	echo " dyx\tSync the primary repository"
 	echo " dyxx\tSync the secondary repository"
 	echo " dys\tSearch a package (in the main repo)"
@@ -809,8 +810,6 @@ function dyu {
 		if [ "$?" != "0" ]; then
 			return 1
 		fi
-		equo deptest
-		equo libtest
 		equo conf update
 	fi
 
@@ -818,6 +817,19 @@ function dyu {
 		brew upgrade
 	fi
 }
+
+function dyv {
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo debtest
+		equo libtest
+		equo conf update
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		brew doctor
+	fi
+}
+
 function dyuu {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		echo "Info: Automated secondary repo upgrading is not supported on this platform."
