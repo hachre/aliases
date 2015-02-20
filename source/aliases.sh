@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.52.20150219.15
+hachreAliasesVersion=0.53.20150220.1
 
 #
 ### hachreAliases internal stuff
@@ -209,30 +209,92 @@ function kernelUpdate {
 
 function btrfsDefragMeta {
 	if [ -z "$1" ]; then
-		echo "Usage: btrfsDefragMetadata <volume mountpoint>"
-		exit 1
+		echo "Usage: btrfsDefragMeta <volume mountpoint>"
+		return 1
 	fi
 
 	if [ ! -d "$1" ]; then
 		echo "Error: Given parameter is not a mount point."
-		exit 1
+		return 1
 	fi
 
+	btrfs fi defrag -v "$1"
 	find "$1" -xdev -type d -exec btrfs fi defrag -v {} \;
 }
 
 function btrfsDefragData {
 	if [ -z "$1" ]; then
-		echo "Usage: btrfsDefragMetadata <volume mountpoint>"
-		exit 1
+		echo "Usage: btrfsDefragData <volume mountpoint>"
+		return 1
 	fi
 
 	if [ ! -d "$1" ]; then
 		echo "Error: Given parameter is not a mount point."
-		exit 1
+		return 1
 	fi
 
 	btrfs fi defrag -r -v -clzo "$1"
+}
+
+function btrfsMaint {
+	if [ -z "$1" ]; then
+		echo "Usage: btrfsMaint [volume mountpoint] (dusage/musage parameter)"
+		echo "Defrags metadata & data, deduplicates and runs a maintenance balance."
+		return 1
+	fi
+
+	dyTmpUsage="10"
+	if [ ! -z "$2" ]; then
+		dyTmpUsage="$2"
+	fi
+
+	if [ ! -d "$1" ]; then
+		echo "Error: Given parameter is not a mount point."
+		return 1
+	fi
+
+	if [ -f "/tmp/btrfsMaintenance" ]; then
+		lastdate=`cat /tmp/btrfsMaintenance`
+	fi
+
+	curdate=`date +%Y%m%d`
+	if [ "$lastdate" != "$curdate" ]; then
+		echo "$curdate" > /tmp/btrfsMaintenance
+		btrfsDefragMeta "$1"
+		btrfsDefragData "$1"
+		which bedup >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			bedup dedup --defrag --size-cutoff 262144
+		else
+			echo "Skipped: bedup (deduplication) skipped because bedup is not installed..."
+		fi
+	else
+		echo "Info: Skipping btrfsDefrag and dedup steps because they already ran today."
+		echo "If you really need them again, delete '/tmp/btrfsMaintenance'"
+	fi
+
+	echo "Running balance with usage: '$usage'."
+	echo " * If you want you can rerun the command with higher usage values."
+	echo " * Be careful because an increase in the usage value can lead"
+	echo "   to very long execution times."
+	btrfs fi bal start -dusage="$usage" -musage="$usage" -v "$1"
+
+	echo ""
+	echo "All done, you can choose to schedule a scrub as well, using btrfsScrub."
+}
+
+function btrfsScrub {
+	if [ -z "$1" ]; then
+		echo "Usage: btrfsScrub [volume mountpoint]"
+		return 1
+	fi
+
+	if [ ! -d "$1" ]; then
+		echo "Error: Given parameter is not a mount point."
+		return 1
+	fi
+
+	btrfs scrub start -B "$1"
 }
 
 #
