@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.5
+hachreAliasesVersion=0.53.20150220.6
 
 #
 ### hachreAliases internal stuff
@@ -262,7 +262,6 @@ function btrfsMaint {
 
 	curdate=`date +%Y%m%d`
 	if [ "$lastdate" != "$curdate" ]; then
-		echo "$curdate" > /tmp/btrfsMaintenance
 		btrfsDefragMeta "$1"
 		btrfsDefragData "$1"
 		which bedup >/dev/null 2>&1
@@ -271,6 +270,7 @@ function btrfsMaint {
 		else
 			echo "Skipped: bedup (deduplication) skipped because bedup is not installed..."
 		fi
+		echo "$curdate" > /tmp/btrfsMaintenance
 	else
 		echo "Info: Skipping btrfsDefrag and dedup steps because they already ran today."
 		echo "If you really need them again, delete '/tmp/btrfsMaintenance'"
