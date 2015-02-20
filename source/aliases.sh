@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.57.20150220.19
+hachreAliasesVersion=0.57.20150220.20
 
 #
 ### hachreAliases internal stuff
@@ -783,6 +783,11 @@ function dyx {
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		echo "Syncing..."
+		which emerge-webrsync >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			emerge-webrsync -q
+		fi
 		emerge --sync
 
 		eix-update >/dev/null 2>&1 &
