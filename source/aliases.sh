@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.3
+hachreAliasesVersion=0.53.20150220.4
 
 #
 ### hachreAliases internal stuff
@@ -271,12 +271,14 @@ function btrfsMaint {
 	else
 		echo "Info: Skipping btrfsDefrag and dedup steps because they already ran today."
 		echo "If you really need them again, delete '/tmp/btrfsMaintenance'"
+		echo ""
 	fi
 
 	echo "Running balance with usage: '$usage'."
 	echo " * If you want you can rerun the command with higher usage values."
 	echo " * Be careful because an increase in the usage value can lead"
 	echo "   to very long execution times."
+	echo ""
 	btrfs fi bal start -dusage="$dyTmpUsage" -musage="$dyTmpUsage" -v "$1"
 
 	echo ""
