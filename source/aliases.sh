@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.53.20150220.2
+hachreAliasesVersion=0.53.20150220.3
 
 #
 ### hachreAliases internal stuff
@@ -277,7 +277,7 @@ function btrfsMaint {
 	echo " * If you want you can rerun the command with higher usage values."
 	echo " * Be careful because an increase in the usage value can lead"
 	echo "   to very long execution times."
-	btrfs fi bal start -dusage="$usage" -musage="$usage" -v "$1"
+	btrfs fi bal start -dusage="$dyTmpUsage" -musage="$dyTmpUsage" -v "$1"
 
 	echo ""
 	echo "All done, you can choose to schedule a scrub as well, using btrfsScrub."
