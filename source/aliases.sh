@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.55.20150220.9
+hachreAliasesVersion=0.55.20150220.10
 
 #
 ### hachreAliases internal stuff
@@ -756,7 +756,7 @@ function dyh {
 	echo " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
 	echo " dyu\tDo a full system upgrade (primary repo, without first syncing)"
 	echo " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
-	echo " dyv\Verify system sanity"
+	echo " dyv\tVerify system sanity"
 	echo " dyx\tSync the primary repository"
 	echo " dyxx\tSync the secondary repository"
 	echo " dys\tSearch a package (in the main repo)"
@@ -820,7 +820,7 @@ function dyu {
 
 function dyv {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		equo debtest
+		equo deptest
 		equo libtest
 		equo conf update
 	fi
