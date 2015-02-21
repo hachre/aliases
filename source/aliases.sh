@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.60.20150221.3
+hachreAliasesVersion=0.61.20150221.4
 
 #
 ### hachreAliases internal stuff
@@ -1112,6 +1112,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: start <service>"
 				return 1
 			fi
+
+			/etc/init.d/"$1" start
 		}
 
 		function stop {
@@ -1119,6 +1121,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: stop <service>"
 				return 1
 			fi
+
+			/etc/init.d/"$1" stop
 		}
 
 		function restart {
@@ -1126,6 +1130,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: restart <service>"
 				return 1
 			fi
+
+			/etc/init.d/"$1" restart
 		}
 
 		function reload {
@@ -1133,6 +1139,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: reload <service>"
 				return 1
 			fi
+
+			/etc/init.d/"$1" reload
 		}
 
 		function status {
@@ -1140,6 +1148,36 @@ if [ "$?" != "0" ]; then
 				echo "Usage: status <service>"
 				return 1
 			fi
+
+			/etc/init.d/"$1" status
+		}
+
+		function senable {
+			if [ -z "$1" ]; then
+				echo "Usage: senable [service] (runlevel)"
+				return 1
+			fi
+
+			runlevel="default"
+			if [ ! -z "$2" ]; then
+				runlevel="$2"
+			fi
+
+			rc-update add "$1" default
+		}
+
+		function sdisable {
+			if [ -z "$1" ]; then
+				echo "Usage: sdisable [service] (runlevel)"
+				return 1
+			fi
+
+			runlevel="default"
+			if [ ! -z "$2" ]; then
+				runlevel="$2"
+			fi
+
+			rc-update del "$1" default
 		}
 
 		function sstatus {
