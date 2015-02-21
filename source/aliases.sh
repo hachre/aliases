@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.59.20150221.1
+hachreAliasesVersion=0.60.20150221.2
 
 #
 ### hachreAliases internal stuff
@@ -640,6 +640,62 @@ if [ "$?" == "0" ]; then
 		systemctl enable -f "$1"
 		systemctl reenable "$1" >/dev/null 2>&1
 	}
+fi
+
+which systemctl >/dev/null 2>&1
+if [ "$?" != "0" ]; then
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		function start {
+			if [ -z "$1" ]; then
+				echo "Usage: start <service>"
+				return 1
+			fi
+		}
+
+		function stop {
+			if [ -z "$1" ]; then
+				echo "Usage: stop <service>"
+				return 1
+			fi
+		}
+
+		function restart {
+			if [ -z "$1" ]; then
+				echo "Usage: restart <service>"
+				return 1
+			fi
+		}
+
+		function reload {
+			if [ -z "$1" ]; then
+				echo "Usage: reload <service>"
+				return 1
+			fi
+		}
+
+		function status {
+			if [ -z "$1" ]; then
+				echo "Usage: status <service>"
+				return 1
+			fi
+		}
+
+		function sstatus {
+			rc-status
+		}
+
+		function sfind {
+			cd /etc/init.d/
+
+			if [ -z "$1" ]; then
+				find . -type f
+				return 0
+			fi
+
+			find . -type f -iname "*$1*"
+			return 0
+		}
+	fi
 fi
 
 #
