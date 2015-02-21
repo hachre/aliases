@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.60.20150221.2
+hachreAliasesVersion=0.60.20150221.3
 
 #
 ### hachreAliases internal stuff
@@ -642,62 +642,6 @@ if [ "$?" == "0" ]; then
 	}
 fi
 
-which systemctl >/dev/null 2>&1
-if [ "$?" != "0" ]; then
-	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		function start {
-			if [ -z "$1" ]; then
-				echo "Usage: start <service>"
-				return 1
-			fi
-		}
-
-		function stop {
-			if [ -z "$1" ]; then
-				echo "Usage: stop <service>"
-				return 1
-			fi
-		}
-
-		function restart {
-			if [ -z "$1" ]; then
-				echo "Usage: restart <service>"
-				return 1
-			fi
-		}
-
-		function reload {
-			if [ -z "$1" ]; then
-				echo "Usage: reload <service>"
-				return 1
-			fi
-		}
-
-		function status {
-			if [ -z "$1" ]; then
-				echo "Usage: status <service>"
-				return 1
-			fi
-		}
-
-		function sstatus {
-			rc-status
-		}
-
-		function sfind {
-			cd /etc/init.d/
-
-			if [ -z "$1" ]; then
-				find . -type f
-				return 0
-			fi
-
-			find . -type f -iname "*$1*"
-			return 0
-		}
-	fi
-fi
-
 #
 # hachreProjects
 #
@@ -749,7 +693,10 @@ function packageProjects() {
 	fi
 }
 
-# hachre unified pkg commands
+#
+# $dyDetectedDistro below this point
+#
+
 dyDetectedDistro="null"
 function dyDetectDistro {
 	if [ "$dyDetectedDistro" != "null" ]; then
@@ -799,6 +746,7 @@ function dyDetectDistro {
 }
 dyDetectDistro
 
+# hachre's unified packaging commands
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
 		echo "Error: Sadly, your distro is not supported."
@@ -1154,3 +1102,60 @@ function dyss {
 		return 1
 	fi
 }
+
+# Gentoo openrc specific init helpers
+which systemctl >/dev/null 2>&1
+if [ "$?" != "0" ]; then
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		function start {
+			if [ -z "$1" ]; then
+				echo "Usage: start <service>"
+				return 1
+			fi
+		}
+
+		function stop {
+			if [ -z "$1" ]; then
+				echo "Usage: stop <service>"
+				return 1
+			fi
+		}
+
+		function restart {
+			if [ -z "$1" ]; then
+				echo "Usage: restart <service>"
+				return 1
+			fi
+		}
+
+		function reload {
+			if [ -z "$1" ]; then
+				echo "Usage: reload <service>"
+				return 1
+			fi
+		}
+
+		function status {
+			if [ -z "$1" ]; then
+				echo "Usage: status <service>"
+				return 1
+			fi
+		}
+
+		function sstatus {
+			rc-status
+		}
+
+		function sfind {
+			cd /etc/init.d/
+
+			if [ -z "$1" ]; then
+				find . -type f
+				return 0
+			fi
+
+			find . -type f -iname "*$1*"
+			return 0
+		}
+	fi
+fi
