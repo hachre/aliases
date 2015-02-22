@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.8
+hachreAliasesVersion=0.64.20150222.9
 
 #
 ### hachreAliases internal stuff
@@ -66,7 +66,7 @@ alias halt="poweroff"
 
 # zsh only aliases
 
-if [ "$SHELL" == "zsh" ]; then
+if [ ! -z "$ZSH_NAME" ]; then
 	# P alias to get pages
 	alias -g P="| less -rEFXKn"
 	# G alias to get a grep
