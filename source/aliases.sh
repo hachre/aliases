@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.7
+hachreAliasesVersion=0.64.20150222.8
 
 #
 ### hachreAliases internal stuff
@@ -1262,9 +1262,9 @@ function byobuSetup {
 	# 	return 1
 	# fi
 
-	byobu >/dev/null 2>&1 &
+	byobu &
 
-	sleep 2
+	sleep 1
 	killall -9 tmux
 	sleep 1
 
@@ -1316,7 +1316,13 @@ function hachreShellSetup {
 		return 1
 	fi
 
+	echo "Welcome to the hachre Shell installation."
+	echo "Please make sure that all instances of your current shell ($SHELL) can be killed."
+	echo "If you are not ready to install, press CTRL+C now, otherwise press enter."
+	read
+
 	# Install zsh and byobu
+	echo "Installing zsh and byobu..."
 	dyi zsh byobu
 	if [ "$?" != "0" ]; then
 		echo "Error: Something bad happened during installation of 'zsh' and 'byobu'. Installation aborted."
@@ -1329,7 +1335,8 @@ function hachreShellSetup {
 	# Set up byobu
 	byobuSetup forcezsh
 
-	# Print you can close this message for old terminal
-	echo ""
-	echo "Installation finished. Relog to see the result!"
+	# Kill all current shells cause they are corrupt now anyway.
+	echo "Please login again..."
+	sleep 1
+	killall -9 $SHELL
 }
