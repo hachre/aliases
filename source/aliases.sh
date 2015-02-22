@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.10
+hachreAliasesVersion=0.65.20150223.1
 
 #
 ### hachreAliases internal stuff
@@ -210,6 +210,14 @@ function kernelUpdate {
 
 	echo "Error: kernelUpdate is not implemented for your platform."
 	return 1
+}
+function checkio {
+	which iostat >/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "checkio needs iostat installed (sysstat package)"
+		return 1
+	fi
+	iostat -dkxz 1
 }
 
 #
