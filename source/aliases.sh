@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.4
+hachreAliasesVersion=0.64.20150222.5
 
 #
 ### hachreAliases internal stuff
@@ -1234,6 +1234,7 @@ function zshSetup {
 	mv /tmp/zshrc /etc/zsh/
 	rm /etc/skel/.zshrc /etc/skel/.zprofile >/dev/null 2>&1
 	echo "source /etc/profile" >> /etc/skel/.zshrc
+	cp /etc/skel/.zshrc $HOME/
 	chsh -s /bin/zsh
 
 	echo ""
@@ -1258,11 +1259,15 @@ function byobuSetup {
 	# 	return 1
 	# fi
 
-	echo 'tmux_left=" #logo #distro #release #arch session"' >> /root/.byobu/status
-	echo 'tmux_right=" #network #disk_io #custom #entropy #raid reboot_required updates_available #apport #services #mail #users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp #battery #wifi_quality #processes load_average #cpu_count #cpu_freq #memory #swap #disk #whoami hostname #ip_address #time_utc date time"' >> /root/.byobu/status
+	mkdir "$HOME/.byobu" >/dev/null 2>&1
+	echo 'tmux_left=" #logo #distro #release #arch session"' >> "$HOME"/.byobu/status
+	echo 'tmux_right=" #network #disk_io #custom #entropy #raid reboot_required updates_available #apport #services #mail #users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp #battery #wifi_quality #processes load_average #cpu_count #cpu_freq #memory #swap #disk #whoami hostname #ip_address #time_utc date time"' >> "$HOME"/.byobu/status
 
 	destination="$HOME/.bashrc"
 	if [ "$SHELL" == "zsh" ]; then
+		destination="$HOME/.zshrc"
+	fi
+	if [ "$1" == "forcezsh" ]; then
 		destination="$HOME/.zshrc"
 	fi
 	echo -e '# Launch byobu on login\nif [ -z "$BYOBU_BACKEND" ]; then\nbyobu\nfi' >> "$destination"
@@ -1314,11 +1319,11 @@ function hachreShellSetup {
 	zshSetup
 
 	# Set up byobu
-	byobuSetup
+	byobuSetup forcezsh
 
 	# Print you can close this message for old terminal
 	echo "Installation finished. You can close this terminal."
 
-	# Launch byobu (this should also launch zsh)
-	byobu
+	# Launch zsh & byobu
+	zsh -c "byobu"
 }
