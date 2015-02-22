@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.6
+hachreAliasesVersion=0.64.20150222.7
 
 #
 ### hachreAliases internal stuff
@@ -1262,11 +1262,10 @@ function byobuSetup {
 	# 	return 1
 	# fi
 
-	byobu &
+	byobu >/dev/null 2>&1 &
 
 	sleep 2
 	killall -9 tmux
-	killall -9 byobu
 	sleep 1
 
 	echo 'tmux_left=" #logo #distro #release #arch session"' >> "$HOME"/.byobu/status
@@ -1276,13 +1275,10 @@ function byobuSetup {
 	if [ "$SHELL" == "zsh" ]; then
 		destination="$HOME/.zshrc"
 	fi
-	if [ "$1" == "forcezsh" ]; then
+	if [ "$1" == "forcezsh" ]; then
 		destination="$HOME/.zshrc"
 	fi
 	echo -e '# Launch byobu on login\nif [ -z "$BYOBU_BACKEND" ]; then\nbyobu\nfi' >> "$destination"
-
-	echo "DEBUG"
-sleep 10
 
 	echo ""
 	echo "All done. On your next login byobu will launch automatically. Or you can use 'byobu' now."
