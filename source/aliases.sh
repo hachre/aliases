@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.9
+hachreAliasesVersion=0.64.20150222.10
 
 #
 ### hachreAliases internal stuff
@@ -1171,7 +1171,7 @@ if [ "$?" != "0" ]; then
 				runlevel="$2"
 			fi
 
-			rc-update add "$1" default
+			rc-update add "$1" "$runlevel"
 		}
 
 		function sdisable {
@@ -1185,7 +1185,7 @@ if [ "$?" != "0" ]; then
 				runlevel="$2"
 			fi
 
-			rc-update del "$1" default
+			rc-update del "$1" "$runlevel"
 		}
 
 		function sstatus {
