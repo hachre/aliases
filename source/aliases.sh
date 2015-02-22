@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.62.20150222.1
+hachreAliasesVersion=0.63.20150222.2
 
 #
 ### hachreAliases internal stuff
@@ -1201,3 +1201,37 @@ if [ "$?" != "0" ]; then
 		}
 	fi
 fi
+
+# Automatic zsh grml settings install
+function zshSetup {
+	if [ ! "$USER" == "root" ]; then
+		echo "We need root to continue."
+		return 1
+	fi
+
+	which zsh >/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Please install zsh before running this setup..."
+		return 1
+	fi
+
+	echo "This will (re)install the zsh configuration in 3 seconds..."
+	echo "Any previously existing configuration will be deleted. CTRL+C to abort now!"
+	sleep 3
+
+	wget -O /tmp/zshrc http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+	if [ "$?" != "0" ]; then
+		echo "Download problem, bailing out..."
+		return 1
+	fi
+
+	rm -R /etc/zsh >/dev/null 2>&1
+	mkdir /etc/zsh
+	mv /tmp/zshrc /etc/zsh/
+	rm /etc/skel/.zshrc /etc/skel/.zprofile >/dev/null 2>&1
+	echo "source /etc/profile" >> /etc/skel/.zshrc
+	chsh -s /bin/zsh
+
+	echo ""
+	echo "zsh configuration is installed!"
+}
