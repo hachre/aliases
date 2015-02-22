@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.63.20150222.3
+hachreAliasesVersion=0.64.20150222.4
 
 #
 ### hachreAliases internal stuff
@@ -1238,4 +1238,87 @@ function zshSetup {
 
 	echo ""
 	echo "zsh configuration is installed!"
+}
+
+# Automatic byobu settings install
+function byobuSetup {
+	if [ ! "$USER" == "root" ]; then
+		echo "We need root to continue."
+		return 1
+	fi
+
+	# which byobu >/dev/null 2>&1
+	# if [ "$?" != "0" ]; then
+	# 	echo "Please install 'byobu' before running this setup..."
+	# 	return 1
+	# fi
+
+	# if [ -z "$BYOBU_BACKEND" ]; then
+	# 	echo "Please launch 'byobu' before running this..."
+	# 	return 1
+	# fi
+
+	echo 'tmux_left=" #logo #distro #release #arch session"' >> /root/.byobu/status
+	echo 'tmux_right=" #network #disk_io #custom #entropy #raid reboot_required updates_available #apport #services #mail #users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp #battery #wifi_quality #processes load_average #cpu_count #cpu_freq #memory #swap #disk #whoami hostname #ip_address #time_utc date time"' >> /root/.byobu/status
+
+	destination="$HOME/.bashrc"
+	if [ "$SHELL" == "zsh" ]; then
+		destination="$HOME/.zshrc"
+	fi
+	echo -e '# Launch byobu on login\nif [ -z "$BYOBU_BACKEND" ]; then\nbyobu\nfi' >> "$destination"
+
+	echo ""
+	echo "All done. On your next login byobu will launch automatically. Or you can use 'byobu' now."
+	echo "You can use ctrl+a-d inside of byobu to detach and drop back to a normal shell."
+	echo "To get back simply relog or launch 'byobu' again!"
+	return 0
+}
+
+# Automatic hachre Shell Setup
+function hachreShellSetup {
+	if [ ! "$USER" == "root" ]; then
+		echo "We need root to continue."
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "unknown" ]; then
+		echo "Your distro is not supported for fully automatic install."
+		echo "Please run zshSetup and byobuSetup on your own."
+		return 1
+	fi
+
+	which zsh >/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		echo "Error: You should use this before installing anything."
+		echo "To continue either use zshSetup manually or remove zsh and its config."
+		echo "The config is /etc/zsh* and $HOME/.zsh*"
+		return 1
+	fi
+
+	which byobu >/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		echo "Error: You should use this before installing anything."
+		echo "To continue either use byobuSetup manually or remove byobu and its config."
+		echo "The config is $HOME/.byobu"
+		return 1
+	fi
+
+	# Install zsh and byobu
+	dyi zsh byobu
+	if [ "$?" != "0" ]; then
+		echo "Error: Something bad happened during installation of 'zsh' and 'byobu'. Installation aborted."
+		return 1
+	fi
+
+	# Set up zsh
+	zshSetup
+
+	# Set up byobu
+	byobuSetup
+
+	# Print you can close this message for old terminal
+	echo "Installation finished. You can close this terminal."
+
+	# Launch byobu (this should also launch zsh)
+	byobu
 }
