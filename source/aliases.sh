@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.64.20150222.5
+hachreAliasesVersion=0.64.20150222.6
 
 #
 ### hachreAliases internal stuff
@@ -1219,9 +1219,11 @@ function zshSetup {
 		return 1
 	fi
 
-	echo "This will (re)install the zsh configuration in 3 seconds..."
-	echo "Any previously existing configuration will be deleted. CTRL+C to abort now!"
-	sleep 3
+	if [ -z "$1" ]; then
+		echo "This will (re)install the zsh configuration in 3 seconds..."
+		echo "Any previously existing configuration will be deleted. CTRL+C to abort now!"
+		sleep 3
+	fi
 
 	wget -O /tmp/zshrc http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
 	if [ "$?" != "0" ]; then
@@ -1235,6 +1237,7 @@ function zshSetup {
 	rm /etc/skel/.zshrc /etc/skel/.zprofile >/dev/null 2>&1
 	echo "source /etc/profile" >> /etc/skel/.zshrc
 	cp /etc/skel/.zshrc $HOME/
+	chown $USER $HOME/.zshrc >/dev/null 2>&1
 	chsh -s /bin/zsh
 
 	echo ""
@@ -1259,7 +1262,13 @@ function byobuSetup {
 	# 	return 1
 	# fi
 
-	mkdir "$HOME/.byobu" >/dev/null 2>&1
+	byobu &
+
+	sleep 2
+	killall -9 tmux
+	killall -9 byobu
+	sleep 1
+
 	echo 'tmux_left=" #logo #distro #release #arch session"' >> "$HOME"/.byobu/status
 	echo 'tmux_right=" #network #disk_io #custom #entropy #raid reboot_required updates_available #apport #services #mail #users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp #battery #wifi_quality #processes load_average #cpu_count #cpu_freq #memory #swap #disk #whoami hostname #ip_address #time_utc date time"' >> "$HOME"/.byobu/status
 
@@ -1271,6 +1280,9 @@ function byobuSetup {
 		destination="$HOME/.zshrc"
 	fi
 	echo -e '# Launch byobu on login\nif [ -z "$BYOBU_BACKEND" ]; then\nbyobu\nfi' >> "$destination"
+
+	echo "DEBUG"
+sleep 10
 
 	echo ""
 	echo "All done. On your next login byobu will launch automatically. Or you can use 'byobu' now."
@@ -1316,14 +1328,12 @@ function hachreShellSetup {
 	fi
 
 	# Set up zsh
-	zshSetup
+	zshSetup skipIntro
 
 	# Set up byobu
 	byobuSetup forcezsh
 
 	# Print you can close this message for old terminal
-	echo "Installation finished. You can close this terminal."
-
-	# Launch zsh & byobu
-	zsh -c "byobu"
+	echo ""
+	echo "Installation finished. Relog to see the result!"
 }
