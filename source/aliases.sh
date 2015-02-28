@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.66.20150228.2
+hachreAliasesVersion=0.66.20150228.3
 
 #
 ### hachreAliases internal stuff
@@ -1271,6 +1271,7 @@ if [ "$?" != "0" ]; then
 		}
 
 		function sfind {
+			sPWD=`pwd`
 			cd /etc/init.d/
 
 			if [ -z "$1" ]; then
@@ -1279,6 +1280,9 @@ if [ "$?" != "0" ]; then
 			fi
 
 			find . -type f -iname "*$1*"
+
+			cd "$sPWD"
+
 			return 0
 		}
 	fi
