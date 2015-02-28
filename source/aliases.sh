@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.65.20150223.2
+hachreAliasesVersion=0.66.20150228.1
 
 #
 ### hachreAliases internal stuff
@@ -749,6 +749,14 @@ function dyDetectDistro {
 		return 0
 	fi
 
+	# Arch
+	which pacman 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="arch"
+		dyDistroInfo="\n * The native package manager for this distro is called 'pacman'.\n * You might also wanna look at 'pacaur'."
+		return 0
+	fi
+
 	# OS X with Brew
 	if [ -f "/usr/local/bin/brew" ]; then
 		dyDetectedDistro="osx-brew"
@@ -800,6 +808,7 @@ function dyx {
 		eix-update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
@@ -813,11 +822,15 @@ function dyx {
 		eix-update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew update
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 
 function dyxx {
@@ -840,6 +853,7 @@ function dyxx {
 		eix-remote update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
@@ -848,12 +862,10 @@ function dyxx {
 		eix-remote update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
-		return 1
-	fi
+	echo "This command is not supported on your platform."
 }
 
 function dyv {
@@ -861,16 +873,15 @@ function dyv {
 		equo deptest
 		equo libtest
 		equo conf update
-	fi
-
-	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		echo "Not implemented yet."
-		return 1
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew doctor
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 
 function dyu {
@@ -880,6 +891,7 @@ function dyu {
 			return 1
 		fi
 		equo conf update
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
@@ -888,11 +900,20 @@ function dyu {
 			emerge --depclean -av
 			etc-update
 		fi
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pacman -Suy
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew upgrade
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 
 function dyuu {
@@ -909,12 +930,10 @@ function dyuu {
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		echo "Info: dyuu and dyu are equal on this platform."
 		dyu $*
+		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
-		return 1
-	fi
+	echo "This command is not supported on your platform."
 }
 function dyi {
 	if [ -z "$1" ]; then
@@ -934,10 +953,17 @@ function dyi {
 			return 1
 		fi
 		equo conf update
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		emerge -avkk --quiet-build=y --binpkg-respect-use=y $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pacman -Suy "$1"
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -946,7 +972,10 @@ function dyi {
 			return 1
 		fi
 		brew install "$1"
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 function dyif {
 	if [ -z "$1" ]; then
@@ -957,15 +986,20 @@ function dyif {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo unmask $* 1>/dev/null 2>&1
 		dyi -av $*
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		dyi --usepkg=n $*
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		dyi $*
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 function dyii {
 	if [ -z "$1" ]; then
@@ -1019,17 +1053,16 @@ function dyii {
 		echo "/etc/entropy/packages/package.mask"
 		echo ""
 		echo "It is recommended that you use emerge / dyuu or dyii to upgrade packages on that list"
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		echo "Info: dyii and dyi are equal on this platform."
 		dyi $*
+		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
-		return 1
-	fi
+	echo "This command is not supported on your platform."
 }
 function dyr {
 	if [ -z "$1" ]; then
@@ -1040,10 +1073,12 @@ function dyr {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo remove --deep -av $*
 		equo unmask $* 1>/dev/null 2>/dev/null
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		emerge --depclean -av $*
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -1052,7 +1087,10 @@ function dyr {
 			return 1
 		fi
 		brew uninstall "$1"
+		return $?
 	fi
+
+	echo "This comand is not supported on your platform."
 }
 function dyrf {
 	if [ -z "$1" ]; then
@@ -1062,10 +1100,12 @@ function dyrf {
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dyr --force-system $*
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		emerge --unmerge -av $*
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
@@ -1074,7 +1114,10 @@ function dyrf {
 			return 1
 		fi
 		brew uninstall --force "$1"
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 function dys {
 	if [ -z "$1" ]; then
@@ -1092,11 +1135,15 @@ function dys {
 			eixupdate
 		fi
 		eix -F $* | less -rEFXKn
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew search $*
+		return $?
 	fi
+
+	echo "This command is not supported on your platform."
 }
 function dyss {
 	if [ -z "$1" ]; then
@@ -1111,13 +1158,15 @@ function dyss {
 		echo "Info: To install a package from this list:"
 		echo " 1. Add the repo by doing 'layman -a <reponame>'"
 		echo " 2. Then use 'dyii <packagename>'"
+		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		echo "Info: This command is not supported on 'osx-brew', because there is no secondary repo."
-		return 1
-	fi
+	echo "This command is not supported on your platform."
 }
+
+#
+# End of dynaloop unified package management commands
+#
 
 # Gentoo openrc specific init helpers
 which systemctl >/dev/null 2>&1
