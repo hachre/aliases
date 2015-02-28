@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.66.20150228.1
+hachreAliasesVersion=0.66.20150228.2
 
 #
 ### hachreAliases internal stuff
@@ -1172,11 +1172,20 @@ function dyss {
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		function existsScript {
+			if [ ! -f "$1" ]; then
+				echo "Error: Given service '$1' not found. Try sfind..."
+				return 1
+			fi
+		}
+
 		function start {
 			if [ -z "$1" ]; then
 				echo "Usage: start <service>"
 				return 1
 			fi
+
+			existsScript "$1" || return $?
 
 			/etc/init.d/"$1" start
 		}
@@ -1187,6 +1196,8 @@ if [ "$?" != "0" ]; then
 				return 1
 			fi
 
+			existsScript "$1" || return $?
+
 			/etc/init.d/"$1" stop
 		}
 
@@ -1195,6 +1206,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: restart <service>"
 				return 1
 			fi
+
+			existsScript "$1" || return $?
 
 			/etc/init.d/"$1" restart
 		}
@@ -1205,6 +1218,8 @@ if [ "$?" != "0" ]; then
 				return 1
 			fi
 
+			existsScript "$1" || return $?
+
 			/etc/init.d/"$1" reload
 		}
 
@@ -1214,6 +1229,8 @@ if [ "$?" != "0" ]; then
 				return 1
 			fi
 
+			existsScript "$1" || return $?
+
 			/etc/init.d/"$1" status
 		}
 
@@ -1222,6 +1239,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: senable [service] (runlevel)"
 				return 1
 			fi
+
+			existsScript "$1" || return $?
 
 			runlevel="default"
 			if [ ! -z "$2" ]; then
@@ -1236,6 +1255,8 @@ if [ "$?" != "0" ]; then
 				echo "Usage: sdisable [service] (runlevel)"
 				return 1
 			fi
+
+			existsScript "$1" || return $?
 
 			runlevel="default"
 			if [ ! -z "$2" ]; then
