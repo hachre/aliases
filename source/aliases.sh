@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.67.20150302.1
+hachreAliasesVersion=0.67.20150302.2
 
 #
 ### hachreAliases internal stuff
@@ -886,8 +886,8 @@ function dyv {
 
 function dyu {
 	# Every platform does a sync first
-	dys
-	dyss
+	dyx
+	dyxx
 
 	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
