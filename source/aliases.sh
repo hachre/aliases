@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.66.20150228.3
+hachreAliasesVersion=0.67.20150302.1
 
 #
 ### hachreAliases internal stuff
@@ -792,8 +792,8 @@ function dyh {
 	echo -e " dyii\tInstall a package from the secondary repo (after confirmation)"
 	echo -e " dyr\tRemove a package (after confirmation, including its unused dependencies)"
 	echo -e " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
-	echo -e " dyu\tDo a full system upgrade (primary repo, without first syncing)"
-	echo -e " dyuu\tDo a full system upgrade (secondary repo, without first syncing)"
+	echo -e " dyu\tDo a full system upgrade (primary repo)"
+	echo -e " dyuu\tDo a full system upgrade (secondary repo)"
 	echo -e " dyv\tVerify system sanity"
 	echo -e " dyx\tSync the primary repository"
 	echo -e " dyxx\tSync the secondary repository"
@@ -885,6 +885,11 @@ function dyv {
 }
 
 function dyu {
+	# Every platform does a sync first
+	dys
+	dyss
+
+	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo upgrade -av  $*
 		if [ "$?" != "0" ]; then
@@ -1173,10 +1178,11 @@ which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		function existsScript {
-			if [ ! -f "$1" ]; then
+			if [ ! -f "/etc/init.d/$1" ]; then
 				echo "Error: Given service '$1' not found. Try sfind..."
 				return 1
 			fi
+			return 0
 		}
 
 		function start {
