@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.67.20150305.1
+hachreAliasesVersion=0.68.20150305.2
 
 #
 ### hachreAliases internal stuff
@@ -886,10 +886,6 @@ function dyv {
 }
 
 function dyu {
-	# Every platform does a sync first
-	dyx
-	dyxx
-
 	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo upgrade -av  $*
@@ -910,7 +906,7 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pacman -Suy
+		pmi
 		return $?
 	fi
 
@@ -968,7 +964,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pacman -Suy "$1"
+		pmi $*
 		return $?
 	fi
 
@@ -1087,6 +1083,11 @@ function dyr {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pmr $*
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -1144,6 +1145,11 @@ function dys {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pms -r $* P
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew search $*
 		return $?
@@ -1164,6 +1170,11 @@ function dyss {
 		echo "Info: To install a package from this list:"
 		echo " 1. Add the repo by doing 'layman -a <reponame>'"
 		echo " 2. Then use 'dyii <packagename>'"
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pms -a $* P
 		return $?
 	fi
 
