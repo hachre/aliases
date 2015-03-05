@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.67.20150302.2
+hachreAliasesVersion=0.67.20150305.1
 
 #
 ### hachreAliases internal stuff
@@ -495,10 +495,11 @@ function setupArchAliases() {
 		   cd $d
 		   $root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
 		   cd $p
-		   $root makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}
+			$root chown archbuild "$d" -R
+		   su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
 	   done
 	}
-	function pmsetup() {
+	function pmSetup() {
 		echo "Proceeding to set up hachre Arch Build system..."
 		$hachreAliasesRoot userdel -rf archbuild >/dev/null 2>&1
 		$hachreAliasesRoot groupdel archbuild >/dev/null 2>&1
