@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.68.20150305.2
+hachreAliasesVersion=0.68.20150305.3
 
 #
 ### hachreAliases internal stuff
@@ -573,12 +573,12 @@ function setupArchAliases() {
 
 which pacman >/dev/null 2>&1
 if [ "$?" == "0" ]; then
-	hachreAliasesArchPM="pacman"
+	hachreAliasesArchPM="pacman --color always"
 
 	which pacaur >/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		root="sudo -u archbuild -s"
-		hachreAliasesArchPM="pacaur --noedit"
+		hachreAliasesArchPM="pacaur --noedit --color always"
 	fi
 
 	setupArchAliases
