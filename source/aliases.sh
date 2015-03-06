@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.69.20150306.2
+hachreAliasesVersion=0.69.20150306.3
 
 #
 ### hachreAliases internal stuff
@@ -1275,7 +1275,15 @@ if [ "$?" == "0" ]; then
 		# Remove double *
 		searchstring=`echo $searchstring | sed "s/\*\*/\*/g"`
 
-		find /lib/systemd -iname $searchstring
+		sfinddir="/lib/systemd"
+		if [ ! -d "$sfindir" ]; then
+			sfinddir="/usr/lib64/systemd"
+		fi
+		spwd=`pwd`
+		cd "$sfinddir"
+		find . -iname $searchstring
+
+		cd "$spwd"
 	}
 	function sdisable {
 		tmpfile=`mktemp`
