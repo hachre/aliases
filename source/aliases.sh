@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.68.20150306.1
+hachreAliasesVersion=0.69.20150306.2
 
 #
 ### hachreAliases internal stuff
@@ -1242,7 +1242,7 @@ if [ "$?" == "0" ]; then
 	alias restart="systemctl restart"
 	alias reload="systemctl reload"
 	alias status="systemctl status"
-	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
+	#alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
 	function viewlog {
 		# Views Journalctl log in Less
 		if [ -z "$1" ]; then
@@ -1306,6 +1306,42 @@ if [ "$?" == "0" ]; then
 	}
 	function sreload() {
 		systemctl daemon-reload
+	}
+	function sstatus() {
+		function echook() {
+			echo -ne " [ \e[92mOK\e[0m ] "
+		}
+		function echofail() {
+			echo -ne " [\e[91mFAIL\e[0m] "
+		}
+
+		sIPS="$IPS"
+		IPS=$'\n'
+
+		echo "System status for multi-user.target.wants:"
+
+		for service in `find /etc/systemd/system/multi-user.target.wants/*service`; do
+			# Get clean servicename.
+			serviceName=`basename "$service"`
+			serviceName=${serviceName/.service/}
+
+			# Find out if it is running
+			state=`systemctl show "$serviceName" --plain --no-pager | grep -i "SubState\="`
+			state=${state/SubState=/}
+
+			# Output the sheet.
+			if [[ "$state" == *"running"* ]]; then
+				# Running
+				echook
+			else
+				# Dead
+				echofail
+			fi
+
+			echo "$serviceName"
+		done
+
+		IPS="$sIPS"
 	}
 fi
 
