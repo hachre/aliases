@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.68.20150305.3
+hachreAliasesVersion=0.68.20150306.1
 
 #
 ### hachreAliases internal stuff
@@ -582,81 +582,6 @@ if [ "$?" == "0" ]; then
 	fi
 
 	setupArchAliases
-fi
-
-#
-# Systemctl
-#
-
-which systemctl >/dev/null 2>&1
-if [ "$?" == "0" ]; then
-	alias start="systemctl start"
-	alias stop="systemctl stop"
-	alias restart="systemctl restart"
-	alias reload="systemctl reload"
-	alias status="systemctl status"
-	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
-	function viewlog {
-		# Views Journalctl log in Less
-		if [ -z "$1" ]; then
-			echo "Usage: viewlog <unit name> [... optional parameters for journalctl ...]"
-			echo "See also: followlog"
-			return 1
-		fi
-		journalctl --since today --no-pager -u "$@" | less +F
-	}
-	function followlog {
-		# Follow JournalCtl log in realtime
-		if [ -z "$1" ]; then
-			echo "Usage: followlog <unit name> [... optional parameters for journalctl ...]"
-			echo "See also: viewlog"
-			return 1
-		fi
-		journalctl -n 500 -f -u "$@"
-	}
-	function sfind {
-		if [ -z "$1" ]; then
-			echo "Usage: sfind <pattern>"
-			return 1
-		fi
-
-		searchstring=""
-		for word in "$@"; do
-			searchstring="${searchstring}*${word}*"
-		done
-
-		# Remove double *
-		searchstring=`echo $searchstring | sed "s/\*\*/\*/g"`
-
-		find /lib/systemd -iname $searchstring
-	}
-	function sdisable {
-		tmpfile=`mktemp`
-		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
-		if [ "$?" != "0" ]; then
-			if [ -z "$hachreAliasesSystemctlOutput" ]; then
-				# Output was 1, and there was no stdout means the unit file cannot be found.
-				cat "$tmpfile"
-				rm "$tmpfile" >/dev/null 2>&1
-				return 1
-			else
-				# Output was 1 but there was stdout, means the unit is already disabled
-				echo "Warning: The given unit was already disabled."
-				rm "$tmpfile" >/dev/null 2>&1
-				return 0
-			fi
-		fi
-
-		# The output is 0, we can now simply disable the unit.
-		systemctl disable "$1"
-		systemctl reset-failed "$1" >/dev/null 2>&1
-		systemctl disable "$1" >/dev/null 2>&1
-	}
-	function senable() {
-		systemctl reset-failed "$1" >/dev/null 2>&1
-		systemctl enable -f "$1"
-		systemctl reenable "$1" >/dev/null 2>&1
-	}
 fi
 
 #
@@ -1304,6 +1229,84 @@ if [ "$?" != "0" ]; then
 			return 0
 		}
 	fi
+fi
+
+#
+# Systemctl
+#
+
+which systemctl >/dev/null 2>&1
+if [ "$?" == "0" ]; then
+	alias start="systemctl start"
+	alias stop="systemctl stop"
+	alias restart="systemctl restart"
+	alias reload="systemctl reload"
+	alias status="systemctl status"
+	alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
+	function viewlog {
+		# Views Journalctl log in Less
+		if [ -z "$1" ]; then
+			echo "Usage: viewlog <unit name> [... optional parameters for journalctl ...]"
+			echo "See also: followlog"
+			return 1
+		fi
+		journalctl --since today --no-pager -u "$@" | less +F
+	}
+	function followlog {
+		# Follow JournalCtl log in realtime
+		if [ -z "$1" ]; then
+			echo "Usage: followlog <unit name> [... optional parameters for journalctl ...]"
+			echo "See also: viewlog"
+			return 1
+		fi
+		journalctl -n 500 -f -u "$@"
+	}
+	function sfind {
+		if [ -z "$1" ]; then
+			echo "Usage: sfind <pattern>"
+			return 1
+		fi
+
+		searchstring=""
+		for word in "$@"; do
+			searchstring="${searchstring}*${word}*"
+		done
+
+		# Remove double *
+		searchstring=`echo $searchstring | sed "s/\*\*/\*/g"`
+
+		find /lib/systemd -iname $searchstring
+	}
+	function sdisable {
+		tmpfile=`mktemp`
+		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
+		if [ "$?" != "0" ]; then
+			if [ -z "$hachreAliasesSystemctlOutput" ]; then
+				# Output was 1, and there was no stdout means the unit file cannot be found.
+				cat "$tmpfile"
+				rm "$tmpfile" >/dev/null 2>&1
+				return 1
+			else
+				# Output was 1 but there was stdout, means the unit is already disabled
+				echo "Warning: The given unit was already disabled."
+				rm "$tmpfile" >/dev/null 2>&1
+				return 0
+			fi
+		fi
+
+		# The output is 0, we can now simply disable the unit.
+		systemctl disable "$1"
+		systemctl reset-failed "$1" >/dev/null 2>&1
+		systemctl disable "$1" >/dev/null 2>&1
+	}
+	function senable() {
+		systemctl reset-failed "$1" >/dev/null 2>&1
+		systemctl enable -f "$1"
+		systemctl reenable "$1" >/dev/null 2>&1
+	}
+	function sreload() {
+		systemctl daemon-reload
+	}
 fi
 
 # Automatic zsh grml settings install
