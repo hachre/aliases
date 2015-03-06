@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.69.20150306.4
+hachreAliasesVersion=0.70.20150306.5
 
 #
 ### hachreAliases internal stuff
@@ -40,29 +40,10 @@ EDITOR="nano"
 ### Aliases
 #
 
-#
-# Shutdown Poweroff Halt Reboot ###
-#
-
-hachreAliasesSystemctl=""
-which systemctl >/dev/null 2>&1
-#if [ "$?" == "0" ]; then
-#	hachreAliasesSystemctl="systemctl"
-#fi
-
 function hachreAliasesExecuteCommand() {
 	hachreAliasesCommand="$1"
 	$hachreAliasesRoot $hachreAliasesSystemctl $hachreAliasesCommand
 }
-function poweroff() {
-	location=`sh -c 'which poweroff'`
-	hachreAliasesExecuteCommand "$location"
-}
-function reboot() {
-	location=`sh -c 'which reboot'`
-	hachreAliasesExecuteCommand "$location"
-}
-alias halt="poweroff"
 
 # zsh only aliases
 
@@ -1504,3 +1485,29 @@ function hachreShellSetup {
 	sleep 1
 	killall -9 $SHELL
 }
+
+function poweroff() {
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		which systemctl > /dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			systemctl poweroff
+			return 0
+		fi
+	fi
+
+	location=`sh -c 'which poweroff'`
+	hachreAliasesExecuteCommand "$location"
+}
+function reboot() {
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		which systemctl > /dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			systemctl reboot
+			return 0
+		fi
+	fi
+
+	location=`sh -c 'which reboot'`
+	hachreAliasesExecuteCommand "$location"
+}
+alias halt="poweroff"
