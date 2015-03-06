@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.69.20150306.3
+hachreAliasesVersion=0.69.20150306.4
 
 #
 ### hachreAliases internal stuff
@@ -1316,11 +1316,23 @@ if [ "$?" == "0" ]; then
 		systemctl daemon-reload
 	}
 	function sstatus() {
+		function echoRed() {
+			echo -ne "\e[91m$1\e[0m"
+		}
+		function echoGreen() {
+			echo -ne "\e[92m$1\e[0m"
+		}
+		function echoYellow() {
+			echo -ne "\e[93m$1\e[0m"
+		}
 		function echook() {
-			echo -ne " [ \e[92mOK\e[0m ] "
+			echo -ne " [ `echoGreen OK` ] "
 		}
 		function echofail() {
-			echo -ne " [\e[91mFAIL\e[0m] "
+			echo -ne " [`echoRed FAIL`] "
+		}
+		function echoexit() {
+			echo -ne " [`echoYellow EXIT`] "
 		}
 
 		sIPS="$IPS"
@@ -1338,11 +1350,16 @@ if [ "$?" == "0" ]; then
 			state=${state/SubState=/}
 
 			# Output the sheet.
+			stateknown="false"
 			if [[ "$state" == *"running"* ]]; then
-				# Running
 				echook
-			else
-				# Dead
+				stateknown="true"
+			fi
+			if [[ "$state" == *"exit"* ]]; then
+				echoexit
+				stateknown="true"
+			fi
+			if [ "$stateknown" != "true" ]; then
 				echofail
 			fi
 
