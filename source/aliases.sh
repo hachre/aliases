@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.70.20150309.1
+hachreAliasesVersion=0.71.20150309.2
 
 #
 ### hachreAliases internal stuff
@@ -1212,13 +1212,23 @@ if [ "$?" != "0" ]; then
 	fi
 fi
 
+# Easy Color Output
+function echoRed() {
+	echo -ne "\e[91m$1\e[0m"
+}
+function echoGreen() {
+	echo -ne "\e[92m$1\e[0m"
+}
+function echoYellow() {
+	echo -ne "\e[93m$1\e[0m"
+}
+
 #
 # Systemctl
 #
 
 which systemctl >/dev/null 2>&1
 if [ "$?" == "0" ]; then
-	alias start="systemctl start"
 	alias stop="systemctl stop"
 	alias restart="systemctl restart"
 	alias reload="systemctl reload"
@@ -1230,8 +1240,9 @@ if [ "$?" == "0" ]; then
 			echo "See also: followlog"
 			return 1
 		fi
-		journalctl --since today --no-pager -u "$@" | less +F
+		journalctl --since today --no-pager -u $@ | less -rEFXKn
 	}
+	alias showlog="viewlog"
 	function followlog {
 		# Follow JournalCtl log in realtime
 		if [ -z "$1" ]; then
@@ -1240,6 +1251,22 @@ if [ "$?" == "0" ]; then
 			return 1
 		fi
 		journalctl -n 500 -f -u "$@"
+	}
+	function start {
+		systemctl start $@
+		returnVal=$?
+		if [ "$returnVal" != "0" ]; then
+			echo ""
+			echoRed "Process '$@' failed to start.\n"
+			echo " -> These are the last 10 entries of all logs:"
+			journalctl -n 10 --no-pager
+			echo ""
+			echo " -> These are the last 10 entries of the '$@' log:"
+			journalctl -n 10 --no-pager -u $@
+			echo ""
+			echo "If you need to view more of the log, use 'viewlog $@'."
+		fi
+		return $returnVal
 	}
 	function sfind {
 		if [ -z "$1" ]; then
@@ -1296,15 +1323,6 @@ if [ "$?" == "0" ]; then
 		systemctl daemon-reload
 	}
 	function sstatus() {
-		function echoRed() {
-			echo -ne "\e[91m$1\e[0m"
-		}
-		function echoGreen() {
-			echo -ne "\e[92m$1\e[0m"
-		}
-		function echoYellow() {
-			echo -ne "\e[93m$1\e[0m"
-		}
 		function echook() {
 			echo -ne " [ `echoGreen OK` ] "
 		}
