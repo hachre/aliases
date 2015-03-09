@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150309.3
+hachreAliasesVersion=0.71.20150309.4
 
 #
 ### hachreAliases internal stuff
@@ -1237,34 +1237,48 @@ if [ "$?" == "0" ]; then
 		# Views Journalctl log in Less
 		if [ -z "$1" ]; then
 			echo "Usage: viewlog <unit name> [... optional parameters for journalctl ...]"
+			echo "Unit name can be 'all' to see the log of all services combined."
 			echo "See also: followlog"
 			return 1
 		fi
-		journalctl --since today --no-pager -u $@ | less -rEFXKn
+		if [ "$1" == "all" ]; then
+			service=""
+		else
+			service=$@
+		fi
+		journalctl --since today --no-pager -u $service | less -rEFXKn
 	}
 	alias showlog="viewlog"
 	function followlog {
 		# Follow JournalCtl log in realtime
 		if [ -z "$1" ]; then
 			echo "Usage: followlog <unit name> [... optional parameters for journalctl ...]"
+			echo "Unit name can be 'all' to see the log of all services combined."
 			echo "See also: viewlog"
 			return 1
 		fi
-		journalctl -n 500 -f -u "$@"
+		if [ "$1" == "all" ]; then
+			service=""
+		else
+			service=$@
+		fi
+		journalctl -n 500 -f -u $service
 	}
 	function start {
 		systemctl start $@
 		returnVal=$?
 		if [ "$returnVal" != "0" ]; then
 			echo ""
-			echoRed "Process '$@' failed to start.\n"
+			echoRed " === Process '$@' failed to start. ===\n"
+			status $@
+			echo ""
 			echoYellow " These are the last 10 entries of all logs:\n"
 			journalctl -n 10 --no-pager
 			echo ""
 			echoYellow " These are the last 10 entries of the '$@' log:\n"
 			journalctl -n 10 --no-pager -u $@
 			echo ""
-			echo "If you need to view more of the log, use 'viewlog $@'."
+			echo "If you need to view more of the log, use 'viewlog $@' or 'viewlog all'."
 		fi
 		return $returnVal
 	}
