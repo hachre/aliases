@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150309.5
+hachreAliasesVersion=0.71.20150309.6
 
 #
 ### hachreAliases internal stuff
@@ -1244,9 +1244,9 @@ if [ "$?" == "0" ]; then
 		if [ "$1" == "all" ]; then
 			service=""
 		else
-			service=$@
+			service="-u $1"
 		fi
-		journalctl --since today --no-pager -u $service | less -rEFXKn
+		journalctl --since today --no-pager $service | less -rEFXKn
 	}
 	alias showlog="viewlog"
 	function followlog {
@@ -1260,9 +1260,9 @@ if [ "$?" == "0" ]; then
 		if [ "$1" == "all" ]; then
 			service=""
 		else
-			service=$@
+			service="-u $1"
 		fi
-		journalctl -n 500 -f -u $service
+		journalctl -n 500 -f $service
 	}
 	function start {
 		systemctl start $@
