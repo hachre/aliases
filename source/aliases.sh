@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.70.20150306.5
+hachreAliasesVersion=0.70.20150309.1
 
 #
 ### hachreAliases internal stuff
@@ -1223,7 +1223,6 @@ if [ "$?" == "0" ]; then
 	alias restart="systemctl restart"
 	alias reload="systemctl reload"
 	alias status="systemctl status"
-	#alias sstatus="systemctl --type=service --no-pager | grep -v systemd"
 	function viewlog {
 		# Views Journalctl log in Less
 		if [ -z "$1" ]; then
@@ -1330,18 +1329,36 @@ if [ "$?" == "0" ]; then
 			state=`systemctl show "$serviceName" --plain --no-pager | grep -i "SubState\="`
 			state=${state/SubState=/}
 
-			# Output the sheet.
+			# Our OK state
 			stateknown="false"
-			if [[ "$state" == *"running"* ]]; then
-				echook
-				stateknown="true"
+
+			# Find out the type (because on oneshot we need the success flag)
+			type=`systemctl show "$serviceName" --plain --no-pager | grep -i "Type\="`
+			type=${type/Type=/}
+			if [[ "$type" == *"oneshot"* ]]; then
+				# If the Type is oneshot we need to look at the success variable
+				result=`systemctl show "$serviceName" --plain --no-pager | grep -i "Result\=" | head -n 1`
+				result=${result/Result=/}
+				if [[ "$result" == *"success"* ]]; then
+					# This status overwrites the status assignments later on
+					echook
+					stateknown="true"
+				fi
 			fi
-			if [[ "$state" == *"exit"* ]]; then
-				echoexit
-				stateknown="true"
-			fi
+
+			# Output the sheet.
 			if [ "$stateknown" != "true" ]; then
-				echofail
+				if [[ "$state" == *"running"* ]]; then
+					echook
+					stateknown="true"
+				fi
+				if [[ "$state" == *"exit"* ]]; then
+					echoexit
+					stateknown="true"
+				fi
+				if [ "$stateknown" != "true" ]; then
+					echofail
+				fi
 			fi
 
 			echo "$serviceName"
