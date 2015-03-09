@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150309.4
+hachreAliasesVersion=0.71.20150309.5
 
 #
 ### hachreAliases internal stuff
@@ -1270,7 +1270,7 @@ if [ "$?" == "0" ]; then
 		if [ "$returnVal" != "0" ]; then
 			echo ""
 			echoRed " === Process '$@' failed to start. ===\n"
-			status $@
+			systemctl status $@
 			echo ""
 			echoYellow " These are the last 10 entries of all logs:\n"
 			journalctl -n 10 --no-pager
