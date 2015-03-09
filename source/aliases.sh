@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150309.2
+hachreAliasesVersion=0.71.20150309.3
 
 #
 ### hachreAliases internal stuff
@@ -1258,10 +1258,10 @@ if [ "$?" == "0" ]; then
 		if [ "$returnVal" != "0" ]; then
 			echo ""
 			echoRed "Process '$@' failed to start.\n"
-			echo " -> These are the last 10 entries of all logs:"
+			echoYellow " These are the last 10 entries of all logs:\n"
 			journalctl -n 10 --no-pager
 			echo ""
-			echo " -> These are the last 10 entries of the '$@' log:"
+			echoYellow " These are the last 10 entries of the '$@' log:\n"
 			journalctl -n 10 --no-pager -u $@
 			echo ""
 			echo "If you need to view more of the log, use 'viewlog $@'."
