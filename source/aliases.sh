@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150309.6
+hachreAliasesVersion=0.71.20150310.1
 
 #
 ### hachreAliases internal stuff
@@ -311,7 +311,7 @@ alias sshi='ssh -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"'
 # Editors
 #
 
-alias nano="nano -w"
+alias nano="nano -w -T 4"
 alias sublime="subl"
 alias sub="subl"
 
