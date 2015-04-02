@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.71.20150310.1
+hachreAliasesVersion=0.72.20150402.1
 
 #
 ### hachreAliases internal stuff
@@ -200,6 +200,7 @@ function checkio {
 	fi
 	iostat -dkxz 1
 }
+alias aria2c="aria2c -x 10 -j 10"
 
 #
 # Btrfs
