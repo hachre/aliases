@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.73.20150410.2
+hachreAliasesVersion=0.73.20150410.3
 
 #
 ### hachreAliases internal stuff
@@ -606,6 +606,7 @@ function packageProjects() {
 
 		tar cf "$name.tar" "./$project"
 		xz -v "$name.tar"
+		rm "$name.tar"
 
 		echo "  -> Package created."
 	done
