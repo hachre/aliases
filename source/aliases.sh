@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.72.20150402.1
+hachreAliasesVersion=0.73.20150410.1
 
 #
 ### hachreAliases internal stuff
@@ -387,15 +387,15 @@ function gitrmDelete() {
 }
 function gitrm() {
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
-   		echo "Usage: gitrm <filename / directory> [--force]"
-   		return 1
+		echo "Usage: gitrm <filename / directory> [--force]"
+		return 1
 	fi
 
 	if [ "$2" != "--force" ]; then
-	        if [ ! -e "$1" ]; then
-	        echo "Error: Given file / directory doesn't exist: '$1', you can use --force."
-	        return 1
-	        fi
+		if [ ! -e "$1" ]; then
+			echo "Error: Given file / directory doesn't exist: '$1', you can use --force."
+			return 1
+		fi
 	fi
 
 	gitrmDelete "$1"
@@ -472,14 +472,14 @@ function setupArchAliases() {
 	alias pmkeys="pacman-key --refresh-keys"
 	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
 	function hachreAliasesaursh() {
-	   d=${BUILDDIR:-$PWD}
+		d=${BUILDDIR:-$PWD}
 		for p in ${@##-*}; do
-		   cd $d
-		   $root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
-		   cd $p
+			cd $d
+			$root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
+			cd $p
 			$root chown archbuild "$d" -R
-		   su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
-	   done
+			su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
+		done
 	}
 	function pmSetup() {
 		echo "Proceeding to set up hachre Arch Build system..."
@@ -573,8 +573,8 @@ function packageProjects() {
 	# package hachreProjects (tm)
 
 	# Configuration
-	destdir="$HOME/Dropbox/Backups/Code/Backups"
-	destdir2="$HOME/MEGA/Backups/Code/Backups"
+	destdir="/Volumes/Solaris/Sync/Dropbox/Backups/Code/Backups"
+	#destdir2="$HOME/MEGA/Backups/Code/Backups"
 
 	# We assume to be in a project root directory.
 	# Traverse subfolders and search for version.txt files.
@@ -610,9 +610,9 @@ function packageProjects() {
 		echo "  -> Package created."
 	done
 
-	echo "Moving created packages into Dropbox..."
+	echo "Moving created packages into Archive..."
 	mv *xz "$destdir" > /dev/null 2>&1
-	if [ "$destdir2" != "" ]; then
+	if [ ! -z "$destdir2" ]; then
 		rsync -aHhP --numeric-ids --delete "$destdir"/* "$destdir2/"
 	fi
 }
