@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.73.20150410.1
+hachreAliasesVersion=0.73.20150410.2
 
 #
 ### hachreAliases internal stuff
@@ -578,7 +578,7 @@ function packageProjects() {
 
 	# We assume to be in a project root directory.
 	# Traverse subfolders and search for version.txt files.
-	for project in `find * -depth 0 -type d -print`; do
+	for project in `find * -maxdepth 0 -type d -print`; do
 		echo ""
 		echo "* $project"
 
