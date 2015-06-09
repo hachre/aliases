@@ -98,6 +98,12 @@ alias duhs="du -hsx * .* --exclude "proc" | sort -h"
 alias dfh="df -h"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete"
+function cpr {
+	if [ -d "$1" ]; then
+		echo "Error: Directories are not supported by cpr, consider cps."
+	fi
+	rsync --progress --append -v $*
+}
 alias ls="ls -F --color"
 alias lsd="ls -alh"
 alias l="ls -l"
