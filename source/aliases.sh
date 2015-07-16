@@ -94,7 +94,10 @@ alias grep="grep --color=always"
 # Filesystem Helpers
 #
 
-alias duhs="du -hsx * .* --exclude "proc" | sort -h"
+function duhs {
+	du -hsx * .* --exclude "proc" | sort -h
+}
+
 alias dfh="df -h"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete"
