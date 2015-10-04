@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.75.20150907.1
+hachreAliasesVersion=0.76.20151004.1
 
 #
 ### hachreAliases internal stuff
@@ -1215,7 +1215,6 @@ if [ "$?" != "0" ]; then
 			fi
 
 			find . -type f -iname "*$1*"
-
 			cd "$sPWD"
 
 			return 0
@@ -1240,10 +1239,25 @@ function echoYellow() {
 
 which systemctl >/dev/null 2>&1
 if [ "$?" == "0" ]; then
-	alias stop="systemctl stop"
-	alias restart="systemctl restart"
-	alias reload="systemctl reload"
-	alias status="systemctl status"
+	function sreload() {
+		systemctl daemon-reload
+	}
+	function stop() {
+		sreload
+		systemctl stop $@
+	}
+	function restart() {
+		sreload
+		systemctl restart $@
+	}
+	function reload() {
+		sreload
+		systemctl reload $@
+	}
+	function status() {
+		sreload
+		systemctl status $@
+	}
 	function viewlog {
 		# Views Journalctl log in Less
 		if [ -z "$1" ]; then
@@ -1276,6 +1290,7 @@ if [ "$?" == "0" ]; then
 		journalctl -n 500 -f $service
 	}
 	function start {
+		sreload
 		systemctl start $@
 		returnVal=$?
 		if [ "$returnVal" != "0" ]; then
@@ -1299,25 +1314,24 @@ if [ "$?" == "0" ]; then
 			return 1
 		fi
 
-		searchstring=""
-		for word in "$@"; do
-			searchstring="${searchstring}*${word}*"
-		done
-
-		# Remove double *
-		searchstring=`echo $searchstring | sed "s/\*\*/\*/g"`
-
+		searchterm="$@"
+		
 		sfinddir="/lib/systemd"
 		if [ ! -d "$sfindir" ]; then
 			sfinddir="/usr/lib64/systemd"
 		fi
 		spwd=`pwd`
 		cd "$sfinddir"
-		find . -iname $searchstring
+
+		echo "Searching in $sfinddir..."
+		echo " If you want to customize one of these, copy them to /etc/systemd, customize there and use sreload"
+		echo ""
+		find . -iname "*${searchterm}*"
 
 		cd "$spwd"
 	}
 	function sdisable {
+		sreload
 		tmpfile=`mktemp`
 		hachreAliasesSystemctlOutput=`systemctl is-enabled "$1" 2>"$tmpfile"`
 		if [ "$?" != "0" ]; then
@@ -1340,12 +1354,10 @@ if [ "$?" == "0" ]; then
 		systemctl disable "$1" >/dev/null 2>&1
 	}
 	function senable() {
+		sreload
 		systemctl reset-failed "$1" >/dev/null 2>&1
 		systemctl enable -f "$1"
 		systemctl reenable "$1" >/dev/null 2>&1
-	}
-	function sreload() {
-		systemctl daemon-reload
 	}
 	function sstatus() {
 		function echook() {
