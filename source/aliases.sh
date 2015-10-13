@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.77.20151004.2
+hachreAliasesVersion=0.77.20151013.1
 
 #
 ### hachreAliases internal stuff
@@ -582,7 +582,7 @@ function packageProjects() {
 	# package hachreProjects (tm)
 
 	# Configuration
-	destdir="/Volumes/Solaris/Sync/Dropbox/Backups/Code/Backups"
+	destdir="/Volumes/Solaris/Sync/Backups/Code/Backups"
 	#destdir2="$HOME/MEGA/Backups/Code/Backups"
 
 	# We assume to be in a project root directory.
