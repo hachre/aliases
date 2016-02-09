@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.77.20151013.1
+hachreAliasesVersion=0.78.20160209.1
 
 #
 ### hachreAliases internal stuff
@@ -915,6 +915,11 @@ function dyif {
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		dyi $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		$root $hachreAliasesArchPM -Suy
 		return $?
 	fi
 
