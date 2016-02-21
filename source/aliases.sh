@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160221.4
+hachreAliasesVersion=0.79.20160221.5
 
 #
 ### hachreAliases internal stuff
@@ -855,9 +855,20 @@ function dyu {
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
         echo "Info: Occasionally you should also manually run 'zypper dup' and be extra careful when you have 3rd party repos enabled."
-        zypper patch -y -l --no-recommends --updatestack-only
+        #zypper patch -y -l --no-recommends --updatestack-only
 		zypper up -l --no-recommends
-        zypper patch -y -l --no-recommends
+        #zypper patch -y -l --no-recommends
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
+
+function dyup {
+	#Opensuse only special patch mode
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+        zypper patch -l --no-recommends
 		return $?
 	fi
 
