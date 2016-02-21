@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160221.1
+hachreAliasesVersion=0.79.20160221.2
 
 #
 ### hachreAliases internal stuff
@@ -689,7 +689,7 @@ function dyDetectDistro {
 	which zypper 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="opensuse"
-		dyDistroInfo="\n * The native package manager for this distro is called 'zypper'.\n"
+		dyDistroInfo="\n * The native package manager for this distro is called 'zypper'."
 		return 0
 	fi
 
