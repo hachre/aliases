@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.78.20160209.1
+hachreAliasesVersion=0.79.20160221.1
 
 #
 ### hachreAliases internal stuff
@@ -414,6 +414,9 @@ function gitreset() {
 	git reset --hard origin/master
 }
 
+# OpenSUSE OpenSuse Zypper Defaults
+alias zypper="zypper --color"
+
 #
 # Ubuntu / Debian Package Management
 #
@@ -682,6 +685,14 @@ function dyDetectDistro {
 		return 0
 	fi
 
+	# OpenSUSE
+	which zypper 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="opensuse"
+		dyDistroInfo="\n * The native package manager for this distro is called 'zypper'.\n"
+		return 0
+	fi
+
 	# Not found
 	dyDetectedDistro="unknown"
 	return 1
@@ -745,6 +756,11 @@ function dyx {
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew update
+		return $?
+	fi
+    
+   	if [ "$dyDetectedDistro" == "opensuse" ]; then
+        zypper ref -s
 		return $?
 	fi
 
@@ -832,6 +848,14 @@ function dyu {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+        echo "Info: Occasionally you should also manually run 'zypper dup' and be extra careful when you have 3rd party repos enabled."
+        zypper patch -y -l --no-recommends --updatestack-only
+		zypper up -l --no-recommends
+        zypper patch -y -l --no-recommends
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -844,12 +868,6 @@ function dyuu {
 		echo " 2. Run each of those packages against emerge -pv <packagename>"
 		echo " 3. Use dyii on the packages that are outdated to update them."
 		return 1
-	fi
-
-	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		echo "Info: dyuu and dyu are equal on this platform."
-		dyu $*
-		return $?
 	fi
 
 	echo "This command is not supported on your platform."
@@ -894,6 +912,11 @@ function dyi {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper in -l $*
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 function dyif {
@@ -920,6 +943,11 @@ function dyif {
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
 		$root $hachreAliasesArchPM -Suy
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper in -fl $*
 		return $?
 	fi
 
@@ -980,13 +1008,7 @@ function dyii {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "gentoo" ]; then
-		echo "Info: dyii and dyi are equal on this platform."
-		dyi $*
-		return $?
-	fi
-
-	echo "This command is not supported on your platform."
+	echo "This command is not supported on your platform. This either means dyi already handles it or it won't work at all."
 }
 function dyr {
 	if [ -z "$1" ]; then
@@ -1016,6 +1038,11 @@ function dyr {
 			return 1
 		fi
 		brew uninstall "$1"
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper rm -u $*
 		return $?
 	fi
 
@@ -1074,6 +1101,11 @@ function dys {
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew search $*
+		return $?
+	fi
+    
+   	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper search $*
 		return $?
 	fi
 
@@ -1588,3 +1620,6 @@ function reboot() {
 	hachreAliasesExecuteCommand "$location"
 }
 alias halt="poweroff"
+
+# OpenSUSE
+alias zyp="zypper"
