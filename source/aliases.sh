@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160221.2
+hachreAliasesVersion=0.79.20160221.3
 
 #
 ### hachreAliases internal stuff
@@ -1356,6 +1356,9 @@ if [ "$?" == "0" ]; then
 		sfinddir="/lib/systemd"
 		if [ ! -d "$sfindir" ]; then
 			sfinddir="/usr/lib64/systemd"
+		fi
+		if [ ! -d "$sfindir" ]; then
+			sfinddir="/usr/lib/systemd"
 		fi
 		spwd=`pwd`
 		cd "$sfinddir"
