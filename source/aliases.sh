@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160221.3
+hachreAliasesVersion=0.79.20160221.4
 
 #
 ### hachreAliases internal stuff
@@ -812,6 +812,11 @@ function dyv {
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		brew doctor
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper verify
 		return $?
 	fi
 
