@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160228.1
+hachreAliasesVersion=0.79.20160228.2
 
 #
 ### hachreAliases internal stuff
@@ -415,7 +415,7 @@ function gitreset() {
 }
 
 # OpenSUSE OpenSuse Zypper Defaults
-alias zypper="zypper --color"
+alias zypper="zypper --color -s 7"
 
 #
 # Ubuntu / Debian Package Management
