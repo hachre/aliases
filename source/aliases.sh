@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.79.20160221.5
+hachreAliasesVersion=0.79.20160228.1
 
 #
 ### hachreAliases internal stuff
@@ -864,11 +864,13 @@ function dyu {
 	echo "This command is not supported on your platform."
 }
 
-function dyup {
-	#Opensuse only special patch mode
+function dyus {
+	# Security updates only
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        zypper patch -l --no-recommends
+		echo "Checking and installing security updates only..."
+		zypper patch -l --no-recommends --updatestack-only -y
+	    zypper patch -l --no-recommends -g security -y --replacefiles
 		return $?
 	fi
 
