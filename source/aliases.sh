@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.80.20160228.3
+hachreAliasesVersion=0.80.20160228.4
 
 #
 ### hachreAliases internal stuff
@@ -933,7 +933,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper in -l $*
+		zypper in -l --no-recommends $*
 		return $?
 	fi
 
@@ -967,7 +967,7 @@ function dyif {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper in -fl $*
+		zypper in -fl --no-recommends $*
 		return $?
 	fi
 
