@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.80.20160228.4
+hachreAliasesVersion=0.80.20160301.1
 
 #
 ### hachreAliases internal stuff
@@ -1125,7 +1125,7 @@ function dys {
 	fi
     
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper search $*
+		zypper search -s $*
 		return $?
 	fi
 
