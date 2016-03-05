@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.81.20160305.1
+hachreAliasesVersion=0.82.20160305.2
 
 #
 ### hachreAliases internal stuff
@@ -1037,13 +1037,13 @@ function dyii {
         fi
     
         # Enable the Packman repo if it is off
-        zypper mr -e packman >/dev/null 2>&1
+        zypper mr -e packman
         
         # Install
 		zypper in -fl --no-recommends $*
 
         # Disable the Packman again 
-        zypper mr -d packman >/dev/null 2>&1
+        zypper mr -d packman
 		return $?
 	fi
 
@@ -1150,6 +1150,7 @@ function dys {
 
 	echo "This command is not supported on your platform."
 }
+
 function dyss {
 	if [ -z "$1" ]; then
 		echo "Usage: dyss <package name>"
@@ -1169,6 +1170,27 @@ function dyss {
 	if [ "$dyDetectedDistro" == "arch" ]; then
 		pms -a $* P
 		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+        zypper lr packman 1>/dev/null 2>&1
+        if [ "$?" != "0" ]; then  
+            echo "Error: Packman repo is not installed."
+            echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
+            return 1
+        fi
+    
+        # Enable the Packman repo if it is off
+        zypper mr -e packman
+        
+        # Searching
+        zypper search -s $*
+        val=$?
+        
+        # Disable the Packman again 
+        zypper mr -d packman
+
+		return $val
 	fi
 
 	echo "This command is not supported on your platform."
