@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.80.20160301.1
+hachreAliasesVersion=0.81.20160305.1
 
 #
 ### hachreAliases internal stuff
@@ -1025,6 +1025,25 @@ function dyii {
 		echo "/etc/entropy/packages/package.mask"
 		echo ""
 		echo "It is recommended that you use emerge / dyuu or dyii to upgrade packages on that list"
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+        zypper lr packman 1>/dev/null 2>&1
+        if [ "$?" != "0" ]; then  
+            echo "Error: Packman repo is not installed."
+            echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
+            return 1
+        fi
+    
+        # Enable the Packman repo if it is off
+        zypper mr -e packman >/dev/null 2>&1
+        
+        # Install
+		zypper in -fl --no-recommends $*
+
+        # Disable the Packman again 
+        zypper mr -d packman >/dev/null 2>&1
 		return $?
 	fi
 
