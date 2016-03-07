@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.82.20160305.2
+hachreAliasesVersion=0.82.20160307.1
 
 #
 ### hachreAliases internal stuff
@@ -1134,7 +1134,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pms -r $* P
+		pms $* P
 		return $?
 	fi
 
