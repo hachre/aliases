@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.82.20160307.1
+hachreAliasesVersion=0.82.20160307.2
 
 #
 ### hachreAliases internal stuff
@@ -489,7 +489,8 @@ function setupArchAliases() {
 		d=${BUILDDIR:-$PWD}
 		for p in ${@##-*}; do
 			cd $d
-			$root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
+			#$root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
+			$root curl https://aur.archlinux.org/cgit/aur.git/snapshot/$p.tar.gz | $root tar xz
 			cd $p
 			$root chown archbuild "$d" -R
 			su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
