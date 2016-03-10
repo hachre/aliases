@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.82.20160307.2
+hachreAliasesVersion=0.84.20160310.1
 
 #
 ### hachreAliases internal stuff
@@ -129,6 +129,9 @@ function mkcd() {
 # Various / Misc
 #
 
+function echoerr() {
+	awk " BEGIN { print \"$*\" > \"/dev/stderr\" }"
+}
 alias flushdns="sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches;dscacheutil -flushcache"
 function psall() {
 	if [ -z "$1" ]; then
@@ -456,8 +459,16 @@ function setupArchAliases() {
 	alias pmie="$root $hachreAliasesArchPM -Suy --asexplicit"
 	alias pmid="$root $hachreAliasesArchPM -Suy --asdeps"
 	alias pmq="$root $hachreAliasesArchPM -Q"
-	alias pmqs="$hachreAliasesRoot pacsysclean"
-	alias pmsize="pmqs"
+	#alias pmqs="$hachreAliasesRoot pacsysclean"
+	function pmsize() {
+		which apacman >/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo "We need 'apacman' to be installed."
+			return 1
+		fi
+
+		apacman -L
+	}
 	alias pmqq="$root $hachreAliasesArchPM -Qq"
 	alias pmqi="$root $hachreAliasesArchPM -Qi"
 	alias pmqe="$root $hachreAliasesArchPM -Q --explicit"
@@ -483,8 +494,13 @@ function setupArchAliases() {
 	alias pmowns="$root $hachreAliasesArchPM -Qo"
 	alias pmqo="pmowns"
 	alias pmprovides="$root pkgfile"
+	alias pmorphans="$root $hachreAliasesArchPM -Qtdq"
 	alias pmkeys="pacman-key --refresh-keys"
 	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
+	function pmconfig() {
+		echoerr "This is a list of modified config files:"
+		$hachreAliasesArchPM -Qii | awk '/^MODIFIED/ {print $2}'
+	}
 	function hachreAliasesaursh() {
 		d=${BUILDDIR:-$PWD}
 		for p in ${@##-*}; do
@@ -1068,7 +1084,7 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pmr $*
+		pmr -s $*
 		return $?
 	fi
 
