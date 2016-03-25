@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.88.20160326.9
+hachreAliasesVersion=0.89.20160326.10
 
 #
 ### hachreAliases internal stuff
@@ -879,8 +879,19 @@ function dyv {
 }
 
 function dyu {
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+        # If the last sync was less than 15 mins ago, skip the new sync
+        if test "`find /usr/portage/metadata/timestamp.chk -mmin +15`"; then
+            touch /usr/portage/metadata/timestamp.chk
+        else
+            skip="1"
+        fi
+    fi
+
     # We want to ensure we are synced before updating
-    dyx
+    if [ -z "$skip" ]; then
+        dyx
+    fi
     
 	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
