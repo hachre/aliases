@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.87.20160326.4
+hachreAliasesVersion=0.87.20160326.5
 
 #
 ### hachreAliases internal stuff
@@ -1423,13 +1423,16 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
             return 1
         fi
 
-        if [ -z "$2" ]; then
+        # Apply Changes
+        if [ ! -z "$2" ]; then
+            $root flaggie $@
+        fi
+        
+        # Show what has changed
+        if [ "$?" == "0" ]; then
             equery u -i "$1"
             return $?
         fi
-        
-        $root flaggie $@
-        return $?
     }
 fi
 
