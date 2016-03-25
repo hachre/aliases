@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.85.20160325.3
+hachreAliasesVersion=0.86.20160325.4
 
 #
 ### hachreAliases internal stuff
@@ -789,7 +789,7 @@ function dyx {
 		echo "Syncing..."
 		which emerge-webrsync >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
-			emerge-webrsync -q
+			emerge-webrsync
 		fi
 		emerge --sync
 
@@ -819,7 +819,13 @@ function dyx {
 
 function dyxx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		echo "Syncing..."
+		which emerge-webrsync >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			emerge-webrsync
+		fi
 		/usr/bin/emerge --sync
+
 		layman -D sabayon >/dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			echo " ------- Answer y in the following dialog!!!"
