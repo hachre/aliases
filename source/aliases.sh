@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.86.20160326.2
+hachreAliasesVersion=0.87.20160326.3
 
 #
 ### hachreAliases internal stuff
@@ -1378,6 +1378,55 @@ if [ "$?" != "0" ]; then
 			return 0
 		}
 	fi
+fi
+
+# Gentoo flag editing
+if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; then
+    function hachreAliasesinstallFlaggie() {
+        which flaggie 1>/dev/null 2>&1
+        if [ "$?" != "0" ]; then
+            dyi flaggie
+        fi
+    }
+
+    function gunlock() {
+        hachreAliasesinstallFlaggie
+        if [ -z "$1" ]; then
+            echo "Usage: gunlock <packagename>"
+            return 1
+        fi
+        
+        $root flaggie "$1" +**
+        return $?
+    }
+    
+    function glock() {
+        hachreAliasesinstallFlaggie
+        if [ -z "$1" ]; then
+            echo "Usage: glock <packagename>"
+            return 1
+        fi
+        
+        $root flaggie "$1" -**
+        return $?
+    }
+    
+    function guse() {
+        hachreAliasesinstallFlaggie
+        if [ -z "$1" ]; then
+            echo "Usage: guse <packagename> [+flag1 -flag2 ...]"
+            echo "If you don't give flags the current flags will be displayed."
+            return 1
+        fi
+
+        if [ -z "$2" ]; then
+            equery u -i "$1"
+            return $?
+        fi
+        
+        $root flaggie $@
+        return $?
+    }
 fi
 
 # Easy Color Output
