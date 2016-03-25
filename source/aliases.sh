@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.86.20160326.1
+hachreAliasesVersion=0.86.20160326.2
 
 #
 ### hachreAliases internal stuff
@@ -1177,7 +1177,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ] || [ "$dyDetectedDistro" == "gentoo" ]; then
-		which eix > /dev/null 2>&1
+		which -p eix > /dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			# Install eix
 			dyi eix
