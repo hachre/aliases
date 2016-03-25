@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.87.20160326.5
+hachreAliasesVersion=0.87.20160326.6
 
 #
 ### hachreAliases internal stuff
@@ -1431,7 +1431,11 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
         # Show what has changed
         if [ "$?" == "0" ]; then
             equery u -i "$1"
-            return $?
+            retval=$?
+            
+            echo ""
+            echo "You can now use 'dyu' to apply these new use settings"
+            return $retval
         fi
     }
 fi
