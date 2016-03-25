@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.85.20160325.1
+hachreAliasesVersion=0.85.20160325.2
 
 #
 ### hachreAliases internal stuff
@@ -800,6 +800,11 @@ function dyx {
 		brew update
 		return $?
 	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+        $root $hachreAliasesArchPM -Sy
+		return $?
+	fi
     
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
         zypper ref -s
@@ -889,7 +894,7 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pmi
+        $root $hachreAliasesArchPM -Su --needed
 		return $?
 	fi
 
