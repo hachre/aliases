@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.87.20160326.3
+hachreAliasesVersion=0.87.20160326.4
 
 #
 ### hachreAliases internal stuff
@@ -1387,6 +1387,10 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
         if [ "$?" != "0" ]; then
             dyi flaggie
         fi
+        $root mkdir /etc/portage/package.use/ >/dev/null 2>&1
+        $root mkdir /etc/portage/package.accept_keywords/ >/dev/null 2>&1
+        $root touch /etc/portage/package.use/z-hachreAliases >/dev/null 2>&1
+        $root touch /etc/portage/package.accept_keywords/z-hachreAliases >/dev/null 2>&1
     }
 
     function gunlock() {
