@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.86.20160325.5
+hachreAliasesVersion=0.86.20160325.6
 
 #
 ### hachreAliases internal stuff
@@ -35,9 +35,6 @@ fi
 
 # Set the default editor
 EDITOR="nano"
-
-# Set Term to fix eix color output errors
-TERM="rxvt"
 
 #
 ### Aliases
@@ -1183,7 +1180,11 @@ function dys {
 			# Install eix
 			dyi eix
 
-			# Upgrade eix cache
+            # Emerge WebRsync
+            emerge-webrsync
+            emerge --sync
+            
+   			# Upgrade eix cache
 			eixupdate
 		fi
 		eix -F $* | less -rEFXKn
