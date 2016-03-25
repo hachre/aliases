@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.85.20160325.2
+hachreAliasesVersion=0.85.20160325.3
 
 #
 ### hachreAliases internal stuff
@@ -35,6 +35,9 @@ fi
 
 # Set the default editor
 EDITOR="nano"
+
+# Set Term to Screen to fix eix color output errors
+TERM="screen"
 
 #
 ### Aliases
