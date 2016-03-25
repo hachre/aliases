@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.84.20160310.1
+hachreAliasesVersion=0.85.20160325.1
 
 #
 ### hachreAliases internal stuff
@@ -733,20 +733,43 @@ function dyh {
 		echo -e "${dyDistroInfo}"
 	fi
 
-	echo ""
-	echo "List of unified package management commands:"
-	echo -e " dyi\tInstall a package from the primary repo (after confirmation)"
-	echo -e " dyif\tInstall a package forced from the primary repo (after confirmation)"
-	echo -e " dyii\tInstall a package from the secondary repo (after confirmation)"
-	echo -e " dyr\tRemove a package (after confirmation, including its unused dependencies)"
-	echo -e " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
-	echo -e " dyu\tDo a full system upgrade (primary repo)"
-	echo -e " dyuu\tDo a full system upgrade (secondary repo)"
-	echo -e " dyv\tVerify system sanity"
-	echo -e " dyx\tSync the primary repository"
-	echo -e " dyxx\tSync the secondary repository"
-	echo -e " dys\tSearch a package (in the main repo)"
-	echo -e " dyss\tSearch a package (in the extended repo)"
+    if [ "$1" == "-v" ]; then
+        echo ""
+        echo "List of unified package management commands:"
+        echo -e " dyi\tInstall a package from the primary repo (after confirmation)"
+        echo -e " dyif\tInstall a package forced from the primary repo (after confirmation)"
+        echo -e " dyii\tInstall a package from the secondary repo (after confirmation)"
+        echo -e " dyr\tRemove a package (after confirmation, including its unused dependencies)"
+        echo -e " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
+        echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
+        echo -e " dyu\tInstall security updates only (not widely supported)"
+        echo -e " dyuu\tDo a full system upgrade (secondary repo)"
+        echo -e " dyv\tVerify system sanity"
+        echo -e " dyx\tSync the primary repository"
+        echo -e " dyxx\tSync the secondary repository"
+        echo -e " dys\tSearch a package (in the main repo)"
+        echo -e " dyss\tSearch a package (in the extended repo)"
+    else
+        echo ""
+        echo "How to search:"
+        echo -e "\tdys <searchterm>"
+
+        echo ""
+        echo "How to install a specific package:"
+        echo -e "\tdyi <packagename>"
+
+        echo ""
+        echo "How to remove a specific package:"
+        echo -e "\tdyr <packagename>"
+
+        echo ""
+        echo "How to fully update your system:"
+        echo -e "\tdyu"
+
+        echo ""
+        echo "If you need more commands, use 'dyh -v'"
+    fi
+    
 	return 0
 }
 function dyx {
@@ -843,6 +866,9 @@ function dyv {
 }
 
 function dyu {
+    # We want to ensure we are synced before updating
+    dyx
+    
 	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo upgrade -av  $*
