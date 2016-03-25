@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.87.20160326.7
+hachreAliasesVersion=0.88.20160326.8
 
 #
 ### hachreAliases internal stuff
@@ -1418,7 +1418,7 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
     function guse() {
         hachreAliasesinstallFlaggie
         if [ -z "$1" ]; then
-            echo "Usage: guse <packagename> [+flag1 -flag2 ...]"
+            echo "Usage: guse <packagename> [+flag1 -flag2 ...] or [--reset]"
             echo "If you don't give flags the current flags will be displayed."
             return 1
         fi
@@ -1426,7 +1426,11 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
         # Apply Changes
         changes=""
         if [ ! -z "$2" ]; then
-            $root flaggie $@
+            if [ "$2" == "--reset" ]; then
+                $root flaggie %use::
+            else
+                $root flaggie $@
+            fi
             changes="1"
         fi
         
@@ -1439,7 +1443,7 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
                 echo ""
                 echo "You can now use 'dyu' to apply these new use settings"
             fi
-
+            
             return $retval
         fi
     }
