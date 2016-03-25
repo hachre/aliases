@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.86.20160325.7
+hachreAliasesVersion=0.86.20160326.1
 
 #
 ### hachreAliases internal stuff
@@ -36,8 +36,7 @@ fi
 # Set the default editor
 EDITOR="nano"
 
-# Unset LS_colors, we want the default
-unset LS_COLORS
+alias eix="TERM='rxvt' eix"
 
 #
 ### Aliases
