@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.16
+hachreAliasesVersion=0.90.20160326.17
 
 #
 ### hachreAliases internal stuff
@@ -1473,7 +1473,7 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
         
         # Show what has changed
         if [ "$?" == "0" ]; then
-			equery >/dev/null 2>&1
+			which equery >/dev/null 2>&1
 			if [ "$?" != "0" ]; then
 				dyi gentoolkit
 			fi
