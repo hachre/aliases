@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.89.20160326.10
+hachreAliasesVersion=0.90.20160326.11
 
 #
 ### hachreAliases internal stuff
@@ -935,6 +935,17 @@ function dyu {
 
 function dyus {
 	# Security updates only
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+        echo "Checking for security issues..."
+        $root glsa-check -f affected
+        return $?
+    fi
+
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+        $root equo sec download
+        $root equo sec install
+        return $?
+    fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		echo "Checking and installing security updates only..."
@@ -948,13 +959,17 @@ function dyus {
 
 function dyuu {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		echo "Info: Automated secondary repo upgrading is not supported on this platform."
-		echo ""
-		echo "Instruction for manual update are as follows:"
-		echo " 1. Look at /etc/entropy/packages/package.mask"
-		echo " 2. Run each of those packages against emerge -pv <packagename>"
-		echo " 3. Use dyii on the packages that are outdated to update them."
-		return 1
+        dyxx
+        emerge -avuN $(equo query revisions 9999 -q)
+        return $?
+
+#		echo "Info: Automated secondary repo upgrading is not supported on this platform."
+#		echo ""
+#		echo "Instruction for manual update are as follows:"
+#		echo " 1. Look at /etc/entropy/packages/package.mask"
+#		echo " 2. Run each of those packages against emerge -pv <packagename>"
+#		echo " 3. Use dyii on the packages that are outdated to update them."
+#		return 1
 	fi
 
 	echo "This command is not supported on your platform."
