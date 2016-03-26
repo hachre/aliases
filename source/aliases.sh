@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.13
+hachreAliasesVersion=0.90.20160326.14
 
 #
 ### hachreAliases internal stuff
@@ -963,8 +963,12 @@ function dyus {
 
 function dyuu {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-        dyxx
-        emerge -avuN $(equo query revisions 9999 -q)
+        # If the last sync was less than 15 mins ago, skip the new sync
+        if test "`find /usr/portage/metadata/timestamp.chk -mmin +15`"; then
+            touch /usr/portage/metadata/timestamp.chk
+			dyxx
+		fi
+        emerge -avuN $(equo query revisions 9999 -q | grep -v automake)
         return $?
 
 #		echo "Info: Automated secondary repo upgrading is not supported on this platform."
