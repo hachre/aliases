@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.14
+hachreAliasesVersion=0.90.20160326.15
 
 #
 ### hachreAliases internal stuff
@@ -666,6 +666,9 @@ function dyDetectDistro {
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="sabayon"
 		dyDistroInfo="\n * The native package manager for this distro is called 'equo'.\n * You might also need to use 'emerge' in advanced circumstances.\n * Searching is best done via 'eix'."
+		function remerge {
+			/usr/bin/emerge $@
+		}
 		function emerge {
 			echo "Warning: 'emerge' should not be used on Sabayon, unless you know what you are doing!!!"
 			echo ""
@@ -968,7 +971,7 @@ function dyuu {
             touch /usr/portage/metadata/timestamp.chk
 			dyxx
 		fi
-        emerge -avuN $(equo query revisions 9999 -q | grep -v automake)
+        remerge -avuN $(equo query revisions 9999 -q | grep -v automake)
         return $?
 
 #		echo "Info: Automated secondary repo upgrading is not supported on this platform."
