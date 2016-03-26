@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.11
+hachreAliasesVersion=0.90.20160326.12
 
 #
 ### hachreAliases internal stuff
@@ -744,7 +744,7 @@ function dyh {
         echo -e " dyr\tRemove a package (after confirmation, including its unused dependencies)"
         echo -e " dyrf\tRemove a package forced (after confirmation, including its unused dependencies)"
         echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
-        echo -e " dyu\tInstall security updates only (not widely supported)"
+        echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyx\tSync the primary repository"
@@ -763,6 +763,10 @@ function dyh {
         echo ""
         echo "How to remove a specific package:"
         echo -e "\tdyr <packagename>"
+
+        echo ""
+        echo "How to install the latest security updates:"
+        echo -e "\tdyus"
 
         echo ""
         echo "How to fully update your system:"
