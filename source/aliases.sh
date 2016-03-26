@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.12
+hachreAliasesVersion=0.90.20160326.13
 
 #
 ### hachreAliases internal stuff
@@ -946,7 +946,7 @@ function dyus {
     fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-        $root equo sec download
+        $root equo sec update
         $root equo sec install
         return $?
     fi
