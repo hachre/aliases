@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.91.20160329.3
+hachreAliasesVersion=0.91.20160329.4
 
 #
 ### hachreAliases internal stuff
@@ -785,13 +785,23 @@ function dyh {
 
 function dyk {
 	if [ "$dyDetectedDistro" == "arch" ]; then
+        function printinfo {
+            echo ""
+            echo "If there are still GPG problems make sure your user 'archbuild'"
+            echo "has run 'gpg --list-keys' and that the file '~/.gnupg/gpg.conf'"
+            echo "contains the line 'keyring /etc/pacman.d/gnupg/pubring.gpg'"
+            echo "towards the end or at the bottom of the file."
+        }
+    
         if [ -z "$1" ]; then
             echo "Updating all keys. To update a specific key use 'dyk <keyid>'"
             $hachreAliasesRoot pacman-key --refresh-keys
+            printinfo
     		return $?
         fi
         echo "Updating specific key..."
         $hachreAliasesRoot pacman-key -r $@
+        printinfo
         return $?
 	fi
 
