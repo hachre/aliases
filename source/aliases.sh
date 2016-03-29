@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.90.20160326.17
+hachreAliasesVersion=0.91.20160329.1
 
 #
 ### hachreAliases internal stuff
@@ -749,6 +749,7 @@ function dyh {
         echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
         echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
+        echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyx\tSync the primary repository"
         echo -e " dyxx\tSync the secondary repository"
@@ -781,6 +782,22 @@ function dyh {
     
 	return 0
 }
+
+function dyk {
+	if [ "$dyDetectedDistro" == "arch" ]; then
+        if [ -z "$1" ]; then
+            echo "Updating all keys. To update a specific key use 'dyk <keyid>'"
+            $root pacman-key --refresh-keys
+    		return $?
+        fi
+        echo "Updating specific key '$1'..."
+        $root pacman-key -r "$1"
+        return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
+
 function dyx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
