@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.91.20160329.1
+hachreAliasesVersion=0.91.20160329.2
 
 #
 ### hachreAliases internal stuff
@@ -787,11 +787,11 @@ function dyk {
 	if [ "$dyDetectedDistro" == "arch" ]; then
         if [ -z "$1" ]; then
             echo "Updating all keys. To update a specific key use 'dyk <keyid>'"
-            $root pacman-key --refresh-keys
+            $hachreAliasesRoot pacman-key --refresh-keys
     		return $?
         fi
         echo "Updating specific key '$1'..."
-        $root pacman-key -r "$1"
+        $hachreAliasesRoot pacman-key -r "$1"
         return $?
 	fi
 
