@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hachre.de
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.91.20160329.2
+hachreAliasesVersion=0.91.20160329.3
 
 #
 ### hachreAliases internal stuff
@@ -790,8 +790,8 @@ function dyk {
             $hachreAliasesRoot pacman-key --refresh-keys
     		return $?
         fi
-        echo "Updating specific key '$1'..."
-        $hachreAliasesRoot pacman-key -r "$1"
+        echo "Updating specific key..."
+        $hachreAliasesRoot pacman-key -r $@
         return $?
 	fi
 
