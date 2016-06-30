@@ -861,7 +861,7 @@ function dyx {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-        apt-get update
+        $hachreAliasesRoot apt-get update
 		return $?
 	fi
 
@@ -983,7 +983,7 @@ function dyu {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-		apt-get dist-upgrade
+		$hachreAliasesRoot apt-get dist-upgrade
 		return $?
 	fi
 
@@ -1081,7 +1081,7 @@ function dyi {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-		apt-get install $*
+		$hachreAliasesRoot apt-get install $*
 		return $?
 	fi
 
@@ -1234,8 +1234,8 @@ function dyr {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-		apt-get remove $*
-		apt-get autoremove
+		$hachreAliasesRoot apt-get remove $*
+		$hachreAliasesRoot apt-get autoremove
 		return $?
 	fi
 
@@ -1267,8 +1267,8 @@ function dyrf {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-		apt-get purge $*
-		apt-get autoremove
+		$hachreAliasesRoot apt-get purge $*
+		$hachreAliasesRoot apt-get autoremove
 		return $?
 	fi
 
@@ -1313,7 +1313,7 @@ function dys {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
-		apt-cache search $*
+		$hachreAliasesRoot apt-cache search $*
 		return $?
 	fi
 
