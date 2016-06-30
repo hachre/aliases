@@ -665,7 +665,7 @@ function dyDetectDistro {
 	fi
 
 	# Sabayon
-	which equo 1>/dev/null 2>/dev/null
+	which -p equo 1>/dev/null 2>/dev/null
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="sabayon"
 		dyDistroInfo="\n * The native package manager for this distro is called 'equo'.\n * You might also need to use 'emerge' in advanced circumstances.\n * Searching is best done via 'eix'."
@@ -690,7 +690,7 @@ function dyDetectDistro {
 	fi
 
 	# Gentoo
-	which emerge 1>/dev/null 2>&1
+	which -p emerge 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="gentoo"
 		dyDistroInfo="\n * The native package manager for this distro is called 'emerge'.\n * You might also wanna look at 'equery'\n * Searching is best done via 'eix'."
@@ -698,7 +698,7 @@ function dyDetectDistro {
 	fi
 
 	# Arch
-	which pacman 1>/dev/null 2>&1
+	which -p pacman 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="arch"
 		dyDistroInfo="\n * The native package manager for this distro is called 'pacman'.\n * You might also wanna look at 'pacaur'."
@@ -713,11 +713,21 @@ function dyDetectDistro {
 	fi
 
 	# OpenSUSE
-	which zypper 1>/dev/null 2>&1
+	which -p zypper 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="opensuse"
 		dyDistroInfo="\n * The native package manager for this distro is called 'zypper'."
 		return 0
+	fi
+
+	# Windows
+	which -p apt-get 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		if [ -f "/mnt/c/Windows/explorer.exe" ]; then
+			dyDetectedDistro="windows"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'."
+			return 0			
+		fi
 	fi
 
 	# Not found
@@ -850,6 +860,11 @@ function dyx {
 		return $?
 	fi
 
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+        apt-get update
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -967,6 +982,11 @@ function dyu {
 		return $?
 	fi
 
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		apt-get dist-upgrade
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -1057,6 +1077,11 @@ function dyi {
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		zypper in -l --no-recommends $*
+		return $?
+	fi
+
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		apt-get install $*
 		return $?
 	fi
 
@@ -1208,6 +1233,12 @@ function dyr {
 		return $?
 	fi
 
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		apt-get remove $*
+		apt-get autoremove
+		return $?
+	fi
+
 	echo "This comand is not supported on your platform."
 }
 function dyrf {
@@ -1232,6 +1263,12 @@ function dyrf {
 			return 1
 		fi
 		brew uninstall --force "$1"
+		return $?
+	fi
+
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		apt-get purge $*
+		apt-get autoremove
 		return $?
 	fi
 
@@ -1272,6 +1309,11 @@ function dys {
     
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		zypper search -s $*
+		return $?
+	fi
+
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		apt-cache search $*
 		return $?
 	fi
 
