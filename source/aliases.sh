@@ -984,6 +984,7 @@ function dyu {
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
 		$hachreAliasesRoot apt-get dist-upgrade
+		$hachreAliasesRoot apt-get autoremove
 		return $?
 	fi
 
