@@ -4,7 +4,7 @@
 # Author: Joshua Wetzstein code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.91.20160625.1
+hachreAliasesVersion=0.92.20160701.1
 
 #
 ### hachreAliases internal stuff
