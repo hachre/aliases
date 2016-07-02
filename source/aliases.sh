@@ -4,7 +4,7 @@
 # Author: Joshua Wetzstein code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.92.20160701.1
+hachreAliasesVersion=0.93.20160702.1
 
 #
 ### hachreAliases internal stuff
@@ -130,6 +130,8 @@ function mkcd() {
 #
 # Various / Misc
 #
+
+alias varnishreset="varnishadm 'ban req.url ~ .'"
 
 function echoerr() {
 	awk " BEGIN { print \"$*\" > \"/dev/stderr\" }"
