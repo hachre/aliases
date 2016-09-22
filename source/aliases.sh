@@ -4,7 +4,7 @@
 # Author: Joshua Wetzstein code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.93.20160702.1
+hachreAliasesVersion=0.94.20160922.1
 
 #
 ### hachreAliases internal stuff
@@ -132,6 +132,20 @@ function mkcd() {
 #
 
 alias varnishreset="varnishadm 'ban req.url ~ .'"
+
+function webrip() {
+	if [ -z "$1" ]; then
+		echo "Usage: webrip http://www.example.com"
+		echo "This will rip the given website and create a tree of html files in the current directory!"
+		return 1
+	fi
+	which wget >/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Webrip requires 'wget' to be installed."
+		return 1
+	fi
+	wget -k -K  -E -r -l 10 -p -N -F --restrict-file-names=windows -nH "$1"
+}
 
 function echoerr() {
 	awk " BEGIN { print \"$*\" > \"/dev/stderr\" }"
