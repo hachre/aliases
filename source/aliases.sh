@@ -4,7 +4,7 @@
 # Author: Joshua Wetzstein code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.94.20160922.1
+hachreAliasesVersion=0.94.20161005.1
 
 #
 ### hachreAliases internal stuff
@@ -737,12 +737,12 @@ function dyDetectDistro {
 	fi
 
 	# Windows
-	which -p apt-get 1>/dev/null 2>&1
+	which apt-get 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		if [ -f "/mnt/c/Windows/explorer.exe" ]; then
 			dyDetectedDistro="windows"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'."
-			return 0			
+			return 0
 		fi
 	fi
 
@@ -808,7 +808,7 @@ function dyh {
         echo ""
         echo "If you need more commands, use 'dyh -v'"
     fi
-    
+
 	return 0
 }
 
@@ -821,7 +821,7 @@ function dyk {
             echo "contains the line 'keyring /etc/pacman.d/gnupg/pubring.gpg'"
             echo "towards the end or at the bottom of the file."
         }
-    
+
         if [ -z "$1" ]; then
             echo "Updating all keys. To update a specific key use 'dyk <keyid>'"
             $hachreAliasesRoot pacman-key --refresh-keys
@@ -870,7 +870,7 @@ function dyx {
         $root $hachreAliasesArchPM -Sy
 		return $?
 	fi
-    
+
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
         zypper ref -s
 		return $?
@@ -960,7 +960,7 @@ function dyu {
     if [ -z "$skip" ]; then
         dyx
     fi
-    
+
 	# Platform specific
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo upgrade -av  $*
@@ -1195,19 +1195,19 @@ function dyii {
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
         zypper lr packman 1>/dev/null 2>&1
-        if [ "$?" != "0" ]; then  
+        if [ "$?" != "0" ]; then
             echo "Error: Packman repo is not installed."
             echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
             return 1
         fi
-    
+
         # Enable the Packman repo if it is off
         zypper mr -e packman
-        
+
         # Install
 		zypper in -fl --no-recommends $*
 
-        # Disable the Packman again 
+        # Disable the Packman again
         zypper mr -d packman
 		return $?
 	fi
@@ -1306,7 +1306,7 @@ function dys {
             # Emerge WebRsync
             emerge-webrsync
             emerge --sync
-            
+
    			# Upgrade eix cache
 			eixupdate
 		fi
@@ -1323,7 +1323,7 @@ function dys {
 		brew search $*
 		return $?
 	fi
-    
+
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		zypper search -s $*
 		return $?
@@ -1360,20 +1360,20 @@ function dyss {
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
         zypper lr packman 1>/dev/null 2>&1
-        if [ "$?" != "0" ]; then  
+        if [ "$?" != "0" ]; then
             echo "Error: Packman repo is not installed."
             echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
             return 1
         fi
-    
+
         # Enable the Packman repo if it is off
         zypper mr -e packman
-        
+
         # Searching
         zypper search -s $*
         val=$?
-        
-        # Disable the Packman again 
+
+        # Disable the Packman again
         zypper mr -d packman
 
 		return $val
@@ -1525,22 +1525,22 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
             echo "Usage: gunlock <packagename>"
             return 1
         fi
-        
+
         $root flaggie "$1" +**
         return $?
     }
-    
+
     function glock() {
         hachreAliasesinstallFlaggie
         if [ -z "$1" ]; then
             echo "Usage: glock <packagename>"
             return 1
         fi
-        
+
         $root flaggie "$1" -**
         return $?
     }
-    
+
     function guse() {
         hachreAliasesinstallFlaggie
         if [ -z "$1" ]; then
@@ -1559,7 +1559,7 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
             fi
             changes="1"
         fi
-        
+
         # Show what has changed
         if [ "$?" == "0" ]; then
 			which equery >/dev/null 2>&1
@@ -1573,7 +1573,7 @@ if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "sabayon" ]; 
                 echo ""
                 echo "You can now use 'dyu' to apply these new use settings"
             fi
-            
+
             return $retval
         fi
     }
@@ -1672,7 +1672,7 @@ if [ "$?" == "0" ]; then
 		fi
 
 		searchterm="$@"
-		
+
 		sfinddir="/lib/systemd"
 		if [ ! -d "$sfindir" ]; then
 			sfinddir="/usr/lib64/systemd"
