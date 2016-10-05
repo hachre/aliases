@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # hachre's Aliases
-# Author: Joshua Wetzstein code@hach.re
+# Author: Harald Glatt code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.94.20161005.1
+hachreAliasesVersion=0.94.20161005.2
 
 #
 ### hachreAliases internal stuff
@@ -435,7 +435,7 @@ function gitreset() {
 	git reset --hard origin/master
 }
 function gitresetauthor() {
-	git filter-branch --commit-filter 'export GIT_AUTHOR_NAME="Joshua Wetzstein"; export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" ; export GIT_AUTHOR_EMAIL=code@hach.re; export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL" ;git commit-tree "$@"' -f
+	git filter-branch --commit-filter 'export GIT_AUTHOR_NAME="Harald Glatt"; export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" ; export GIT_AUTHOR_EMAIL=code@hach.re; export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL" ;git commit-tree "$@"' -f
 }
 
 # OpenSUSE OpenSuse Zypper Defaults
