@@ -529,6 +529,10 @@ function setupArchAliases() {
 			#$root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
 			$root curl https://aur.archlinux.org/cgit/aur.git/snapshot/$p.tar.gz | $root tar xz
 			cd $p
+			if [ -d "$d/proc" ]; then
+				echo "Error: $d ended up being root. This isn't normal. Exiting..."
+				return 1
+			fi
 			$root chown archbuild "$d" -R
 			su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
 		done
