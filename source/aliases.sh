@@ -1001,6 +1001,14 @@ function dyu {
    	if [ "$dyDetectedDistro" == "windows" ]; then
 		$hachreAliasesRoot apt-get dist-upgrade
 		$hachreAliasesRoot apt-get autoremove
+
+		which youtube-dl >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyi python-setuptools
+			sudo easy_install pip
+			sudo pip install --upgrade youtube-dl
+		fi
+
 		return $?
 	fi
 
