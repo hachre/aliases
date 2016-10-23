@@ -126,6 +126,7 @@ function mkcd() {
 	mkdir -p "$1"
 	cd "$1"
 }
+alias youtube-dl="youtube-dl --no-check-certificate"
 
 #
 # Various / Misc
