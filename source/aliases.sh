@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.97.20161029.1
+hachreAliasesVersion=0.97.20161029.2
 
 #
 ### hachreAliases internal stuff
@@ -233,18 +233,18 @@ function checkio {
 alias aria2c="aria2c -x 10 -j 10 --file-allocation=falloc"
 
 function installCode {
-	set -e
-	dyi git git-lfs nodejs npm jre rsync
-	npm install -g typescript
-	npm install -g metalsmith
-	npm install -g browserify
-	npm install -g closurecompiler
-	cd
-	git lfs install
-	rm -Rf lfs
-	git config --global user.name 'Harald Glatt'
-	git config --global user.email 'code@hach.re'
-	git config --global core.fileMode false
+	echo "Installing basic code environment... Wait for the 'All done' message!"
+	dyi git git-lfs nodejs npm jre rsync &&
+	npm install -g typescript &&
+	npm install -g metalsmith &&
+	npm install -g browserify &&
+	npm install -g closurecompiler &&
+	cd &&
+	git lfs install &&
+	rm -Rf lfs &&
+	git config --global user.name 'Harald Glatt' &&
+	git config --global user.email 'code@hach.re' &&
+	git config --global core.fileMode false &&
 	echo "All done :)"
 }
 
