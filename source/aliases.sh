@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.94.20161005.2
+hachreAliasesVersion=0.97.20161029.1
 
 #
 ### hachreAliases internal stuff
@@ -231,6 +231,22 @@ function checkio {
 	iostat -dkxz 1
 }
 alias aria2c="aria2c -x 10 -j 10 --file-allocation=falloc"
+
+function installCode {
+	set -e
+	dyi git git-lfs nodejs npm jre rsync
+	npm install -g typescript
+	npm install -g metalsmith
+	npm install -g browserify
+	npm install -g closurecompiler
+	cd
+	git lfs install
+	rm -Rf lfs
+	git config --global user.name 'Harald Glatt'
+	git config --global user.email 'code@hach.re'
+	git config --global core.fileMode false
+	echo "All done :)"
+}
 
 #
 # Btrfs
