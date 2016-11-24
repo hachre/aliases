@@ -234,7 +234,7 @@ alias aria2c="aria2c -x 10 -j 10 --file-allocation=falloc"
 
 function installCode {
 	echo "Installing basic code environment... Wait for the 'All done' message!"
-	dyi git git-lfs nodejs npm jre rsync &&
+	dyi git git-lfs nodejs npm jre rsync imagemagick ghostscript &&
 	npm install -g typescript &&
 	npm install -g metalsmith &&
 	npm install -g browserify &&
