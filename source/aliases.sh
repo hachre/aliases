@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.97.20161029.2
+hachreAliasesVersion=0.99.20170104.1
 
 #
 ### hachreAliases internal stuff
@@ -1974,3 +1974,6 @@ alias halt="poweroff"
 
 # OpenSUSE
 alias zyp="zypper"
+
+# macOS
+alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
