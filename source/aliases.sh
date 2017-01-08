@@ -4,7 +4,7 @@
 # Author: Harald Glatt code@hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.99.20170104.1
+hachreAliasesVersion=0.100.20170108.1
 
 #
 ### hachreAliases internal stuff
@@ -1977,3 +1977,6 @@ alias zyp="zypper"
 
 # macOS
 alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
+
+# Various
+alias pngcrush="pngcrush -rem allb -brute -reduce"
