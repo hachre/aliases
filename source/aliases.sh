@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # hachre's Aliases
-# Author: Harald Glatt code@hach.re
+# Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.100.20170108.1
+hachreAliasesVersion=0.101.20170129.1
 
 #
 ### hachreAliases internal stuff
@@ -1980,3 +1980,4 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 
 # Various
 alias pngcrush="pngcrush -rem allb -brute -reduce"
+alias serve="python -m SimpleHTTPServer 8000"
