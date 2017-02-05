@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.101.20170129.1
+hachreAliasesVersion=0.101.20170205.1
 
 #
 ### hachreAliases internal stuff
@@ -631,7 +631,7 @@ if [ "$?" == "0" ]; then
 
 	which pacaur >/dev/null 2>&1
 	if [ "$?" == "0" ]; then
-		root="sudo -u archbuild -s"
+		root="sudo -u archbuild -s EDITOR='nano'"
 		hachreAliasesArchPM="pacaur --noedit --color always"
 	fi
 
