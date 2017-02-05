@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.101.20170205.1
+hachreAliasesVersion=0.101.20170205.2
 
 #
 ### hachreAliases internal stuff
@@ -564,6 +564,7 @@ function setupArchAliases() {
 		$root $hachreAliasesArchPM -S --needed --noconfirm sudo curl binutils base base-devel
 		$root $hachreAliasesArchPM -R --noconfirm pacaur cower 2>/dev/null
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+		$hachreAliasesRoot echo "Defaults env_keep += \"EDITOR\"" >> /etc/sudoers
 		mytemp=`$hachreAliasesRoot mktemp`
 		$hachreAliasesRoot rm "$mytemp"
 		$hachreAliasesRoot mkdir -p "$mytemp"
@@ -631,7 +632,7 @@ if [ "$?" == "0" ]; then
 
 	which pacaur >/dev/null 2>&1
 	if [ "$?" == "0" ]; then
-		root="sudo -u archbuild -s EDITOR='nano'"
+		root="sudo -u archbuild -s"
 		hachreAliasesArchPM="pacaur --noedit --color always"
 	fi
 
