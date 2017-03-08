@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.102.20170308.6
+hachreAliasesVersion=0.102.20170308.7
 
 #
 ### hachreAliases internal stuff
@@ -1283,7 +1283,7 @@ function dyii {
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		pwd="$PWD"
 		cd /usr/ports
-		path=`dys $* | grep Path | awk '{print $2}'`
+		path=`dyss $* | grep Path | awk '{print $2}'`
 		if [ ! -d "$path" ]; then
 			echo "Error: Couldn't find ports path for '$*'"
 			return 1
