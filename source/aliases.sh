@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.102.20170308.5
+hachreAliasesVersion=0.102.20170308.6
 
 #
 ### hachreAliases internal stuff
@@ -1284,7 +1284,7 @@ function dyii {
 		pwd="$PWD"
 		cd /usr/ports
 		path=`dys $* | grep Path | awk '{print $2}'`
-		if [ ! -d "$path" ];
+		if [ ! -d "$path" ]; then
 			echo "Error: Couldn't find ports path for '$*'"
 			return 1
 		fi
