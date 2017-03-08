@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.105.20170308.14
+hachreAliasesVersion=0.105.20170308.15
 
 #
 ### hachreAliases internal stuff
@@ -1190,6 +1190,63 @@ function dyuu {
 
 	echo "This command is not supported on your platform."
 }
+function dyi {
+	if [ -z "$1" ]; then
+		echo "Usage: dyi <package name>"
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo install -av $*
+		if [ "$?" != "0" ]; then
+			echo ""
+			echo "If equo is talking about masked packages it means that you have"
+			echo "previously used dyii to install this package and it has been masked"
+			echo "so that equo will not overwrite it with its own version."
+			echo ""
+			echo "You can either use dyif, 'equo unmask <package>' or dyr to uninstall first."
+			return 1
+		fi
+		equo conf update
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		emerge -avkk --quiet-build=y --binpkg-respect-use=y $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pmi $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+		if [ ! -z "$2" ]; then
+			echo "Error: 'osx-brew' supports only one package parameter."
+			return 1
+		fi
+		brew install "$1"
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
+		zypper in -l --no-recommends $*
+		return $?
+	fi
+
+   	if [ "$dyDetectedDistro" == "windows" ]; then
+		$hachreAliasesRoot apt-get install $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg install $*
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
 function dyif {
 	if [ -z "$1" ]; then
 		echo "Usage: dyif <package name>"
@@ -1300,7 +1357,7 @@ function dyii {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		dyFreeBSDCheckPortmaster
-		path=dyFreeBSDResolvePortPath $*
+		dyFreeBSDResolvePortPath $*
 		$hachreAliasesRoot portmaster "$path"
 		return $?
 	fi
