@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.101.20170205.2
+hachreAliasesVersion=0.102.20170308.1
 
 #
 ### hachreAliases internal stuff
@@ -767,6 +767,12 @@ function dyDetectDistro {
 		fi
 	fi
 
+	# FreeBSD
+	which -p freebsd-version 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="FreeBSD"
+	fi
+
 	# Not found
 	dyDetectedDistro="unknown"
 	return 1
@@ -902,6 +908,11 @@ function dyx {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg update
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -940,6 +951,12 @@ function dyxx {
 		eix-remote update >/dev/null 2>&1 &
 		echo ""
 		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot portsnap fetch
+        $hachreAliasesRoot portsnap update
 		return $?
 	fi
 
@@ -1033,6 +1050,12 @@ function dyu {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg upgrade
+		$hachreAliasesRoot pkg autoremove
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -1057,6 +1080,11 @@ function dyus {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg audit -F
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -1078,6 +1106,11 @@ function dyuu {
 #		echo " 3. Use dyii on the packages that are outdated to update them."
 #		return 1
 	fi
+
+#	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+#       $hachreAliasesRoot 
+#		return $?
+#	fi
 
 	echo "This command is not supported on your platform."
 }
@@ -1128,6 +1161,11 @@ function dyi {
 
    	if [ "$dyDetectedDistro" == "windows" ]; then
 		$hachreAliasesRoot apt-get install $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg install $*
 		return $?
 	fi
 
@@ -1241,6 +1279,14 @@ function dyii {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		pwd="$PWD"
+		cd /usr/ports
+        $hachreAliasesRoot make install $*
+		cd "$pwd"
+		return $?
+	fi
+
 	echo "This command is not supported on your platform. This either means dyi already handles it or it won't work at all."
 }
 function dyr {
@@ -1282,6 +1328,11 @@ function dyr {
    	if [ "$dyDetectedDistro" == "windows" ]; then
 		$hachreAliasesRoot apt-get remove $*
 		$hachreAliasesRoot apt-get autoremove
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg remove $*
 		return $?
 	fi
 
@@ -1363,6 +1414,11 @@ function dys {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+        $hachreAliasesRoot pkg search $*
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
@@ -1406,6 +1462,14 @@ function dyss {
         zypper mr -d packman
 
 		return $val
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		pwd="$PWD"
+		cd /usr/ports
+        $hachreAliasesRoot make quicksearch name=$*
+		cd "$pwd"
+		return $?
 	fi
 
 	echo "This command is not supported on your platform."
