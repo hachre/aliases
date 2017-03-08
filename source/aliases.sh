@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.103.20170308.11
+hachreAliasesVersion=0.104.20170308.12
 
 #
 ### hachreAliases internal stuff
@@ -771,6 +771,7 @@ function dyDetectDistro {
 	which freebsd-version 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="FreeBSD"
+		dyDistroInfo="\n * The native package manager for this distro is called 'pkg'.\n * The alternate package manager is called ports and runs through 'portmaster'\n * To install new major versions you should use 'freebsd-update fetch' and 'freebsd-update install'."
 		return 0
 	fi
 
