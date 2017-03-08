@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.105.20170308.15
+hachreAliasesVersion=0.105.20170308.16
 
 #
 ### hachreAliases internal stuff
@@ -783,7 +783,10 @@ dyDetectDistro
 
 # helper functions
 function dyFreeBSDResolvePortPath {
+	pwd="$PWD"
+	cd /usr/ports
 	path=`make search name="$*" display=path | head -n 1 | awk '{print $2}'`
+	cd "$pwd"
 }
 
 function dyFreeBSDCheckPortmaster {
