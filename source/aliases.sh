@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.102.20170308.7
+hachreAliasesVersion=0.103.20170308.8
 
 #
 ### hachreAliases internal stuff
@@ -780,6 +780,30 @@ function dyDetectDistro {
 }
 dyDetectDistro
 
+# helper functions
+function dyFreeBSDCheckPortmaster {
+	if [ "$dyDetectDistro" != "FreeBSD" ];
+		return 0
+	fi
+
+	which portmaster 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		return 0
+	fi
+
+	# Use traditional installation method to install portmaster
+	pwd="$PWD"
+	cd /usr/ports
+	path=`make quicksearch name=portmaster | grep Path | awk '{print $2}'`
+	if [ ! -d "$path" ]; then
+		echo "Error: Couldn't install portmaster."
+		return 1
+	fi
+	cd "$path"
+	$hachreAliasesRoot make install
+	cd "$pwd"
+}
+
 # hachre's unified packaging commands
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
@@ -1113,6 +1137,12 @@ function dyuu {
 #		return $?
 #	fi
 
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		dyFreeBSDCheckPortmaster
+        $hachreAliasesRoot portmaster -a
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 function dyi {
@@ -1281,17 +1311,8 @@ function dyii {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		pwd="$PWD"
-		cd /usr/ports
-		path=`dyss $* | grep Path | awk '{print $2}'`
-		if [ ! -d "$path" ]; then
-			echo "Error: Couldn't find ports path for '$*'"
-			return 1
-		fi
-		cd "$path"
-        $hachreAliasesRoot make install
-		echo "Installed package from '$path'."
-		cd "$pwd"
+		dyFreeBSDCheckPortmaster
+		$hachreAliasesRoot portmaster $*
 		return $?
 	fi
 
@@ -1475,7 +1496,7 @@ function dyss {
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		pwd="$PWD"
 		cd /usr/ports
-        $hachreAliasesRoot make quicksearch name=$*
+		$hachreAliasesRoot make quicksearch name=$*
 		cd "$pwd"
 		return $?
 	fi
