@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 # hachre's Aliases
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.102.20170308.2
+hachreAliasesVersion=0.102.20170308.3
 
 #
 ### hachreAliases internal stuff
