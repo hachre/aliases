@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.104.20170308.12
+hachreAliasesVersion=0.104.20170308.13
 
 #
 ### hachreAliases internal stuff
@@ -1133,25 +1133,6 @@ function dyuu {
 #		return 1
 	fi
 
-#	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-#       $hachreAliasesRoot 
-#		return $?
-#	fi
-
-	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortmaster
-        $hachreAliasesRoot portmaster -adwv
-		return $?
-	fi
-
-	echo "This command is not supported on your platform."
-}
-function dyi {
-	if [ -z "$1" ]; then
-		echo "Usage: dyi <package name>"
-		return 1
-	fi
-
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo install -av $*
 		if [ "$?" != "0" ]; then
@@ -1197,7 +1178,9 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-        $hachreAliasesRoot pkg install $*
+		dyFreeBSDCheckPortmaster
+        $hachreAliasesRoot portmaster -adwv
+		$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
