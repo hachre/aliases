@@ -782,7 +782,7 @@ dyDetectDistro
 
 # helper functions
 function dyFreeBSDCheckPortmaster {
-	if [ "$dyDetectDistro" != "FreeBSD" ];
+	if [ "$dyDetectDistro" != "FreeBSD" ]; then
 		return 0
 	fi
 
