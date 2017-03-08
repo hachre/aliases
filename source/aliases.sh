@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.103.20170308.8
+hachreAliasesVersion=0.103.20170308.10
 
 #
 ### hachreAliases internal stuff
@@ -800,7 +800,7 @@ function dyFreeBSDCheckPortmaster {
 		return 1
 	fi
 	cd "$path"
-	$hachreAliasesRoot make install
+	$hachreAliasesRoot make install clean
 	cd "$pwd"
 }
 
