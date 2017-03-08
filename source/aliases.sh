@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 # hachre's Aliases
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.102.20170308.1
+hachreAliasesVersion=0.102.20170308.2
 
 #
 ### hachreAliases internal stuff
@@ -768,7 +768,7 @@ function dyDetectDistro {
 	fi
 
 	# FreeBSD
-	which -p freebsd-version 1>/dev/null 2>&1
+	which freebsd-version 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="FreeBSD"
 	fi
