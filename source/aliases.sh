@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.106.20170309.1
+hachreAliasesVersion=0.106.20170309.2
 
 #
 ### hachreAliases internal stuff
@@ -812,7 +812,8 @@ function dyFreeBSDCheckPortUtils {
 	which psearch 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		# Install psearch via just installed portmaster
-		$hachreAliasesRoot portmaster psearch
+		path=`dyFreeBSDResolvePortPath psearch`
+		$hachreAliasesRoot portmaster "$path"
 	fi
 }
 
