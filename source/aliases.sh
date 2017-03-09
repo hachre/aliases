@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.105.20170308.16
+hachreAliasesVersion=0.106.20170309.1
 
 #
 ### hachreAliases internal stuff
@@ -785,31 +785,35 @@ dyDetectDistro
 function dyFreeBSDResolvePortPath {
 	pwd="$PWD"
 	cd /usr/ports
-	path=`make search name="$*" display=path | head -n 1 | awk '{print $2}'`
+	echo `make search name="$*" display=path | head -n 1 | awk '{print $2}'`
 	cd "$pwd"
 }
 
-function dyFreeBSDCheckPortmaster {
-	if [ "$dyDetectDistro" != "FreeBSD" ]; then
+function dyFreeBSDCheckPortUtils {
+	if [ "$dyDetectedDistro" != "FreeBSD" ]; then
 		return 0
 	fi
 
 	which portmaster 1>/dev/null 2>&1
-	if [ "$?" == "0" ]; then
-		return 0
+	if [ "$?" != "0" ]; then
+		# Use traditional installation method to install portmaster
+		pwd="$PWD"
+		cd /usr/ports
+		path=`dyFreeBSDResolvePortPath portmaster`
+		if [ ! -d "path" ]; then
+			echo "Error: Couldn't install portmaster."
+			return 1
+		fi
+		cd "$path"
+		$hachreAliasesRoot make install clean
+		cd "$pwd"
 	fi
 
-	# Use traditional installation method to install portmaster
-	pwd="$PWD"
-	cd /usr/ports
-	path=`make quicksearch name=portmaster | grep Path | awk '{print $2}'`
-	if [ ! -d "$path" ]; then
-		echo "Error: Couldn't install portmaster."
-		return 1
+	which psearch 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		# Install psearch via just installed portmaster
+		$hachreAliasesRoot portmaster psearch
 	fi
-	cd "$path"
-	$hachreAliasesRoot make install clean
-	cd "$pwd"
 }
 
 # hachre's unified packaging commands
@@ -1185,7 +1189,7 @@ function dyuu {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortmaster
+		dyFreeBSDCheckPortUtils
         $hachreAliasesRoot portmaster -adwv
 		$hachreAliasesRoot pkg autoremove
 		return $?
@@ -1359,8 +1363,8 @@ function dyii {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortmaster
-		dyFreeBSDResolvePortPath $*
+		dyFreeBSDCheckPortUtils
+		path=`dyFreeBSDResolvePortPath $*`
 		$hachreAliasesRoot portmaster "$path"
 		return $?
 	fi
@@ -1543,11 +1547,14 @@ function dyss {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		pwd="$PWD"
-		cd /usr/ports
-		$hachreAliasesRoot make quicksearch name=$*
-		cd "$pwd"
+		dyFreeBSDCheckPortUtils
+		$hachreAliasesRoot psearch -n $*
 		return $?
+		#pwd="$PWD"
+		#cd /usr/ports
+		#$hachreAliasesRoot make quicksearch name=$*
+		#cd "$pwd"
+		#return $?
 	fi
 
 	echo "This command is not supported on your platform."
