@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.106.20170309.4
+hachreAliasesVersion=0.106.20170310.1
 
 #
 ### hachreAliases internal stuff
@@ -1190,6 +1190,7 @@ function dyuu {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		dyxx
 		dyFreeBSDCheckPortUtils
         $hachreAliasesRoot portmaster -adwv
 		$hachreAliasesRoot pkg autoremove
