@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.106.20170310.1
+hachreAliasesVersion=0.107.20170312.1
 
 #
 ### hachreAliases internal stuff
@@ -1569,7 +1569,7 @@ function dyss {
 # Gentoo openrc specific init helpers
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
-	if [ "$dyDetectedDistro" == "gentoo" ]; then
+	if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectDistro" == "FreeBSD" ]; then
 		function existsScript {
 			if [ ! -f "/etc/init.d/$1" ]; then
 				echo "Error: Given service '$1' not found. Try sfind..."
