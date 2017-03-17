@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.108.20170317.1
+hachreAliasesVersion=0.108.20170317.2
 
 #
 ### hachreAliases internal stuff
@@ -2161,7 +2161,7 @@ alias halt="poweroff"
 alias zyp="zypper"
 
 # FreeBSD
-if [ "$dyDetectedDistro" == "FreeBSD" ];
+if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 	alias iotop="top -Smio"
 fi
 
