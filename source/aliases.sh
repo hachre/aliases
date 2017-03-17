@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.107.20170312.2
+hachreAliasesVersion=0.108.20170317.1
 
 #
 ### hachreAliases internal stuff
@@ -1570,8 +1570,16 @@ function dyss {
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
 	if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		initdir=""
+		if [ "$dyDetectedDistro" == "gentoo" ]; then
+			initdir="/etc/init.d"
+		fi
+		if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			initdir="/etc/rc.d"
+		fi
+
 		function existsScript {
-			if [ ! -f "/etc/init.d/$1" ]; then
+			if [ ! -f "$initdir/$1" ]; then
 				echo "Error: Given service '$1' not found. Try sfind..."
 				return 1
 			fi
@@ -1586,7 +1594,12 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			/etc/init.d/"$1" start
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				$initdir/$1 start
+			fi
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				service $1 start
+			fi
 		}
 
 		function stop {
@@ -1597,7 +1610,12 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			/etc/init.d/"$1" stop
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				$initdir/$1 stop
+			fi
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				service $1 stop
+			fi
 		}
 
 		function restart {
@@ -1608,7 +1626,12 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			/etc/init.d/"$1" restart
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				$initdir/$1 restart
+			fi
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				service $1 restart
+			fi
 		}
 
 		function reload {
@@ -1619,7 +1642,12 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			/etc/init.d/"$1" reload
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				$initdir/$1 reload
+			fi
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				service $1 reload
+			fi
 		}
 
 		function status {
@@ -1630,7 +1658,12 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			/etc/init.d/"$1" status
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				$initdir/$1 status
+			fi
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				service $1 status
+			fi
 		}
 
 		function senable {
@@ -1671,7 +1704,7 @@ if [ "$?" != "0" ]; then
 
 		function sfind {
 			sPWD=`pwd`
-			cd /etc/init.d/
+			cd $initdir
 
 			if [ -z "$1" ]; then
 				find . -type f
@@ -2126,6 +2159,11 @@ alias halt="poweroff"
 
 # OpenSUSE
 alias zyp="zypper"
+
+# FreeBSD
+if [ "$dyDetectedDistro" == "FreeBSD" ];
+	alias iotop="top -Smio"
+fi
 
 # macOS
 alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
