@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.108.20170317.2
+hachreAliasesVersion=0.108.20170328.1
 
 #
 ### hachreAliases internal stuff
@@ -1090,7 +1090,7 @@ function dyu {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
         $hachreAliasesRoot pkg upgrade
-		$hachreAliasesRoot pkg autoremove
+		#$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
@@ -1170,15 +1170,6 @@ function dyuu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		if [ ! -z "$2" ]; then
-			echo "Error: 'osx-brew' supports only one package parameter."
-			return 1
-		fi
-		brew install "$1"
-		return $?
-	fi
-
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		zypper in -l --no-recommends $*
 		return $?
@@ -1193,7 +1184,7 @@ function dyuu {
 		dyxx
 		dyFreeBSDCheckPortUtils
         $hachreAliasesRoot portmaster -adwv
-		$hachreAliasesRoot pkg autoremove
+		#$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
