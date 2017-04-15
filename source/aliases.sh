@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.108.20170328.1
+hachreAliasesVersion=0.109.20170415.1
 
 #
 ### hachreAliases internal stuff
@@ -775,6 +775,17 @@ function dyDetectDistro {
 		return 0
 	fi
 
+	# Ubuntu
+	which lsb_release 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		release=$(lsb_release -is)
+		if [ "$release" == "Ubuntu" ]; then
+			dyDetectedDistro="ubuntu"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			return 0
+		fi
+	fi
+
 	# Not found
 	dyDetectedDistro="unknown"
 	return 1
@@ -941,7 +952,7 @@ function dyx {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
         $hachreAliasesRoot apt-get update
 		return $?
 	fi
@@ -1074,15 +1085,18 @@ function dyu {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+		$hachreAliasesRoot apt-get update
 		$hachreAliasesRoot apt-get dist-upgrade
 		$hachreAliasesRoot apt-get autoremove
 
-		which youtube-dl >/dev/null 2>&1
-		if [ "$?" == "0" ]; then
-			dyi python-setuptools
-			sudo easy_install pip
-			sudo pip install --upgrade youtube-dl
+		if [ "$dyDetectedDistro" == "windows" ]; then
+			which youtube-dl >/dev/null 2>&1
+			if [ "$?" == "0" ]; then
+				dyi python-setuptools
+				sudo easy_install pip
+				sudo pip install --upgrade youtube-dl
+			fi
 		fi
 
 		return $?
@@ -1175,11 +1189,6 @@ function dyuu {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
-		$hachreAliasesRoot apt-get install $*
-		return $?
-	fi
-
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		dyxx
 		dyFreeBSDCheckPortUtils
@@ -1235,7 +1244,7 @@ function dyi {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-get install $*
 		return $?
 	fi
@@ -1400,7 +1409,7 @@ function dyr {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-get remove $*
 		$hachreAliasesRoot apt-get autoremove
 		return $?
@@ -1438,7 +1447,7 @@ function dyrf {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-get purge $*
 		$hachreAliasesRoot apt-get autoremove
 		return $?
@@ -1484,7 +1493,7 @@ function dys {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ]; then
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-cache search $*
 		return $?
 	fi
@@ -1557,12 +1566,13 @@ function dyss {
 # End of dynaloop unified package management commands
 #
 
+# INIT Helpers - TODO Extensive refactor, rewrite of this section
 # Gentoo openrc specific init helpers
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
-	if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ]; then
+	if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		initdir=""
-		if [ "$dyDetectedDistro" == "gentoo" ]; then
+		if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 			initdir="/etc/init.d"
 		fi
 		if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -1588,7 +1598,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 start
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 start
 			fi
 		}
@@ -1604,7 +1614,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 stop
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 stop
 			fi
 		}
@@ -1620,7 +1630,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 restart
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 restart
 			fi
 		}
@@ -1636,7 +1646,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 reload
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 reload
 			fi
 		}
@@ -1652,12 +1662,16 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 status
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 status
 			fi
 		}
 
 		function senable {
+			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
+				return 0
+			fi
+
 			if [ -z "$1" ]; then
 				echo "Usage: senable [service] (runlevel)"
 				return 1
@@ -1674,6 +1688,10 @@ if [ "$?" != "0" ]; then
 		}
 
 		function sdisable {
+			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
+				return 0
+			fi
+
 			if [ -z "$1" ]; then
 				echo "Usage: sdisable [service] (runlevel)"
 				return 1
@@ -1690,6 +1708,10 @@ if [ "$?" != "0" ]; then
 		}
 
 		function sstatus {
+			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
+				return 0
+			fi
+
 			rc-status
 		}
 
