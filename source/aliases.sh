@@ -103,6 +103,18 @@ function duhs {
 alias dfh="df -h"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete"
+function cpss {
+	if [ -z "$1" ]; then
+		echo "Usage: cpss <sourcedir> <targetdir>"
+		echo "Makes an exact copy of source in target using tar with gzip in the transfer."
+		echo "This significantly lowers the IO load that 'cps' would create in the same process."
+		echo "Resume is not supported. It is recommended to do the majority of work with 'cpss'."
+		echo "And then run 'cps' with the same parameters in order to finish up."
+		echo "Note: <sourcedir> needs to end on / when used with 'cps'."
+		return 1
+	fi
+	tar cpzf - -C "$2" . | tar xpzvf - -C "$1"
+}
 function cpr {
 	if [ -d "$1" ]; then
 		echo "Error: Directories are not supported by cpr, consider cps."
