@@ -113,7 +113,7 @@ function cpss {
 		echo "Note: <sourcedir> needs to end on / when used with 'cps'."
 		return 1
 	fi
-	tar cpzf - -C "$2" . | tar xpzvf - -C "$1"
+	tar cpzf - -C "$1" . | tar xpzvf - -C "$2"
 }
 function cpr {
 	if [ -d "$1" ]; then
