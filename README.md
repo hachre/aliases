@@ -2,7 +2,7 @@
 
 Collection of personal shell aliases that I like.
 
-## Easy installation on Linux
+## Installation
 
 ```
 curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
@@ -10,22 +10,11 @@ curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/install.sh | 
 
 This will automatically install the git repo to /usr/local/hachre/aliases.
 
-It will also hook up the aliases at /etc/profile.d/hachreAliases.sh and
-automatically get them running in your current shell.
-
 To uninstall use the ./remove.sh script in /usr/local/hachre/aliases.
 
-To update use the ./update.sh script.
+To update use the ./update.sh script or simply type `hachreUpdate`.
 
-## Manual installation
-
-If you don't like things to automatically happen to your system, or you're
-running OS X, here are the manual installation steps:
-
+## Install hachreShell
 ```
-git clone https://github.com/hachre/aliases
-ln -s /path/to/aliases/source/aliases.sh /etc/profile.d/hachreAliases.sh
-source /etc/profile
+curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/installHachreShell.sh | bash
 ```
-
-You can verify that the aliases are running by entering 'hachreAliases'.
