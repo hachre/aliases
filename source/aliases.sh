@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.111.20170527.1
+hachreAliasesVersion=0.112.20170613.1
 
 #
 ### hachreAliases internal stuff
@@ -417,7 +417,7 @@ function gitbranchrm() {
 function gitit() {
 	commit="dev"
 	if [ -e "version.txt" ]; then
-		nano "version.txt"
+		$EDITOR "version.txt"
 		commit=`cat version.txt | head -n 1`
 	fi
 
@@ -796,6 +796,13 @@ function dyDetectDistro {
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
+	fi
+
+	# CentOS
+	which yum 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		dyDetectedDistro="CentOS"
+		dyDistroInfo="\n * The native package manager for this distro is called 'yum'."
 	fi
 
 	# Not found
@@ -1266,6 +1273,11 @@ function dyi {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+        $hachreAliasesRoot yum install $*
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 function dyif {
@@ -1432,6 +1444,11 @@ function dyr {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+        $hachreAliasesRoot yum remove -y $*
+		return $?
+	fi
+
 	echo "This comand is not supported on your platform."
 }
 function dyrf {
@@ -1512,6 +1529,11 @@ function dys {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
         $hachreAliasesRoot pkg search $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+        $hachreAliasesRoot yum search $*
 		return $?
 	fi
 
