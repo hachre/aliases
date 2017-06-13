@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.112.20170613.5
+hachreAliasesVersion=0.113.20170613.6
 
 #
 ### hachreAliases internal stuff
@@ -1063,6 +1063,11 @@ function dyu {
         fi
     fi
 
+	# CentOS does this on its own
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+		skip="1"
+	fi
+
     # We want to ensure we are synced before updating
     if [ -z "$skip" ]; then
         dyx
@@ -1130,7 +1135,11 @@ function dyu {
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
         $hachreAliasesRoot yum update
-		return $?
+		ret="$?"
+		if [ "$?" == "0" ]; then
+			$hachreAliasesRoot yum autoremove -y
+		fi
+		return $ret
 	fi
 
 	echo "This command is not supported on your platform."
@@ -1451,7 +1460,8 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot yum remove -y $*
+        $hachreAliasesRoot yum remove $*
+        $hachreAliasesRoot yum autoremove -y		
 		return $?
 	fi
 
