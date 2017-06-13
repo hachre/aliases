@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.112.20170613.4
+hachreAliasesVersion=0.112.20170613.5
 
 #
 ### hachreAliases internal stuff
@@ -1125,6 +1125,11 @@ function dyu {
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
         $hachreAliasesRoot pkg upgrade
 		#$hachreAliasesRoot pkg autoremove
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+        $hachreAliasesRoot yum update
 		return $?
 	fi
 
