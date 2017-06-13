@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.112.20170613.1
+hachreAliasesVersion=0.112.20170613.2
 
 #
 ### hachreAliases internal stuff
@@ -762,6 +762,7 @@ function dyDetectDistro {
 	fi
 
 	# OpenSUSE
+	unalias which 2>/dev/null
 	which -p zypper 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="opensuse"
@@ -803,6 +804,7 @@ function dyDetectDistro {
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="CentOS"
 		dyDistroInfo="\n * The native package manager for this distro is called 'yum'."
+		return 0
 	fi
 
 	# Not found
