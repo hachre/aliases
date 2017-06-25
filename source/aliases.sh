@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.114.20170613.8
+hachreAliasesVersion=0.115.20170625.1
 
 #
 ### hachreAliases internal stuff
@@ -790,11 +790,16 @@ function dyDetectDistro {
 		fi
 	fi
 
-	# CentOS
+	# CentOS, OracleLinux
 	which yum 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="CentOS"
-		dyDistroInfo="\n * The native package manager for this distro is called 'yum'."
+		dyDistroName="$dyDetectedDistro"
+		dyDistroInfo="\n * Using command aliases for distro '$dyDetectedDistro'\n * The native package manager for this distro is called 'yum'."
+		if [ -f "/etc/os-release" ]; then
+			source /etc/os-release
+			dyDistroName="$NAME"
+		fi
 		return 0
 	fi
 
@@ -858,7 +863,12 @@ function dyh {
 	echo "dynaloop unified package managing commands"
 	echo ""
 
-	echo "Your distro is supported and has been detected as '$dyDetectedDistro'."
+	displayDistro="$dyDetectedDistro"
+	if [ ! -z "$dyDistroName" ]; then
+		displayDistro="$dyDistroName"
+	fi
+
+	echo "Your distro is supported and has been detected as '$displayDistro'."
 	if [ ! -z "${dyDistroInfo}" ]; then
 		echo -e "${dyDistroInfo}"
 	fi
@@ -905,6 +915,10 @@ function dyh {
         echo "If you need more commands, use 'dyh -v'"
     fi
 
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+		echo "As a user of CentOS features, you also have access to 'dyundo' which allows to rollback previous package manager actions. Check 'dyundo --help'."
+	fi
+
 	return 0
 }
 
@@ -931,6 +945,43 @@ function dyk {
 	fi
 
 	echo "This command is not supported on your platform."
+}
+
+# This is CentOS (yum) only
+function dyundo {
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+		echo "Usage: $0 <command> [command parameter]"
+		echo " Note: You can also use 'yum history' directly."
+		echo " Possible commands are:"
+		echo "  --stats:        display various historic stats"
+		echo "  --history:      display a list of previous transactions"
+		echo "  --undo <N>:     undo the single transaction with id N"
+		echo "  --rollback <N>: rollback everything up until transaction with id N"
+		return 1
+	fi
+
+	if [ "$1" == "--stats" ]; then
+		yum history stats
+		return $?
+	fi
+
+	if [ "$1" == "--history" ]; then
+		yum history
+		return $?
+	fi
+
+	if [ "$1" == "--undo" ]; then
+		yum history undo "$2"
+		return $?
+	fi
+
+	if [ "$1" == "--rollback" ]; then
+		yum history rollback "$2"
+		return $?
+	fi
+
+	echo "Given command '$1' not understood. Check '--help'."
+	return 1
 }
 
 function dyx {
