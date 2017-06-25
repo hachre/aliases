@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.4
+hachreAliasesVersion=0.115.20170625.5
 
 #
 ### hachreAliases internal stuff
@@ -795,10 +795,12 @@ function dyDetectDistro {
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="CentOS"
 		dyDistroName="$dyDetectedDistro"
-		dyDistroInfo="\n * Using command aliases for distro '$dyDetectedDistro'\n * The native package manager for this distro is called 'yum'."
+		dyDistroInfo="\n * Using command aliases for distro '$dyDetectedDistro'.\n * The native package manager for this distro is called 'yum'."
 		if [ -f "/etc/os-release" ]; then
 			source /etc/os-release
 			dyDistroName="$NAME"
+			NAME=""
+			export NAME=""
 		fi
 		return 0
 	fi
@@ -949,6 +951,10 @@ function dyk {
 
 # This is CentOS (yum) only
 function dyundo {
+	if [ "$dyDetectedDistro" != "CentOS" ]; then
+		return 1
+	fi
+
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
 		echo -e "Usage: dyundo <command> [command parameter]\n"
 		echo -e " Note: You can also use 'yum history' directly.\n"
