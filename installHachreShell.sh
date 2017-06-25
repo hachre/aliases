@@ -18,13 +18,16 @@ if [ -f "$HOME/.zshrc" ]; then
 fi
 
 echo "source \"$HOME/.zshrc_grml\"" >> "$HOME/.zshrc"
-echo "source \"$HOME/.zshrc_fish\"" >> "$HOME/.zshrc"
+echo "source \"/usr/local/hachre/aliases/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"" >> "$HOME/.zshrc"
 echo "emulate sh -c \"source /usr/local/hachre/aliases/source/aliases.sh\"" >> "$HOME/.zshrc"
 echo "echo \"Welcome :)\"" >> "$HOME/.zshrc"
 cd "$HOME"
 
 wget -O .zshrc_grml http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
-wget -O .zshrc_fish https://raw.githubusercontent.com/zsh-users/zsh-syntax-highlighting/master/zsh-syntax-highlighting.zsh
+
+cd /usr/local/hachre/aliases
+git pull https://github.com/zsh-users/zsh-syntax-highlighting.git
+
 rehash 1>/dev/null 2>&1
 
 chsh -s `which zsh`
