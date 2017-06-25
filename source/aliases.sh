@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.2
+hachreAliasesVersion=0.115.20170625.3
 
 #
 ### hachreAliases internal stuff
@@ -916,7 +916,7 @@ function dyh {
     fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		echo "\nAs a user of CentOS features, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
+		echo -e "\nAs a user of CentOS features, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
 	fi
 
 	return 0
@@ -950,8 +950,8 @@ function dyk {
 # This is CentOS (yum) only
 function dyundo {
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
-		echo "Usage: dyund <command> [command parameter]\n"
-		echo " Note: You can also use 'yum history' directly.\n"
+		echo -e "Usage: dyund <command> [command parameter]\n"
+		echo -e " Note: You can also use 'yum history' directly.\n"
 		echo " Possible commands are:"
 		echo "  --stats:        display various historic stats"
 		echo "  --history:      display a list of previous transactions"
