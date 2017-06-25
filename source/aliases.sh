@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.3
+hachreAliasesVersion=0.115.20170625.4
 
 #
 ### hachreAliases internal stuff
@@ -950,7 +950,7 @@ function dyk {
 # This is CentOS (yum) only
 function dyundo {
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
-		echo -e "Usage: dyund <command> [command parameter]\n"
+		echo -e "Usage: dyundo <command> [command parameter]\n"
 		echo -e " Note: You can also use 'yum history' directly.\n"
 		echo " Possible commands are:"
 		echo "  --stats:        display various historic stats"
