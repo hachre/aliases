@@ -26,7 +26,7 @@ cd "$HOME"
 wget -O .zshrc_grml http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
 
 cd /usr/local/hachre/aliases
-git pull https://github.com/zsh-users/zsh-syntax-highlighting.git
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
 rehash 1>/dev/null 2>&1
 
