@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.8
+hachreAliasesVersion=0.115.20170625.9
 
 #
 ### hachreAliases internal stuff
@@ -967,22 +967,22 @@ function dyundo {
 	fi
 
 	if [ "$1" == "--stats" ]; then
-		yum history stats
+		$hachreAliasesRoot yum history stats
 		return $?
 	fi
 
 	if [ "$1" == "--history" ]; then
-		yum history
+		$hachreAliasesRoot yum history
 		return $?
 	fi
 
 	if [ "$1" == "--undo" ]; then
-		yum history undo "$2"
+		$hachreAliasesRoot yum history undo "$2"
 		return $?
 	fi
 
 	if [ "$1" == "--rollback" ]; then
-		yum history rollback "$2"
+		$hachreAliasesRoot yum history rollback "$2"
 		return $?
 	fi
 
@@ -1227,6 +1227,11 @@ function dyus {
         $hachreAliasesRoot pkg audit -F
 		return $?
 	fi
+
+	if [ "$dyDetectedDistro" != "CentOS" ]; then
+		$hachreAliasesRoot yum update --security
+	fi
+
 
 	echo "This command is not supported on your platform."
 }
