@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.9
+hachreAliasesVersion=0.115.20170625.10
 
 #
 ### hachreAliases internal stuff
@@ -1228,8 +1228,9 @@ function dyus {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" != "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
 		$hachreAliasesRoot yum update --security
+		return $?
 	fi
 
 
