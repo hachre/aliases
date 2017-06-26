@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.115.20170625.10
+hachreAliasesVersion=0.116.20170626.1
 
 #
 ### hachreAliases internal stuff
@@ -855,6 +855,26 @@ function dyFreeBSDCheckPortUtils {
 	fi
 }
 
+usednf="unchecked"
+function dyYumCmd {
+	if [ "$usednf" == "unchecked" ]; then
+		which dnf 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			usednf="1"
+		else
+			usednf="0"
+ 		fi
+	fi
+	if [ "$usednf" == "1" ]; then
+		dnf $@
+		return $?
+	fi
+	if [ "$usednf" == "0" ]; then
+		yum $@
+		return $?
+	fi
+}
+
 # hachre's unified packaging commands
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
@@ -967,22 +987,22 @@ function dyundo {
 	fi
 
 	if [ "$1" == "--stats" ]; then
-		$hachreAliasesRoot yum history stats
+		$hachreAliasesRoot dyYumCmd history stats
 		return $?
 	fi
 
 	if [ "$1" == "--history" ]; then
-		$hachreAliasesRoot yum history
+		$hachreAliasesRoot dyYumCmd history
 		return $?
 	fi
 
 	if [ "$1" == "--undo" ]; then
-		$hachreAliasesRoot yum history undo "$2"
+		$hachreAliasesRoot dyYumCmd history undo "$2"
 		return $?
 	fi
 
 	if [ "$1" == "--rollback" ]; then
-		$hachreAliasesRoot yum history rollback "$2"
+		$hachreAliasesRoot dyYumCmd history rollback "$2"
 		return $?
 	fi
 
@@ -1191,10 +1211,10 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot yum update
+        $hachreAliasesRoot dyYumCmd update
 		ret="$?"
 		if [ "$?" == "0" ]; then
-			$hachreAliasesRoot yum autoremove -y
+			$hachreAliasesRoot dyYumCmd autoremove -y
 		fi
 		return $ret
 	fi
@@ -1229,7 +1249,7 @@ function dyus {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		$hachreAliasesRoot yum update --security
+		$hachreAliasesRoot dyYumCmd update --security
 		return $?
 	fi
 
@@ -1354,7 +1374,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot yum install $*
+        $hachreAliasesRoot dyYumCmd install $*
 		return $?
 	fi
 
@@ -1525,8 +1545,8 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot yum remove $*
-        $hachreAliasesRoot yum autoremove -y		
+        $hachreAliasesRoot dyYumCmd remove $*
+        $hachreAliasesRoot dyYumCmd autoremove -y		
 		return $?
 	fi
 
@@ -1614,7 +1634,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot yum search $*
+        $hachreAliasesRoot dyYumCmd search $*
 		return $?
 	fi
 
