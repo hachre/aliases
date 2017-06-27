@@ -830,10 +830,11 @@ function dyYumCmd {
  		fi
 	fi
 	if [ "$usednf" == "1" ]; then
-		return "dnf"
+		echo "dnf"
+		return 0
 	fi
 	if [ "$usednf" == "0" ]; then
-		return "yum"
+		echo "yum"
 	fi
 }
 
@@ -986,7 +987,7 @@ function dyundo {
 	fi
 
 	if [ "$1" == "--stats" ]; then
-		$hachreAliasesRoot dyYumCmd history stats
+		$hachreAliasesRoot $(dyYumCmd) history stats
 		return $?
 	fi
 
