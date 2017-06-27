@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.116.20170626.1
+hachreAliasesVersion=0.117.20170627.1
 
 #
 ### hachreAliases internal stuff
@@ -819,6 +819,24 @@ function dyDetectDistro {
 }
 dyDetectDistro
 
+usednf="unchecked"
+function dyYumCmd {
+	if [ "$usednf" == "unchecked" ]; then
+		which dnf 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			usednf="1"
+		else
+			usednf="0"
+ 		fi
+	fi
+	if [ "$usednf" == "1" ]; then
+		return "dnf"
+	fi
+	if [ "$usednf" == "0" ]; then
+		return "yum"
+	fi
+}
+
 # helper functions
 function dyFreeBSDResolvePortPath {
 	pwd="$PWD"
@@ -855,26 +873,6 @@ function dyFreeBSDCheckPortUtils {
 	fi
 }
 
-usednf="unchecked"
-function dyYumCmd {
-	if [ "$usednf" == "unchecked" ]; then
-		which dnf 1>/dev/null 2>&1
-		if [ "$?" == "0" ]; then
-			usednf="1"
-		else
-			usednf="0"
- 		fi
-	fi
-	if [ "$usednf" == "1" ]; then
-		dnf $@
-		return $?
-	fi
-	if [ "$usednf" == "0" ]; then
-		yum $@
-		return $?
-	fi
-}
-
 # hachre's unified packaging commands
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
@@ -906,6 +904,7 @@ function dyh {
         echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
         echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
+		echo -e " dyq\tQuery detailed package information"
         echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyx\tSync the primary repository"
@@ -1008,6 +1007,20 @@ function dyundo {
 
 	echo "Given command '$1' not understood. Check '--help'."
 	return 1
+}
+
+function dyq {
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		$hachreAliasesRoot $hachreAliasesArchPM -Si $@
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+		$hachreAliasesRoot dyYumCmd info $@
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."	
 }
 
 function dyx {
