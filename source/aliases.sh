@@ -979,30 +979,30 @@ function dyundo {
 		echo -e "Usage: dyundo <command> [command parameter]\n"
 		echo -e " Note: You can also use 'yum history' directly.\n"
 		echo " Possible commands are:"
-		echo "  --stats:        display various historic stats"
+		#echo "  --stats:        display various historic stats"
 		echo "  --history:      display a list of previous transactions"
 		echo "  --undo <N>:     undo the single transaction with id N"
 		echo "  --rollback <N>: rollback everything up until transaction with id N"
 		return 1
 	fi
 
-	if [ "$1" == "--stats" ]; then
-		$hachreAliasesRoot $(dyYumCmd) history stats
-		return $?
-	fi
+	#if [ "$1" == "--stats" ]; then
+	#	$hachreAliasesRoot $(dyYumCmd) history stats
+	#	return $?
+	#fi
 
 	if [ "$1" == "--history" ]; then
-		$hachreAliasesRoot dyYumCmd history
+		$hachreAliasesRoot $(dyYumCmd) history
 		return $?
 	fi
 
 	if [ "$1" == "--undo" ]; then
-		$hachreAliasesRoot dyYumCmd history undo "$2"
+		$hachreAliasesRoot $(dyYumCmd) history undo "$2"
 		return $?
 	fi
 
 	if [ "$1" == "--rollback" ]; then
-		$hachreAliasesRoot dyYumCmd history rollback "$2"
+		$hachreAliasesRoot $(dyYumCmd) history rollback "$2"
 		return $?
 	fi
 
@@ -1017,7 +1017,7 @@ function dyq {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		$hachreAliasesRoot dyYumCmd info $@
+		$hachreAliasesRoot $(dyYumCmd) info $@
 		return $?
 	fi
 
@@ -1225,10 +1225,10 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot dyYumCmd update
+        $hachreAliasesRoot $(dyYumCmd) update
 		ret="$?"
 		if [ "$?" == "0" ]; then
-			$hachreAliasesRoot dyYumCmd autoremove -y
+			$hachreAliasesRoot $(dyYumCmd) autoremove -y
 		fi
 		return $ret
 	fi
@@ -1263,7 +1263,7 @@ function dyus {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		$hachreAliasesRoot dyYumCmd update --security
+		$hachreAliasesRoot $(dyYumCmd) update --security
 		return $?
 	fi
 
@@ -1388,7 +1388,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot dyYumCmd install $*
+        $hachreAliasesRoot $(dyYumCmd) install $*
 		return $?
 	fi
 
@@ -1559,8 +1559,8 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot dyYumCmd remove $*
-        $hachreAliasesRoot dyYumCmd autoremove -y		
+        $hachreAliasesRoot $(dyYumCmd) remove $*
+        $hachreAliasesRoot $(dyYumCmd) autoremove -y		
 		return $?
 	fi
 
@@ -1648,7 +1648,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot dyYumCmd search $*
+        $hachreAliasesRoot $(dyYumCmd) search $*
 		return $?
 	fi
 
