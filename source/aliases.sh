@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.11
+hachreAliasesVersion=0.119.20170628.12
 
 #
 ### hachreAliases internal stuff
@@ -1937,6 +1937,13 @@ if [ "$?" != "0" ]; then
 				# Prepare the state checker
 				stateknown="false"
 
+				# Check for false positives
+				grep "$serviceName"_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
+				enabled="1"
+				if [ "$?" != "0" ]; then
+					enabled="0"
+				fi
+
 				# Whitelist
 				if [ "$serviceName" == "ip6addrctl" ]; then
 					echook
@@ -1957,6 +1964,9 @@ if [ "$?" != "0" ]; then
 						stateknown="true"
 					fi
 					if [ "$stateknown" != "true" ]; then
+						if [ "$enabled" == "0" ]; then
+							continue
+						fi
 						echofail
 					fi
 				fi
