@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.6
+hachreAliasesVersion=0.119.20170628.7
 
 #
 ### hachreAliases internal stuff
@@ -1931,7 +1931,7 @@ if [ "$?" != "0" ]; then
 				#serviceName=${serviceName/.service/}
 
 				# Find out if it is running
-				state=$(status "$serviceName")
+				state=$(status "$serviceName" 2>&1)
 				#state=${state/SubState=/}
 
 				# Our OK state
