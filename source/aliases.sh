@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.10
+hachreAliasesVersion=0.119.20170628.11
 
 #
 ### hachreAliases internal stuff
@@ -1948,7 +1948,7 @@ if [ "$?" != "0" ]; then
 					if [[ "$state" == *"unknown directive"* ]]; then
 						continue
 					fi
-					if [[ "$state" == *"running"* ]]; then
+					if [[ "$state" == *"is running"* ]]; then
 						echook
 						stateknown="true"
 					fi
@@ -1989,7 +1989,7 @@ if [ "$?" != "0" ]; then
 					if [[ "$state" == *"unknown directive"* ]]; then
 						continue
 					fi
-					if [[ "$state" == *"running"* ]]; then
+					if [[ "$state" == *"is running"* ]]; then
 						echook
 						stateknown="true"
 					fi
@@ -1998,7 +1998,8 @@ if [ "$?" != "0" ]; then
 						stateknown="true"
 					fi
 					if [ "$stateknown" != "true" ]; then
-						echofail
+						continue
+						#echofail
 					fi
 				fi
 
