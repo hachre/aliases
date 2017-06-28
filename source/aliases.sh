@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.120.20170628.14
+hachreAliasesVersion=0.120.20170628.15
 
 #
 ### hachreAliases internal stuff
@@ -1946,7 +1946,9 @@ if [ "$?" != "0" ]; then
 			#find /etc/rc.d -type f >> $tmp
 			#find /usr/local/etc/rc.d -type f >> $tmp
 
-			for service in $(service -e); do
+			enabledServices=$(mktemp)
+			service -e > $enabledServices
+			for service in $(cat $enabledServices); do
 				# Get clean servicename.
 				serviceName=`basename "$service"`
 				#serviceName=${serviceName/.service/}
@@ -2002,6 +2004,11 @@ if [ "$?" != "0" ]; then
 			find /usr/local/etc/rc.d -type f >> $tmp
 			cat $tmp | sort | uniq > $tmp.2
 			mv $tmp.2 $tmp
+
+			for service in $(cat $enabledServices); do
+				cat $tmp | grep -vi "$service" > $tmp.2
+				mv $tmp.2 $tmp
+			done
 			
 			for service in $(cat $tmp); do
 				# Get clean servicename.
@@ -2038,6 +2045,7 @@ if [ "$?" != "0" ]; then
 			done
 
 			rm "$tmp"
+			rm "$enabledServices"
 			IPS="$sIPS"
 		}
 
