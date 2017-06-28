@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.117.20170628.1
+hachreAliasesVersion=0.117.20170628.2
 
 #
 ### hachreAliases internal stuff
@@ -1726,12 +1726,15 @@ if [ "$?" != "0" ]; then
 		fi
 		if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 			initdir="/etc/rc.d"
+			initdir2="/usr/local/etc/rc.d"
 		fi
 
 		function existsScript {
-			if [ ! -f "$initdir/$1" ]; then
-				echo "Error: Given service '$1' not found. Try sfind..."
-				return 1
+			if [ ! -f "$initdir2/$1" ]; then
+				if [ ! -f "$initdir/$1" ]; then
+					echo "Error: Given service '$1' not found. Try sfind..."
+					return 1
+				fi
 			fi
 			return 0
 		}
@@ -1866,6 +1869,7 @@ if [ "$?" != "0" ]; then
 
 		function sfind {
 			sPWD=`pwd`
+
 			cd $initdir
 
 			if [ -z "$1" ]; then
@@ -1874,6 +1878,18 @@ if [ "$?" != "0" ]; then
 			fi
 
 			find . -type f -iname "*$1*"
+
+			if [ ! -z "$initdir2" ]; then
+				cd $initdir2
+
+				if [ -z "$1" ]; then
+					find . -type f
+					return 0
+				fi
+
+				find . -type f -iname "*$1*"				
+			fi
+
 			cd "$sPWD"
 
 			return 0
