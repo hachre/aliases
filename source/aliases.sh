@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.13
+hachreAliasesVersion=0.120.20170628.14
 
 #
 ### hachreAliases internal stuff
@@ -1866,43 +1866,64 @@ if [ "$?" != "0" ]; then
 		}
 
 		function senable {
-			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
-				return 0
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				if [ -z "$1" ]; then
+					echo "Usage: senable [service] (runlevel)"
+					return 1
+				fi
+
+				existsScript "$1" || return $?
+
+				runlevel="default"
+				if [ ! -z "$2" ]; then
+					runlevel="$2"
+				fi
+
+				rc-update add "$1" "$runlevel"
+				return $?
 			fi
 
-			if [ -z "$1" ]; then
-				echo "Usage: senable [service] (runlevel)"
-				return 1
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				echo "$1 has been enabled to run on system startup, but not started right now."
+				grep "$1_enabled" /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != 0 ]; then
+					echo "$1_enable" >> /etc/rc.conf
+				fi
+				gsed -i "/$1_enable/c$1_enable=\"YES\"" /etc/rc.conf
+				return $?
 			fi
 
-			existsScript "$1" || return $?
-
-			runlevel="default"
-			if [ ! -z "$2" ]; then
-				runlevel="$2"
-			fi
-
-			rc-update add "$1" "$runlevel"
+			echo "This command is not supported on your platform."
 		}
 
 		function sdisable {
-			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
-				return 0
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				if [ -z "$1" ]; then
+					echo "Usage: sdisable [service] (runlevel)"
+					return 1
+				fi
+
+				existsScript "$1" || return $?
+
+				runlevel="default"
+				if [ ! -z "$2" ]; then
+					runlevel="$2"
+				fi
+
+				rc-update del "$1" "$runlevel"
 			fi
 
-			if [ -z "$1" ]; then
-				echo "Usage: sdisable [service] (runlevel)"
-				return 1
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				echo "$1 has been disabled to run on system startup, but not stopped right now."
+				grep "$1_enable" /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != 0 ]; then
+					echo "$1_enable" >> /etc/rc.conf
+				fi
+				gsed -i "/$1_enable/c$1_enable=\"NO\"" /etc/rc.conf
+				return $?
 			fi
 
-			existsScript "$1" || return $?
-
-			runlevel="default"
-			if [ ! -z "$2" ]; then
-				runlevel="$2"
-			fi
-
-			rc-update del "$1" "$runlevel"
+			echo "This command is not supported on your platform."
 		}
 
 		function dyFreeBSDsstatus {
