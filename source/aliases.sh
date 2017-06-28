@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.118.20170628.3
+hachreAliasesVersion=0.118.20170628.4
 
 #
 ### hachreAliases internal stuff
@@ -1555,6 +1555,7 @@ function dyr {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
         $hachreAliasesRoot pkg remove $*
+		$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
