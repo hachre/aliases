@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.117.20170627.1
+hachreAliasesVersion=0.117.20170628.1
 
 #
 ### hachreAliases internal stuff
@@ -1504,8 +1504,8 @@ function dyii {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		dyFreeBSDCheckPortUtils
-		#path=`dyFreeBSDResolvePortPath $*`
-		$hachreAliasesRoot portmaster --force-config $*
+		path=`dyFreeBSDResolvePortPath $*`
+		$hachreAliasesRoot portmaster --force-config "$path"
 		return $?
 	fi
 
