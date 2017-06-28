@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.120.20170628.15
+hachreAliasesVersion=0.121.20170629.1
 
 #
 ### hachreAliases internal stuff
@@ -1018,6 +1018,11 @@ function dyq {
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
 		$hachreAliasesRoot $(dyYumCmd) info $@
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		$hachreAliasesRoot pkg info $@ P
 		return $?
 	fi
 
