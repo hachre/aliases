@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.8
+hachreAliasesVersion=0.119.20170628.9
 
 #
 ### hachreAliases internal stuff
@@ -1934,8 +1934,14 @@ if [ "$?" != "0" ]; then
 				state=$(status "$serviceName" 2>&1)
 				#state=${state/SubState=/}
 
-				# Our OK state
+				# Prepare the state checker
 				stateknown="false"
+
+				# Whitelist
+				if [ "$serviceName" == "ip6addrctl" ]; then
+					echook
+					stateknown="true"
+				fi
 
 				# Output the sheet.
 				if [ "$stateknown" != "true" ]; then
