@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.117.20170628.2
+hachreAliasesVersion=0.118.20170628.3
 
 #
 ### hachreAliases internal stuff
@@ -1750,8 +1750,17 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 start
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 start
+			fi
+			
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				serviceCmd="start"
+				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != "0" ]; then
+					serviceCmd="onestart"
+				fi
+				service $1 $serviceCmd
 			fi
 		}
 
@@ -1766,8 +1775,17 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 stop
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 stop
+			fi
+
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				serviceCmd="stop"
+				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != "0" ]; then
+					serviceCmd="onestop"
+				fi
+				service $1 $serviceCmd
 			fi
 		}
 
@@ -1782,8 +1800,17 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 restart
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 restart
+			fi
+
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				serviceCmd="restart"
+				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != "0" ]; then
+					serviceCmd="onerestart"
+				fi
+				service $1 $serviceCmd
 			fi
 		}
 
@@ -1801,6 +1828,15 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 reload
 			fi
+
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				serviceCmd="reload"
+				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != "0" ]; then
+					serviceCmd="onereload"
+				fi
+				service $1 $serviceCmd
+			fi
 		}
 
 		function status {
@@ -1814,8 +1850,17 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ]; then
 				$initdir/$1 status
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
 				service $1 status
+			fi
+
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+				serviceCmd="status"
+				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				if [ "$?" != "0" ]; then
+					serviceCmd="onestatus"
+				fi
+				service $1 $serviceCmd
 			fi
 		}
 
