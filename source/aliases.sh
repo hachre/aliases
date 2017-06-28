@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.12
+hachreAliasesVersion=0.119.20170628.13
 
 #
 ### hachreAliases internal stuff
@@ -1757,7 +1757,7 @@ if [ "$?" != "0" ]; then
 			
 			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 				serviceCmd="start"
-				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				grep -i $1_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				if [ "$?" != "0" ]; then
 					serviceCmd="onestart"
 				fi
@@ -1782,7 +1782,7 @@ if [ "$?" != "0" ]; then
 
 			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 				serviceCmd="stop"
-				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				grep -i $1_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				if [ "$?" != "0" ]; then
 					serviceCmd="onestop"
 				fi
@@ -1807,7 +1807,7 @@ if [ "$?" != "0" ]; then
 
 			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 				serviceCmd="restart"
-				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				grep -i $1_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				if [ "$?" != "0" ]; then
 					serviceCmd="onerestart"
 				fi
@@ -1832,7 +1832,7 @@ if [ "$?" != "0" ]; then
 
 			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 				serviceCmd="reload"
-				grep $1 /etc/rc.conf 1>/dev/null 2>&1
+				grep -i $1_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				if [ "$?" != "0" ]; then
 					serviceCmd="onereload"
 				fi
@@ -1938,8 +1938,8 @@ if [ "$?" != "0" ]; then
 				stateknown="false"
 
 				# Check for false positives
-				grep "$serviceName"_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				enabled="1"
+				grep "$serviceName"_enable=\"YES\" /etc/rc.conf 1>/dev/null 2>&1
 				if [ "$?" != "0" ]; then
 					enabled="0"
 				fi
