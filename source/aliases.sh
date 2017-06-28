@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.118.20170628.4
+hachreAliasesVersion=0.119.20170628.5
 
 #
 ### hachreAliases internal stuff
@@ -1905,12 +1905,74 @@ if [ "$?" != "0" ]; then
 			rc-update del "$1" "$runlevel"
 		}
 
+		function dyFreeBSDsstatus {
+			function echook() {
+				echo -ne " [ `echoGreen OK` ] "
+			}
+			function echofail() {
+				echo -ne " [`echoRed FAIL`] "
+			}
+			function echoexit() {
+				echo -ne " [`echoYellow EXIT`] "
+			}
+
+			sIPS="$IPS"
+			IPS=$'\n'
+
+			echo "Current system status:"
+
+			#tmp=$(mktemp)
+			#find /etc/rc.d -type f >> $tmp
+			#find /usr/local/etc/rc.d -type f >> $tmp
+
+			for service in $(service -e); do
+				# Get clean servicename.
+				serviceName=`basename "$service"`
+				#serviceName=${serviceName/.service/}
+
+				# Find out if it is running
+				state=$(status "$serviceName")
+				#state=${state/SubState=/}
+
+				# Our OK state
+				stateknown="false"
+
+				# Output the sheet.
+				if [ "$stateknown" != "true" ]; then
+					if [[ "$state" == *"unknown directive"* ]]; then
+						continue
+					fi
+					if [[ "$state" == *"running"* ]]; then
+						echook
+						stateknown="true"
+					fi
+					if [[ "$state" == *"exit"* ]]; then
+						echoexit
+						stateknown="true"
+					fi
+					if [ "$stateknown" != "true" ]; then
+						echofail
+					fi
+				fi
+
+				echo "$serviceName"
+			done
+
+			IPS="$sIPS"
+		}
+
 		function sstatus {
-			if [ ! "$dyDetectedDistro" == "gentoo" ]; then
-				return 0
+			if [ "$dyDetectedDistro" == "gentoo" ]; then
+				rc-status
+				return $?
 			fi
 
-			rc-status
+			if [ "$dyDetectedDistro" == "FreeBSD"]; then
+				dyFreeBSDsstatus
+				return $?
+			fi
+
+			echo "This command is not supported on your platform."
 		}
 
 		function sfind {
