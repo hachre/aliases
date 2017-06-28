@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.5
+hachreAliasesVersion=0.119.20170628.6
 
 #
 ### hachreAliases internal stuff
@@ -1967,7 +1967,7 @@ if [ "$?" != "0" ]; then
 				return $?
 			fi
 
-			if [ "$dyDetectedDistro" == "FreeBSD"]; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 				dyFreeBSDsstatus
 				return $?
 			fi
