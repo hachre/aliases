@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.119.20170628.9
+hachreAliasesVersion=0.119.20170628.10
 
 #
 ### hachreAliases internal stuff
@@ -1919,7 +1919,7 @@ if [ "$?" != "0" ]; then
 			sIPS="$IPS"
 			IPS=$'\n'
 
-			echo "Current system status:"
+			echo "Status for enabled services:"
 
 			#tmp=$(mktemp)
 			#find /etc/rc.d -type f >> $tmp
@@ -1964,6 +1964,48 @@ if [ "$?" != "0" ]; then
 				echo "$serviceName"
 			done
 
+			echo "Status for non-enabled services:"
+			
+			tmp=$(mktemp)
+			find /etc/rc.d -type f >> $tmp
+			find /usr/local/etc/rc.d -type f >> $tmp
+			cat $tmp | sort | uniq > $tmp.2
+			mv $tmp.2 $tmp
+			
+			for service in $(cat $tmp); do
+				# Get clean servicename.
+				serviceName=`basename "$service"`
+				#serviceName=${serviceName/.service/}
+
+				# Find out if it is running
+				state=$(status "$serviceName" 2>&1)
+				#state=${state/SubState=/}
+
+				# Prepare the state checker
+				stateknown="false"
+
+				# Output the sheet.
+				if [ "$stateknown" != "true" ]; then
+					if [[ "$state" == *"unknown directive"* ]]; then
+						continue
+					fi
+					if [[ "$state" == *"running"* ]]; then
+						echook
+						stateknown="true"
+					fi
+					if [[ "$state" == *"exit"* ]]; then
+						echoexit
+						stateknown="true"
+					fi
+					if [ "$stateknown" != "true" ]; then
+						echofail
+					fi
+				fi
+
+				echo "$serviceName"
+			done
+
+			rm "$tmp"
 			IPS="$sIPS"
 		}
 
