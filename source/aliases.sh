@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.121.20170629.1
+hachreAliasesVersion=0.122.20170702.1
 
 #
 ### hachreAliases internal stuff
@@ -1064,7 +1064,7 @@ function dyx {
 	fi
 
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        zypper ref -s
+        $hachreAliasesRoot zypper ref -s
 		return $?
 	fi
 
@@ -1142,7 +1142,7 @@ function dyv {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper verify
+		$hachreAliasesRoot zypper verify
 		return $?
 	fi
 
@@ -1201,7 +1201,7 @@ function dyu {
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
         echo "Info: Occasionally you should also manually run 'zypper dup' and be extra careful when you have 3rd party repos enabled."
         #zypper patch -y -l --no-recommends --updatestack-only
-		zypper up -l --no-recommends
+		$hachreAliasesRoot zypper up -l --no-recommends
         #zypper patch -y -l --no-recommends
 		return $?
 	fi
@@ -1257,8 +1257,8 @@ function dyus {
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		echo "Checking and installing security updates only..."
-		zypper patch -l --no-recommends --updatestack-only -y
-	    zypper patch -l --no-recommends -g security -y --replacefiles
+		$hachreAliasesRoot zypper patch -l --no-recommends --updatestack-only -y
+	    $hachreAliasesRoot zypper patch -l --no-recommends -g security -y --replacefiles
 		return $?
 	fi
 
@@ -1321,7 +1321,7 @@ function dyuu {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper in -l --no-recommends $*
+		$hachreAliasesRoot zypper in -l --no-recommends $*
 		return $?
 	fi
 
@@ -1378,7 +1378,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper in -l --no-recommends $*
+		$hachreAliasesRoot zypper in -l --no-recommends $*
 		return $?
 	fi
 
@@ -1427,7 +1427,7 @@ function dyif {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper in -fl --no-recommends $*
+		$hachreAliasesRoot zypper in -fl --no-recommends $*
 		return $?
 	fi
 
@@ -1489,7 +1489,7 @@ function dyii {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        zypper lr packman 1>/dev/null 2>&1
+        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
         if [ "$?" != "0" ]; then
             echo "Error: Packman repo is not installed."
             echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
@@ -1497,13 +1497,13 @@ function dyii {
         fi
 
         # Enable the Packman repo if it is off
-        zypper mr -e packman
+        $hachreAliasesRoot zypper mr -e packman
 
         # Install
-		zypper in -fl --no-recommends $*
+		$hachreAliasesRoot zypper in -fl --no-recommends $*
 
         # Disable the Packman again
-        zypper mr -d packman
+        $hachreAliasesRoot zypper mr -d packman
 		return $?
 	fi
 
@@ -1548,7 +1548,7 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper rm -u $*
+		$hachreAliasesRoot zypper rm -u $*
 		return $?
 	fi
 
@@ -1639,7 +1639,7 @@ function dys {
 	fi
 
    	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		zypper search -s $*
+		$hachreAliasesRoot zypper search -s $*
 		return $?
 	fi
 
@@ -1683,7 +1683,7 @@ function dyss {
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        zypper lr packman 1>/dev/null 2>&1
+        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
         if [ "$?" != "0" ]; then
             echo "Error: Packman repo is not installed."
             echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
@@ -1691,14 +1691,14 @@ function dyss {
         fi
 
         # Enable the Packman repo if it is off
-        zypper mr -e packman
+        $hachreAliasesRoot zypper mr -e packman
 
         # Searching
-        zypper search -s $*
+        $hachreAliasesRoot zypper search -s $*
         val=$?
 
         # Disable the Packman again
-        zypper mr -d packman
+        $hachreAliasesRoot zypper mr -d packman
 
 		return $val
 	fi
