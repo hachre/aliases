@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.122.20170702.2
+hachreAliasesVersion=0.123.20170720.1
 
 #
 ### hachreAliases internal stuff
@@ -785,6 +785,12 @@ function dyDetectDistro {
 		release=$(lsb_release -is)
 		if [ "$release" == "Ubuntu" ]; then
 			dyDetectedDistro="ubuntu"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			return 0
+		fi
+		if [ "$release" == "Debian" ]; then
+			dyDetectedDistro="ubuntu"
+			dyDistroName="Debian"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
