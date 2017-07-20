@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.123.20170720.1
+hachreAliasesVersion=0.123.20170720.2
 
 #
 ### hachreAliases internal stuff
@@ -475,14 +475,14 @@ alias zyporphaned="zyp -q packages --orphaned | cut -d │ -f 3 | sort | uniq | 
 # Ubuntu / Debian Package Management
 #
 
-which apt-get >/dev/null 2>&1
+which apt >/dev/null 2>&1
 if [ "$?" == "0" ]; then
-	alias aga="sudo apt-get autoremove"
-	alias agar="sudo apt-get autoremove"
-	alias agr="sudo apt-get remove"
-	alias agi="sudo apt-get install"
-	alias au="sudo apt-get update"
-	alias adg="sudo apt-get dist-upgrade"
+	alias aga="sudo apt autoremove"
+	alias agar="sudo apt autoremove"
+	alias agr="sudo apt remove"
+	alias agi="sudo apt install"
+	alias au="sudo apt update"
+	alias adg="sudo apt full-upgrade"
 	alias ama="sudo apt-mark auto"
 	alias amh="sudo apt-mark hold"
 	alias amm="sudo apt-mark hold"
@@ -766,7 +766,8 @@ function dyDetectDistro {
 	if [ "$?" == "0" ]; then
 		if [ -f "/mnt/c/Windows/explorer.exe" ]; then
 			dyDetectedDistro="windows"
-			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'."
+			dyDistroName="Ubuntu on Windows"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'."
 			return 0
 		fi
 	fi
@@ -785,13 +786,13 @@ function dyDetectDistro {
 		release=$(lsb_release -is)
 		if [ "$release" == "Ubuntu" ]; then
 			dyDetectedDistro="ubuntu"
-			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
 		if [ "$release" == "Debian" ]; then
 			dyDetectedDistro="ubuntu"
 			dyDistroName="Debian"
-			dyDistroInfo="\n * The native package manager for this distro is called 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
 	fi
@@ -1033,7 +1034,12 @@ function dyq {
 		return $?
 	fi
 
-	echo "This command is not supported on your platform."	
+	if [ "$dyDetectedDistro" == "ubuntu" ]; then
+		apt show $@
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
 }
 
 function dyx {
@@ -1076,7 +1082,7 @@ function dyx {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-        $hachreAliasesRoot apt-get update
+        $hachreAliasesRoot apt update
 		return $?
 	fi
 
@@ -1214,9 +1220,9 @@ function dyu {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt-get update
-		$hachreAliasesRoot apt-get dist-upgrade
-		$hachreAliasesRoot apt-get autoremove
+		$hachreAliasesRoot apt update
+		$hachreAliasesRoot apt full-upgrade
+		$hachreAliasesRoot apt autoremove
 
 		if [ "$dyDetectedDistro" == "windows" ]; then
 			which youtube-dl >/dev/null 2>&1
@@ -1390,7 +1396,7 @@ function dyi {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt-get install $*
+		$hachreAliasesRoot apt install $*
 		return $?
 	fi
 
@@ -1560,8 +1566,8 @@ function dyr {
 	fi
 
    	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt-get remove $*
-		$hachreAliasesRoot apt-get autoremove
+		$hachreAliasesRoot apt remove $*
+		$hachreAliasesRoot apt autoremove
 		return $?
 	fi
 
@@ -1606,7 +1612,7 @@ function dyrf {
 
    	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-get purge $*
-		$hachreAliasesRoot apt-get autoremove
+		$hachreAliasesRoot apt autoremove
 		return $?
 	fi
 
