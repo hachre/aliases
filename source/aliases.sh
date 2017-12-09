@@ -2566,14 +2566,19 @@ alias serve="python -m SimpleHTTPServer 8000"
 
 # AWS
 function awshelp {
-	echo "awssetexpire, awsinvalidate, awsdistribs, awsreset"
+	echo "AWS commands:"
+	echo "awscps - uploads files to S3"
+	echo "awspublish - sets long expires and makes files public"
+	echo "awspublishfull - additionally invalidates CloudFront"
+	echo "awsinvalidate - invalidates CloudFront only"
+	echo "awslsdistribs - find CloudFront ids"
 	return 1
 }
 
-function awssetexpire {
+function awspublish {
 	if [ -z "$1" ]; then
-		echo "Usage: awssetexpire <s3bucketname>"
-		echo "Will add far reaching expire metadata to all files in S3"
+		echo "Usage: awspublish <s3bucketname>"
+		echo "Will add far reaching expire metadata to all files in S3 and make them public."
 		return 1
 	fi
 
@@ -2590,14 +2595,14 @@ function awsinvalidate {
 	aws cloudfront create-invalidation --distribution-id "$1" --paths /\*
 }
 
-function awsdistribs {
-	aws cloudfront list-distributions P
+function awslsdistribs {
+	aws cloudfront list-distributions G id P
 }
 
-function awsreset {
+function awspublishfull {
 	if [ -z "$1" ]; then
-		echo "Usage: awsreset <s3bucketname> <cloudfrontid>"
-		echo "Will execute awssetexpire and then awsinvalidate with given parameters."
+		echo "Usage: awspublishfull <s3bucketname> <cloudfrontid>"
+		echo "Will run awspublish and additionally also invalidate a CloudFront CDN state."
 		return 1
 	fi
 	
