@@ -2593,13 +2593,12 @@ function awsinvalidate {
 		return 1
 	fi
 
-	parameter=" 1>/dev/null 2>&1"
-
+	parameter="/dev/null"
 	if [ "$2" == "--show" ]; then
-		parameter=""
+		parameter="/dev/stdout"
 	fi
 
-	aws cloudfront create-invalidation --distribution-id "$1" --paths /\* $parameter
+	aws cloudfront create-invalidation --distribution-id "$1" --paths /\* >"$parameter"
 	if [ "$?" == "0" ]; then
 		echo "Done!"
 		return 0
