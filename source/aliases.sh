@@ -2642,7 +2642,7 @@ function awscps {
 	fi
 
 	echo "Syncing from '$p1' to '$p2'..."
-	aws s3 sync "$p1" "$p2"
+	aws s3 sync --delete "$p1" "$p2"
 }
 
 function awsit {
