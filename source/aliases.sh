@@ -2605,12 +2605,30 @@ function awsreset {
 	awsinvalidate "$2"
 }
 
-function awssync {
+function awscps {
 	if [ -z "$1" ]; then
-		echo "Usage: awssync <s3bucketname> <localfolder>"
-		echo "Will upload whatever isn't uploaded already to the s3 bucket."
+		echo "Usage: awscps <source> <target>"
+		echo " source / target: can either be a S3 bucket name or a local directory"
+		echo "Will synchronize between source and target similar to rsync (cps)"
 		return 1
 	fi
 	
-	aws s3 sync "$2" s3://"$1"/
+	p1="$1"
+	p2="$2"
+
+	if [[ ! -d "$p1" ] && [ ! -d "$p2" ]]; then
+		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
+		return 1
+	fi 
+
+	if [ -d "$p1" ]; then
+		p2="s3://$p2/"
+	fi
+
+	if [ -d "$p2" ]; then
+		p1="s3://$p1/"
+	fi
+
+	echo "Syncing from '$p1' to '$p2'..."
+	aws s3 sync "$p1" "$p2"
 }
