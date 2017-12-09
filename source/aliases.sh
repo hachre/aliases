@@ -2654,6 +2654,22 @@ function awsit {
 
 	if [ ! -d "$1" ]; then
 		echo "Error: The first parameter has to be a local dir."
+		return 1
+	fi
+
+	if [ -z "$2" ]; then
+		echo "Error: The second parameter has to be a s3 bucket name."
+		return 1
+	fi
+
+	if [ -z "$3" ]; then
+		echo "Error: The third parameter has to be a cloudfront id."
+		return 1
+	fi
+
+	if [ ! -z "$4" ]; then
+		echo "Error: Wrong parameter count. Run 'awsit' without parameters for usage."
+		return 1
 	fi
 
 	awscps "$1" "$2"
