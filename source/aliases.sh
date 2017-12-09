@@ -2563,3 +2563,40 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 # Various
 alias pngcrush="pngcrush -rem allb -brute -reduce"
 alias serve="python -m SimpleHTTPServer 8000"
+
+# AWS
+function awshelp {
+	echo "awssetexpire, awsinvalidate, awsdistribs, awsreset"
+}
+
+function awssetexpire {
+	if [ -z "$1" ]; then
+		echo "Usage: awssetexpire <s3bucketname>"
+		echo "Will add far reaching expire metadata to all files in S3"
+	fi
+
+	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public
+}
+
+function awsinvalidate {
+	if [ -z "$1" ]; then
+		echo "Usage: awsreset <cloudfrontid>"
+		echo "Will invalidate /* on the CloudFront. Use 'awsdistribs' to scan for id."
+	fi
+
+	aws cloudfront create-invalidation --distribution-id "$1" --paths /\*
+}
+
+function awsdistribs {
+	aws cloudfront list-distributions P
+}
+
+function awsreset {
+	if [ -z "$1" ]; then
+		echo "Usage: awsreset <s3bucketname> <cloudfrontid>"
+		echo "Will execute awssetexpire and then awsinvalidate with given parameters."
+	fi
+	
+	awssetexpire "$1"
+	awsinvalidate "$2"
+}
