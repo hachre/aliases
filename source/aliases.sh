@@ -2567,17 +2567,17 @@ alias serve="python -m SimpleHTTPServer 8000"
 # AWS
 function awshelp {
 	echo "AWS commands:"
-	echo "awscps - uploads files to S3"
-	echo "awspublish - sets long expires and makes files public"
-	echo "awspublishfull - additionally invalidates CloudFront"
-	echo "awsinvalidate - invalidates CloudFront only"
-	echo "awslsdistribs - find CloudFront ids"
+	echo "awsit - uploads files to S3, publishes them and invalidates the cache"
+	echo "awscps - uploads/downloads files to/from S3"
+	echo "awspublish - sets long expires and makes files public on S3"
+	echo "awsinvalidate - invalidates the CloudFront cache"
+	echo "awslsdistribs - list possible CloudFront ids"
 	return 1
 }
 
 function awspublish {
 	if [ -z "$1" ]; then
-		echo "Usage: awspublish <s3bucketname>"
+		echo "Usage: awspublish <s3 bucket name>"
 		echo "Will add far reaching expire metadata to all files in S3 and make them public."
 		return 1
 	fi
@@ -2587,27 +2587,30 @@ function awspublish {
 
 function awsinvalidate {
 	if [ -z "$1" ]; then
-		echo "Usage: awsreset <cloudfrontid>"
-		echo "Will invalidate /* on the CloudFront. Use 'awsdistribs' to scan for id."
+		echo "Usage: awsinvalidate <cloudfront id> [--show]"
+		echo " --show: display output of the invalidation request"
+		echo "Will invalidate /* on the CloudFront. Use 'awslsdistribs' to scan for the id."
 		return 1
 	fi
 
-	aws cloudfront create-invalidation --distribution-id "$1" --paths /\*
+	parameter=" 1>/dev/null 2>&1"
+
+	if [ "$2" == "--show" ]; then
+		parameter=""
+	fi
+
+	aws cloudfront create-invalidation --distribution-id "$1" --paths /\* $parameter
+	if [ "$?" == "0" ]; then
+		echo "Done!"
+		return 0
+	fi
+
+	echo "Something went wrong. Please run the command again with '--show' to find out why."
+	return 1
 }
 
 function awslsdistribs {
 	aws cloudfront list-distributions G id P
-}
-
-function awspublishfull {
-	if [ -z "$1" ]; then
-		echo "Usage: awspublishfull <s3bucketname> <cloudfrontid>"
-		echo "Will run awspublish and additionally also invalidate a CloudFront CDN state."
-		return 1
-	fi
-	
-	awssetexpire "$1"
-	awsinvalidate "$2"
 }
 
 function awscps {
@@ -2641,4 +2644,20 @@ function awscps {
 
 	echo "Syncing from '$p1' to '$p2'..."
 	aws s3 sync "$p1" "$p2"
+}
+
+function awsit {
+	if [ -z "$1" ]; then
+		echo "Usage: awsit <local dir> <s3 bucket name> <cloudfront id>"
+		echo "Will run 'awscps' followed by 'awspublish' and 'awsinvalidate'."
+		return 1
+	fi
+
+	if [ ! -d "$1" ]; then
+		echo "Error: The first parameter has to be a local dir."
+	fi
+
+	awscps "$1" "$2"
+	awspublish "$2"
+	awsinvalidate "$3"
 }
