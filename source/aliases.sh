@@ -2604,3 +2604,13 @@ function awsreset {
 	awssetexpire "$1"
 	awsinvalidate "$2"
 }
+
+function awssync {
+	if [ -z "$1" ]; then
+		echo "Usage: awssync <s3bucketname> <localfolder>"
+		echo "Will upload whatever isn't uploaded already to the s3 bucket."
+		return 1
+	fi
+	
+	aws s3 sync "$2" s3://"$1"/
+}
