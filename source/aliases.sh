@@ -2616,6 +2616,11 @@ function awscps {
 	p1="$1"
 	p2="$2"
 
+	if [ "$p1" == "$p2" ]; then
+		echo "Error: <source> and <target> parameter cannot be the same. Please rename the local directory."
+		return 1
+	fi
+
 	if [ ! -d "$p1" ] && [ ! -d "$p2" ]; then
 		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
 		return 1
