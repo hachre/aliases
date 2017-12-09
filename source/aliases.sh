@@ -2616,7 +2616,7 @@ function awscps {
 	p1="$1"
 	p2="$2"
 
-	if [[ ! -d "$p1" ] && [ ! -d "$p2" ]]; then
+	if [ ! -d "$p1" ] && [ ! -d "$p2" ]; then
 		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
 		return 1
 	fi 
