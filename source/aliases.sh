@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.128.20171210.2
+hachreAliasesVersion=0.129.20171210.3
 
 #
 ### hachreAliases internal stuff
@@ -2567,25 +2567,12 @@ alias serve="python -m SimpleHTTPServer 8000"
 # AWS
 function awshelp {
 	echo "AWS commands:"
-	echo "awsit - uploads files to S3, publishes them and invalidates the cache"
-	echo "awscps - uploads/downloads files to/from S3"
-	#echo "awspublish - sets long expires and makes files public on S3"
-	echo "awsinvalidate - invalidates the CloudFront cache"
-	echo "awslsdistribs - list possible CloudFront ids"
+	echo "awsit           uploads files to S3, publishes them and invalidates the cache"
+	echo "awscps          uploads/downloads files to/from S3 and sets dynaloop metadata"
+	echo "awsresetmeta    resets metadata on all objects in S3 to dynaloop defaults"
+	echo "awsinvalidate   invalidates the entire CloudFront cache"
+	echo "awslsdistribs   list possible CloudFront ids"
 	return 1
-}
-
-function awspublish {
-	# Disabled, pending full review of neccessity
-	return 0
-
-	if [ -z "$1" ]; then
-		echo "Usage: awspublish <s3 bucket name>"
-		echo "Will add far reaching expire metadata to all files in S3 and make them public."
-		return 1
-	fi
-
-#	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public
 }
 
 function awsinvalidate {
@@ -2626,6 +2613,22 @@ function awscps {
 	p1="$1"
 	p2="$2"
 
+	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+	defaultOptions="--acl public-read"
+	longCache="--cache-control max-age=2592000,public"
+	shortCache="--cache-control max-age=600,public"
+
+#	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public 
+	if [ "$p2" == "--reset" ]; then
+		echo "Resetting metadata in '$p1' to dynaloop defaults..."
+		aws s3 cps --recursive --metadata-directive REPLACE --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p1"
+		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
+		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
+		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
+		return 0
+	fi
+
+
 	if [ "$p1" == "$p2" ]; then
 		echo "Error: <source> and <target> parameter cannot be the same. Please rename the local directory."
 		return 1
@@ -2645,15 +2648,20 @@ function awscps {
 	fi
 
 	echo "Syncing from '$p1' to '$p2'..."
-	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
-	defaultOptions="--acl public-read"
-	longCache="--cache-control max-age=2592000,public"
-	shortCache="--cache-control max-age=600,public"
-
 	aws s3 sync --delete --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
 	aws s3 sync --delete --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
 	aws s3 sync --delete --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
 	aws s3 sync --delete --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+}
+
+function awsresetmeta {
+	if [ -z "$1" ]; then
+		echo "Usage: awsresetmeta <s3 bucket name>"
+		echo "Will apply the current dynaloop default settings to all metadata on S3."
+		return 1
+	fi
+
+	awscps "$1" --reset
 }
 
 function awsit {
