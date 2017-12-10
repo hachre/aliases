@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.129.20171210.4
+hachreAliasesVersion=0.130.20171210.5
 
 #
 ### hachreAliases internal stuff
@@ -2634,6 +2634,7 @@ function awscps {
 	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
 	defaultOptions="--acl public-read"
 	longCache="--cache-control max-age=2592000,public"
+	midCache="--cache-control max-age=6000,public"
 	shortCache="--cache-control max-age=600,public"
 
 	resetCmd="aws s3 cps --recursive --metadata-directive REPLACE"
@@ -2651,8 +2652,8 @@ function awscps {
 		
 	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
 	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
-	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
-	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$p1" "$p2"
+	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$p1" "$p2"
 }
 
 function awsresetmeta {
