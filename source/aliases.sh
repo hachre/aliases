@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.129.20171210.3
+hachreAliasesVersion=0.129.20171210.4
 
 #
 ### hachreAliases internal stuff
@@ -2613,28 +2613,12 @@ function awscps {
 	p1="$1"
 	p2="$2"
 
-	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
-	defaultOptions="--acl public-read"
-	longCache="--cache-control max-age=2592000,public"
-	shortCache="--cache-control max-age=600,public"
-
-#	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public 
-	if [ "$p2" == "--reset" ]; then
-		echo "Resetting metadata in '$p1' to dynaloop defaults..."
-		aws s3 cps --recursive --metadata-directive REPLACE --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p1"
-		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
-		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
-		aws s3 cps --recursive --metadata-directive REPLACE --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p1"
-		return 0
-	fi
-
-
 	if [ "$p1" == "$p2" ]; then
 		echo "Error: <source> and <target> parameter cannot be the same. Please rename the local directory."
 		return 1
 	fi
 
-	if [ ! -d "$p1" ] && [ ! -d "$p2" ]; then
+	if [ ! -d "$p1" ] && [ ! -d "$p2" ] || [ "$p2" != "--reset" ]; then
 		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
 		return 1
 	fi 
@@ -2647,11 +2631,28 @@ function awscps {
 		p1="s3://$p1/"
 	fi
 
-	echo "Syncing from '$p1' to '$p2'..."
-	aws s3 sync --delete --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+	defaultOptions="--acl public-read"
+	longCache="--cache-control max-age=2592000,public"
+	shortCache="--cache-control max-age=600,public"
+
+	resetCmd="aws s3 cps --recursive --metadata-directive REPLACE"
+	syncCmd="aws s3 sync --delete"
+	cmd=""
+
+	if [ "$p2" == "--reset" ]; then
+		echo "Resetting metadata in '$p1' to dynaloop defaults..."
+		cmd=${resetCmd}
+		p2="$p1"
+	else
+		echo "Syncing from '$p1' to '$p2'..."
+		cmd=${syncCmd}
+	fi
+		
+	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
+	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
 }
 
 function awsresetmeta {
