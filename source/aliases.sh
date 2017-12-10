@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.130.20171210.7
+hachreAliasesVersion=0.130.20171210.8
 
 #
 ### hachreAliases internal stuff
@@ -2621,7 +2621,7 @@ function awscps {
 	if [ ! -d "$p1" ] && [ ! -d "$p2" ] && [ "$p2" != "--reset" ]; then
 		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
 		return 1
-	fi 
+	fi
 
 	if [ -d "$p1" ]; then
 		p2="s3://$p2/"
@@ -2641,15 +2641,16 @@ function awscps {
 	syncCmd="aws s3 sync --delete"
 	cmd=""
 
-	if [ "$p2" == "--reset" ]; then
+	if [ "$2" == "--reset" ]; then
 		echo "Resetting metadata in '$p1' to dynaloop defaults..."
 		cmd=${resetCmd}
+		p1="s3://$p1/"
 		p2="$p1"
 	else
 		echo "Syncing from '$p1' to '$p2'..."
 		cmd=${syncCmd}
 	fi
-		
+
 	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
 	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
 	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$p1" "$p2"
