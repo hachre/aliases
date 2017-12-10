@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.127.20171210.1
+hachreAliasesVersion=0.128.20171210.2
 
 #
 ### hachreAliases internal stuff
@@ -2645,12 +2645,15 @@ function awscps {
 	fi
 
 	echo "Syncing from '$p1' to '$p2'..."
-	defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+	defaultOptions="--acl public-read"
+	longCache="--cache-control max-age=2592000,public"
+	shortCache="--cache-control max-age=600,public"
 
-	aws s3 sync --delete --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} "$p1" "$p2"
-	aws s3 sync --delete --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} "$p1" "$p2"
+	aws s3 sync --delete --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
 }
 
 function awsit {
