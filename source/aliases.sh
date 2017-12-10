@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.127.20171209.9
+hachreAliasesVersion=0.127.20171210.1
 
 #
 ### hachreAliases internal stuff
@@ -2569,20 +2569,23 @@ function awshelp {
 	echo "AWS commands:"
 	echo "awsit - uploads files to S3, publishes them and invalidates the cache"
 	echo "awscps - uploads/downloads files to/from S3"
-	echo "awspublish - sets long expires and makes files public on S3"
+	#echo "awspublish - sets long expires and makes files public on S3"
 	echo "awsinvalidate - invalidates the CloudFront cache"
 	echo "awslsdistribs - list possible CloudFront ids"
 	return 1
 }
 
 function awspublish {
+	# Disabled, pending full review of neccessity
+	return 0
+
 	if [ -z "$1" ]; then
 		echo "Usage: awspublish <s3 bucket name>"
 		echo "Will add far reaching expire metadata to all files in S3 and make them public."
 		return 1
 	fi
 
-	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public
+#	aws s3 cp s3://"$1"/ s3://"$1"/ --recursive --metadata-directive REPLACE --expires 2034-01-01T00:00:00Z --acl public-read --cache-control max-age=2592000,public
 }
 
 function awsinvalidate {
@@ -2619,7 +2622,7 @@ function awscps {
 		echo "Will synchronize between source and target similar to rsync (cps)"
 		return 1
 	fi
-	
+
 	p1="$1"
 	p2="$2"
 
@@ -2642,7 +2645,12 @@ function awscps {
 	fi
 
 	echo "Syncing from '$p1' to '$p2'..."
-	aws s3 sync --delete "$p1" "$p2"
+	defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+
+	aws s3 sync --delete --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} "$p1" "$p2"
+	aws s3 sync --delete --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} "$p1" "$p2"
 }
 
 function awsit {
@@ -2673,6 +2681,6 @@ function awsit {
 	fi
 
 	awscps "$1" "$2"
-	awspublish "$2"
+	#awspublish "$2"
 	awsinvalidate "$3"
 }
