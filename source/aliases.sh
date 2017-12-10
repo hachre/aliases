@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.130.20171210.9
+hachreAliasesVersion=0.130.20171210.10
 
 #
 ### hachreAliases internal stuff
@@ -2634,7 +2634,7 @@ function awscps {
 	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
 	defaultOptions="--acl public-read"
 	longCache="--cache-control max-age=2592000,public"
-	midCache="--cache-control max-age=3600,public"
+	midCache="--cache-control max-age=3720,public"
 	shortCache="--cache-control max-age=600,public"
 
 	resetCmd="aws s3 cp --recursive --metadata-directive REPLACE"
