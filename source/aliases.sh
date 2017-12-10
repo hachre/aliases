@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.130.20171210.10
+hachreAliasesVersion=0.131.20171211.1
 
 #
 ### hachreAliases internal stuff
@@ -2603,58 +2603,135 @@ function awslsdistribs {
 }
 
 function awscps {
-	if [ -z "$1" ]; then
-		echo "Usage: awscps <source> <target>"
-		echo " source / target: can either be a S3 bucket name or a local directory"
-		echo "Will synchronize between source and target similar to rsync (cps)"
+	function show_help {
+		echo "Usage: awscps [options] <source> <target>"
+		echo "Synchronize files between a source and target, for use with S3."
+		echo ""
+		echo " Positional parameters:"
+		echo "  source:      either a local directory or S3 bucket name"
+		echo "  target:      either a local directory or S3 bucket name"
+		echo ""
+		echo " Options:"
+		echo "  -w, --web:   assigns dynaloop metadata defaults for S3 webhosting during upload"
+		echo "  -r, --reset: implies --web, updates metadata on existing S3 bucket for webhosting"
+	}
+
+	# http://mywiki.wooledge.org/BashFAQ/035
+	# Parse the parameters
+	if [ -z "$1" ]; then show_help; return; fi
+	source=""
+	target=""
+	demovalue=""
+	reset=0
+	web=0
+	while :; do
+  	case $1 in
+	    -h|-\?|--help)
+  	    show_help
+  	    return
+  	    ;;
+			# Example of a parameter with a value
+			-d|--demo)
+				if [ "$2" ]; then
+					demovalue="$2"
+					shift
+				else
+					show_help
+					echo -e "\nError: --demo requires a non-empty parameter."
+					return
+				fi
+				;;
+			-r|--reset)
+				reset=1
+				web=1
+				;;
+			-w|--web)
+				web=1
+				;;
+			--)
+  	    shift
+        break
+	      ;;
+  	  -?*)
+				show_help
+    	  echo -e "\nError: Unknown parameter: '$1'" >&2
+				return
+    	  ;;
+      *)
+				# Whatever parameters are left and not starting with any of the above are out source and target parameters.
+				source="$1"
+				target="$2"
+				if [ ! -z "$3" ]; then
+					show_help
+					echo -e "\nError: Too many positional parameters. Expected two: 'source' and 'target'."
+					return
+				fi
+      	break
+  	esac
+	shift
+  done
+
+	function debug_parameters() {
+		echo "source: $source"
+		echo "target: $target"
+		echo "demovalue: $demovalue"
+		echo "reset: $reset"
+		echo "web: $web"
+	}
+	#debug_parameters
+
+	# Parameter validation
+	if [ $reset == 1 ]; then
+		target="null"
+	fi
+	if [ ! "$source" ] || [ ! "$target" ]; then
+		show_help
+		echo -e "\nError: Both a 'source' and 'target' value are mandatory."
+		return
+	fi
+
+	# Detect whether source or target is the local dir.
+	if [ ! -d "$source" ] && [ ! -d "$target" ] && [ $reset != 1 ]; then
+		show_help
+		echo -e "\nError: Both 'source' and 'target' aren't local directories. One has to be a S3 bucket name, one has to be a local directory. Cannot proceed."
 		return 1
 	fi
-
-	p1="$1"
-	p2="$2"
-
-	if [ "$p1" == "$p2" ]; then
-		echo "Error: <source> and <target> parameter cannot be the same. Please rename the local directory."
-		return 1
+	if [ -d "$source" ]; then
+		target="s3://$target/"
 	fi
 
-	if [ ! -d "$p1" ] && [ ! -d "$p2" ] && [ "$p2" != "--reset" ]; then
-		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
-		return 1
+	if [ -d "$target" ]; then
+		source="s3://$source/"
 	fi
 
-	if [ -d "$p1" ]; then
-		p2="s3://$p2/"
-	fi
-
-	if [ -d "$p2" ]; then
-		p1="s3://$p1/"
-	fi
-
-	#defaultOptions="--acl public-read --expires 2034-01-01T00:00:00Z --cache-control max-age=2592000,public"
+	# Defaults for dynaloop web hosting metadata
 	defaultOptions="--acl public-read"
 	longCache="--cache-control max-age=2592000,public"
 	midCache="--cache-control max-age=3720,public"
 	shortCache="--cache-control max-age=600,public"
 
+	# Command templates depending on whether -r is given or not.
 	resetCmd="aws s3 cp --recursive --metadata-directive REPLACE"
 	syncCmd="aws s3 sync --delete"
 	cmd=""
 
-	if [ "$2" == "--reset" ]; then
-		echo "Resetting metadata in '$p1' to dynaloop defaults..."
+	# Execute the commands
+	if [ $reset == 1 ]; then
+		echo "Resetting metadata in '$source' to dynaloop web hosting defaults..."
 		cmd=${resetCmd}
-		p1="s3://$p1/"
-		p2="$p1"
+		source="s3://$source/"
+		target="$source"
 	else
-		echo "Syncing from '$p1' to '$p2'..."
+		echo "Syncing from '$source' to '$target'..."
 		cmd=${syncCmd}
 	fi
 
-	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$p1" "$p2"
-	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$p1" "$p2"
-	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$p1" "$p2"
-	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$p1" "$p2"
+	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$source" "$target"
+	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$source" "$target"
+	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
+	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
+
+	echo "All done :)"
 }
 
 function awsresetmeta {
