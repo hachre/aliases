@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.130.20171210.5
+hachreAliasesVersion=0.130.20171210.6
 
 #
 ### hachreAliases internal stuff
@@ -2618,7 +2618,7 @@ function awscps {
 		return 1
 	fi
 
-	if [ ! -d "$p1" ] && [ ! -d "$p2" ] || [ "$p2" != "--reset" ]; then
+	if [ ! -d "$p1" ] && [ ! -d "$p2" ] && [ "$p2" != "--reset" ]; then
 		echo "Error: Both <source> as well as <target> are not local directories. Can't proceed."
 		return 1
 	fi 
