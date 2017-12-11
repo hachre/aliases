@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.132.20171211.3
+hachreAliasesVersion=0.132.20171211.4
 
 #
 ### hachreAliases internal stuff
@@ -2567,7 +2567,7 @@ alias serve="python -m SimpleHTTPServer 8000"
 # AWS
 function awshelp {
 	echo "AWS commands:"
-	echo "awscps:    cps for S3, metadata reset, CloudFlare invalidation master tool"
+	echo "awscps:    cps for S3, metadata reset, CloudFront invalidation master tool"
 	echo "awsreset:  reset existing S3 metadata to dynaloop webhosting defaults (awscps shortcut)"
 	echo "awscfi:    invalidate (clear) CloudFront caches (awscps shortcut)"
 	echo "awscfls:   list all available CloudFront ids"
@@ -2804,6 +2804,7 @@ function awsreset {
 	if [ -z "$1" ]; then
 		echo "Usage: awsreset <s3bucketname> [cloudfrontid]"
 		echo "Will reset metadata on 's3bucketname' and also invalidate CloudFront if 'cloudfrontid' was given."
+		return
 	fi
 	if [ ! -z "$2" ]; then
 		awscps -r -w -I "$2" "$1"
