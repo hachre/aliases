@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.132.20171211.7
+hachreAliasesVersion=0.132.20171211.8
 
 #
 ### hachreAliases internal stuff
@@ -2605,11 +2605,11 @@ function awscps {
 	reset=0
 	web=0
 	while :; do
-  		case $1 in
+		case $1 in
 		-h|-\?|--help)
-  	    	show_help
-  	    	return
-  	    	;;
+			show_help
+			return
+			;;
 		-i|--invalidate)
 			if [ "$2" ]; then
 				cloudfrontid="$2"
@@ -2638,12 +2638,12 @@ function awscps {
 			web=1
 			;;
 		--)
-  		    shift
-    	    break
+			shift
+			break
 			;;
 		-?*)
 			show_help
-    	  	echo -e "\nError: Unknown parameter: '$1'" >&2
+			echo -e "\nError: Unknown parameter: '$1'" >&2
 			return
 			;;
 		*)
@@ -2655,7 +2655,7 @@ function awscps {
 				echo -e "\nError: Too many positional parameters. Expected two: 'source' and 'target'."
 				return
 			fi
-	    	break
+			break
 		esac
 	shift
 	done
