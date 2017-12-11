@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.132.20171211.4
+hachreAliasesVersion=0.132.20171211.5
 
 #
 ### hachreAliases internal stuff
@@ -2807,7 +2807,7 @@ function awsreset {
 		return
 	fi
 	if [ ! -z "$2" ]; then
-		awscps -r -w -I "$2" "$1"
+		awscps -r -w -i "$2" "$1"
 		return
 	fi
 	awscps -r -w "$1"
