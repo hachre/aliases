@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.132.20171211.6
+hachreAliasesVersion=0.132.20171211.7
 
 #
 ### hachreAliases internal stuff
@@ -2605,60 +2605,60 @@ function awscps {
 	reset=0
 	web=0
 	while :; do
-  	case $1 in
-	    -h|-\?|--help)
-  	    show_help
-  	    return
-  	    ;;
-			-i|--invalidate)
-				if [ "$2" ]; then
-					cloudfrontid="$2"
-					shift
-				else
-					show_help
-					echo -e "\nError: -i|--invalidate requires a non-empty parameter 'cloudfrontid'."
-					return
-				fi
-				;;
-			-I|--invalidate-only)
-				if [ "$2" ]; then
-					cloudfrontid="$2"
-					invalidateonly=1
-					shift
-				else
-					show_help
-					echo -e "\nError: -I|--invalidate-only requires a non-empty parameter 'cloudfrontid'."
-					return
-				fi
-				;;
-			-r|--reset)
-				reset=1
-				;;
-			-w|--web)
-				web=1
-				;;
-			--)
-  	    shift
-        break
-	      ;;
-  	  -?*)
+  		case $1 in
+		-h|-\?|--help)
+  	    	show_help
+  	    	return
+  	    	;;
+		-i|--invalidate)
+			if [ "$2" ]; then
+				cloudfrontid="$2"
+				shift
+			else
 				show_help
-    	  echo -e "\nError: Unknown parameter: '$1'" >&2
+				echo -e "\nError: -i|--invalidate requires a non-empty parameter 'cloudfrontid'."
 				return
-    	  ;;
-      *)
-				# Whatever parameters are left and not starting with any of the above are out source and target parameters.
-				source="$1"
-				target="$2"
-				if [ ! -z "$3" ]; then
-					show_help
-					echo -e "\nError: Too many positional parameters. Expected two: 'source' and 'target'."
-					return
-				fi
-      	break
-  	esac
+			fi
+			;;
+		-I|--invalidate-only)
+			if [ "$2" ]; then
+				cloudfrontid="$2"
+				invalidateonly=1
+				shift
+			else
+				show_help
+				echo -e "\nError: -I|--invalidate-only requires a non-empty parameter 'cloudfrontid'."
+				return
+			fi
+			;;
+		-r|--reset)
+			reset=1
+			;;
+		-w|--web)
+			web=1
+			;;
+		--)
+  		    shift
+    	    break
+			;;
+		-?*)
+			show_help
+    	  	echo -e "\nError: Unknown parameter: '$1'" >&2
+			return
+			;;
+		*)
+			# Whatever parameters are left and not starting with any of the above are out source and target parameters.
+			source="$1"
+			target="$2"
+			if [ ! -z "$3" ]; then
+				show_help
+				echo -e "\nError: Too many positional parameters. Expected two: 'source' and 'target'."
+				return
+			fi
+	    	break
+		esac
 	shift
-  done
+	done
 
 	function debug_parameters() {
 		echo "source: $source"
