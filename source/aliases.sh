@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.131.20171211.2
+hachreAliasesVersion=0.132.20171211.3
 
 #
 ### hachreAliases internal stuff
@@ -2706,6 +2706,10 @@ function awscps {
 		fi
 		if [ ! "$source" ] || [ ! "$target" ]; then
 			show_help
+			if [ $reset == 1 ]; then
+				echo -e "\nError: You need to define the S3 bucket name as 'source'"
+				return 1337
+			fi
 			echo -e "\nError: Both a 'source' and 'target' value are mandatory."
 			return 1337
 		fi
@@ -2797,5 +2801,13 @@ function awscfi {
 }
 
 function awsreset {
+	if [ -z "$1" ]; then
+		echo "Usage: awsreset <s3bucketname> [cloudfrontid]"
+		echo "Will reset metadata on 's3bucketname' and also invalidate CloudFront if 'cloudfrontid' was given."
+	fi
+	if [ ! -z "$2" ]; then
+		awscps -r -w -I "$2" "$1"
+		return
+	fi
 	awscps -r -w "$1"
 }
