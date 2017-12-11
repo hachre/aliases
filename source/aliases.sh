@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.131.20171211.1
+hachreAliasesVersion=0.131.20171211.2
 
 #
 ### hachreAliases internal stuff
@@ -2567,11 +2567,10 @@ alias serve="python -m SimpleHTTPServer 8000"
 # AWS
 function awshelp {
 	echo "AWS commands:"
-	echo "awsit           uploads files to S3, publishes them and invalidates the cache"
-	echo "awscps          uploads/downloads files to/from S3 and sets dynaloop metadata"
-	echo "awsresetmeta    resets metadata on all objects in S3 to dynaloop defaults"
-	echo "awsinvalidate   invalidates the entire CloudFront cache"
-	echo "awslsdistribs   list possible CloudFront ids"
+	echo "awscps:    cps for S3, metadata reset, CloudFlare invalidation master tool"
+	echo "awsreset:  reset existing S3 metadata to dynaloop webhosting defaults (awscps shortcut)"
+	echo "awscfi:    invalidate (clear) CloudFront caches (awscps shortcut)"
+	echo "awscfls:   list all available CloudFront ids"
 	return 1
 }
 
@@ -2598,22 +2597,25 @@ function awsinvalidate {
 	return 1
 }
 
-function awslsdistribs {
-	aws cloudfront list-distributions G id P
-}
-
 function awscps {
 	function show_help {
-		echo "Usage: awscps [options] <source> <target>"
+		echo "Usage: awscps [options] [-i|--invalidate or -I|--invalidate-only <cloudfrontid>] <source> <target>"
 		echo "Synchronize files between a source and target, for use with S3."
 		echo ""
 		echo " Positional parameters:"
-		echo "  source:      either a local directory or S3 bucket name"
-		echo "  target:      either a local directory or S3 bucket name"
+		echo "  source:       either a local directory or S3 bucket name"
+		echo "  target:       either a local directory or S3 bucket name"
+		echo ""
+		echo " Named parameters:"
+		echo "  -i,"
+		echo "  --invalidate:       invalidates CloudFront after finish sync operation (requires <cloudfrontid>)"
+		echo "                      to find the <cloudfrontid>, try 'awscfls' (aws cloudfront ls)"
+		echo "  -I,"
+		echo "  --invalidate-only:  same as -i|--invalidate, but no syncing operation will be attempted"
 		echo ""
 		echo " Options:"
-		echo "  -w, --web:   assigns dynaloop metadata defaults for S3 webhosting during upload"
-		echo "  -r, --reset: implies --web, updates metadata on existing S3 bucket for webhosting"
+		echo "  -w, --web:    assigns dynaloop webhosting defaults to S3 metadata during upload"
+		echo "  -r, --reset:  resets already existing S3 metadata to dynaloop defaults (use with -w|--web)"
 	}
 
 	# http://mywiki.wooledge.org/BashFAQ/035
@@ -2621,7 +2623,8 @@ function awscps {
 	if [ -z "$1" ]; then show_help; return; fi
 	source=""
 	target=""
-	demovalue=""
+	cloudfrontid=0
+	invalidateonly=0
 	reset=0
 	web=0
 	while :; do
@@ -2630,20 +2633,29 @@ function awscps {
   	    show_help
   	    return
   	    ;;
-			# Example of a parameter with a value
-			-d|--demo)
+			-i|--invalidate)
 				if [ "$2" ]; then
-					demovalue="$2"
+					cloudfrontid="$2"
 					shift
 				else
 					show_help
-					echo -e "\nError: --demo requires a non-empty parameter."
+					echo -e "\nError: -i|--invalidate requires a non-empty parameter 'cloudfrontid'."
+					return
+				fi
+				;;
+			-I|--invalidate-only)
+				if [ "$2" ]; then
+					cloudfrontid="$2"
+					invalidateonly=1
+					shift
+				else
+					show_help
+					echo -e "\nError: -I|--invalidate-only requires a non-empty parameter 'cloudfrontid'."
 					return
 				fi
 				;;
 			-r|--reset)
 				reset=1
-				web=1
 				;;
 			-w|--web)
 				web=1
@@ -2674,104 +2686,116 @@ function awscps {
 	function debug_parameters() {
 		echo "source: $source"
 		echo "target: $target"
-		echo "demovalue: $demovalue"
+		echo "cloudfrontid: $cloudfrontid"
 		echo "reset: $reset"
 		echo "web: $web"
 	}
 	#debug_parameters
 
-	# Parameter validation
-	if [ $reset == 1 ]; then
-		target="null"
+	function sync {
+		# Parameter validation
+		if [ $reset == 1 ]; then
+			if [ $web != 1 ]; then
+				show_help
+				echo -e "\nError: Giving '-r|--reset' without '-w|--web' makes no sense. Please give both if you really want to reset."
+				return 1337
+			fi
+			if [ ! "$target" ]; then
+				target="null"
+			fi
+		fi
+		if [ ! "$source" ] || [ ! "$target" ]; then
+			show_help
+			echo -e "\nError: Both a 'source' and 'target' value are mandatory."
+			return 1337
+		fi
+
+		# Detect whether source or target is the local dir.
+		if [ ! -d "$source" ] && [ ! -d "$target" ] && [ $reset != 1 ]; then
+			show_help
+			echo -e "\nError: Both 'source' and 'target' aren't local directories. One has to be a S3 bucket name, one has to be a local directory. Cannot proceed."
+			return 1337
+		fi
+		s3target=0
+		if [ -d "$source" ]; then
+			target="s3://$target/"
+			s3target="$target"
+		fi
+
+		if [ -d "$target" ]; then
+			source="s3://$source/"
+			s3target="$source"
+		fi
+
+		# Defaults for dynaloop web hosting metadata
+		defaultOptions="--acl public-read"
+		longCache="--cache-control max-age=2592000,public"
+		midCache="--cache-control max-age=3720,public"
+		shortCache="--cache-control max-age=600,public"
+
+		# Command templates depending on whether -r is given or not.
+		resetCmd="aws s3 cp --recursive --metadata-directive REPLACE"
+		syncCmd="aws s3 sync --delete"
+		cmd=""
+
+		# Execute the commands
+		if [ $reset == 1 ]; then
+			echo "Resetting metadata in '$source' to dynaloop web hosting defaults..."
+			cmd=${resetCmd}
+
+			# If we have no 's3target' at this point, it means the target is 'source' but not converted to s3 yet.
+			if [ "$s3target" == 0 ]; then
+				s3target="s3://$source/"
+			fi
+
+			source="$s3target"
+			target="$s3target"
+		else
+			echo "Syncing from '$source' to '$target'..."
+			cmd=${syncCmd}
+		fi
+
+		${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$source" "$target"
+		${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$source" "$target"
+		${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
+		${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
+	}
+
+	# Proceed with syncing or resetting metadata, unless a -I|--invalidate-only parameter has been given.
+	if [ "$invalidateonly" != 1 ]; then
+		sync
+
+		# If we receive signal 1337 from inside the function, we need to exit.
+		if [ "$?" == "1337" ]; then
+			return 1
+		fi
 	fi
-	if [ ! "$source" ] || [ ! "$target" ]; then
-		show_help
-		echo -e "\nError: Both a 'source' and 'target' value are mandatory."
-		return
+
+	# Invalidate CloudFront, if an id has been given.
+	if [ "$cloudfrontid" != 0 ]; then
+		tmpfile=$(mktemp)
+		echo "Invalidating CloudFront cache for id '$cloudfrontid'..."
+		aws cloudfront create-invalidation --distribution-id "$cloudfrontid" --paths /\* >"$tmpfile"
+		if [ "$?" != "0" ]; then
+			cat "$tmpfile"
+			rm "$tmpfile"
+			return 1
+		fi
+		rm "$tmpfile"
 	fi
 
-	# Detect whether source or target is the local dir.
-	if [ ! -d "$source" ] && [ ! -d "$target" ] && [ $reset != 1 ]; then
-		show_help
-		echo -e "\nError: Both 'source' and 'target' aren't local directories. One has to be a S3 bucket name, one has to be a local directory. Cannot proceed."
-		return 1
-	fi
-	if [ -d "$source" ]; then
-		target="s3://$target/"
-	fi
-
-	if [ -d "$target" ]; then
-		source="s3://$source/"
-	fi
-
-	# Defaults for dynaloop web hosting metadata
-	defaultOptions="--acl public-read"
-	longCache="--cache-control max-age=2592000,public"
-	midCache="--cache-control max-age=3720,public"
-	shortCache="--cache-control max-age=600,public"
-
-	# Command templates depending on whether -r is given or not.
-	resetCmd="aws s3 cp --recursive --metadata-directive REPLACE"
-	syncCmd="aws s3 sync --delete"
-	cmd=""
-
-	# Execute the commands
-	if [ $reset == 1 ]; then
-		echo "Resetting metadata in '$source' to dynaloop web hosting defaults..."
-		cmd=${resetCmd}
-		source="s3://$source/"
-		target="$source"
-	else
-		echo "Syncing from '$source' to '$target'..."
-		cmd=${syncCmd}
-	fi
-
-	${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$source" "$target"
-	${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$source" "$target"
-	${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
-	${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
-
+	# Finally done!
 	echo "All done :)"
 }
 
-function awsresetmeta {
-	if [ -z "$1" ]; then
-		echo "Usage: awsresetmeta <s3 bucket name>"
-		echo "Will apply the current dynaloop default settings to all metadata on S3."
-		return 1
-	fi
-
-	awscps "$1" --reset
+function awscfls {
+	aws cloudfront list-distributions G id P
 }
 
-function awsit {
-	if [ -z "$1" ]; then
-		echo "Usage: awsit <local dir> <s3 bucket name> <cloudfront id>"
-		echo "Will run 'awscps' followed by 'awspublish' and 'awsinvalidate'."
-		return 1
-	fi
+function awscfi {
+	awscps -I "$1"
+}
 
-	if [ ! -d "$1" ]; then
-		echo "Error: The first parameter has to be a local dir."
-		return 1
-	fi
-
-	if [ -z "$2" ]; then
-		echo "Error: The second parameter has to be a s3 bucket name."
-		return 1
-	fi
-
-	if [ -z "$3" ]; then
-		echo "Error: The third parameter has to be a cloudfront id."
-		return 1
-	fi
-
-	if [ ! -z "$4" ]; then
-		echo "Error: Wrong parameter count. Run 'awsit' without parameters for usage."
-		return 1
-	fi
-
-	awscps "$1" "$2"
-	#awspublish "$2"
-	awsinvalidate "$3"
+function awsreset {
+	awscps -r -w "$1"
 }
