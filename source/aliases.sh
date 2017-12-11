@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.132.20171211.5
+hachreAliasesVersion=0.132.20171211.6
 
 #
 ### hachreAliases internal stuff
@@ -2571,29 +2571,6 @@ function awshelp {
 	echo "awsreset:  reset existing S3 metadata to dynaloop webhosting defaults (awscps shortcut)"
 	echo "awscfi:    invalidate (clear) CloudFront caches (awscps shortcut)"
 	echo "awscfls:   list all available CloudFront ids"
-	return 1
-}
-
-function awsinvalidate {
-	if [ -z "$1" ]; then
-		echo "Usage: awsinvalidate <cloudfront id> [--show]"
-		echo " --show: display output of the invalidation request"
-		echo "Will invalidate /* on the CloudFront. Use 'awslsdistribs' to scan for the id."
-		return 1
-	fi
-
-	parameter="/dev/null"
-	if [ "$2" == "--show" ]; then
-		parameter="/dev/stdout"
-	fi
-
-	aws cloudfront create-invalidation --distribution-id "$1" --paths /\* >"$parameter"
-	if [ "$?" == "0" ]; then
-		echo "Done!"
-		return 0
-	fi
-
-	echo "Something went wrong. Please run the command again with '--show' to find out why."
 	return 1
 }
 
