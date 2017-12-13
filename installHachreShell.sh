@@ -6,20 +6,15 @@ rm install.sh
 source /usr/local/hachre/aliases/source/aliases.sh
 
 dyx
-dyi -y git
-dyi -y zsh
-dyi -y byobu
-dyi -y mosh
-dyi -y htop
-dyi -y zstd
+dyi -y git zsh byobu mosh htop zstd
 rehash 1>/dev/null 2>&1
 
 cd /usr/local/hachre/aliases
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
 cd /tmp
-wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.zstd
-zstd -d root-skel.tar.zstd && rm root-skel.tar.zstd
+wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.zst
+zstd -d root-skel.tar.zst && rm root-skel.tar.zst
 cd /root
 tar xvf /tmp/root-skel.tar
 rm /tmp/root-skel.tar
