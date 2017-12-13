@@ -1,40 +1,32 @@
 #!/bin/bash
 
-wget -O hachretmp.sh https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh
-if [ "$?" != "0" ]; then
-        echo "Something went wrong while downloading the hachreShell prequisites."
-        exit 1
-fi
-source hachretmp.sh
-rm hachretmp.sh
+wget -Oq install.sh https://raw.githubusercontent.com/hachre/aliases/master/install.sh
+bash install.sh
+rm install.sh
+source /usr/local/hachre/aliases/source/aliases.sh
 
 dyx
 dyi -y git
 dyi -y zsh
 dyi -y byobu
 dyi -y mosh
-
-curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
-if [ -f "$HOME/.zshrc" ]; then
-        rm "$HOME/.zshrc" 1>/dev/null 2>&1
-        rm "$HOME/.zshrc_grml" 1>/dev/null 2>&1
-        rm "$HOME/.zshrc_fish" 1>/dev/null 2>&1
-fi
-
-echo "source \"$HOME/.zshrc_grml\"" >> "$HOME/.zshrc"
-echo "source \"/usr/local/hachre/aliases/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh\"" >> "$HOME/.zshrc"
-echo "emulate sh -c \"source /usr/local/hachre/aliases/source/aliases.sh\"" >> "$HOME/.zshrc"
-echo "echo \"Welcome :)\"" >> "$HOME/.zshrc"
-cd "$HOME"
-
-wget -O .zshrc_grml http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+dyi -y htop
+dyi -y zstd
+rehash 1>/dev/null 2>&1
 
 cd /usr/local/hachre/aliases
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
-rehash 1>/dev/null 2>&1
+cd /tmp
+wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.zstd
+zstd -d root-skel.tar.zstd && rm root-skel.tar.zstd
+cd /root
+tar xvf /tmp/root-skel.tar
+rm /tmp/root-skel.tar
 
 chsh -s `which zsh`
+
 echo "Almost done! Please logout and back in to your shell"
 echo "and run 'byobu-enable' followed by 'byobu' to finish."
 
+zsh
