@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget -Oq install.sh https://raw.githubusercontent.com/hachre/aliases/master/install.sh
+wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
 bash install.sh
 rm install.sh
 source /usr/local/hachre/aliases/source/aliases.sh
@@ -30,3 +30,5 @@ echo "Almost done! Please logout and back in to your shell"
 echo "and run 'byobu-enable' followed by 'byobu' to finish."
 
 zsh
+
+
