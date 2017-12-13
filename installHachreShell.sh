@@ -15,7 +15,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 cd /tmp
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.gz
 cd /root
-tar xvzf /tmp/root-skel.tar && rm /tmp/root-skel.tar
+tar xvzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar
 rm /tmp/root-skel.tar
 
 chsh -s `which zsh`
