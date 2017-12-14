@@ -4,8 +4,13 @@ wget -q https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.s
 source aliases.sh
 rm aliases.sh
 
-dyx
-dyi -y git zsh byobu mosh htop
+if [ "$dyDetectedDistro" == "CentOS" ]; then
+	yum install -y epel-release || true
+	yum-config-manager --enable epel || true
+fi
+
+dyx || true
+dyi -y git zsh byobu mosh htop aria2 zstd
 rehash 1>/dev/null 2>&1
 
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
@@ -23,6 +28,7 @@ tar xvzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar
 rm /tmp/root-skel.tar
 
 chsh -s `which zsh`
+dyu -y
 
 echo "Almost done! Please logout and back in to your shell"
 echo "and run 'byobu-enable' followed by 'byobu' to finish."
