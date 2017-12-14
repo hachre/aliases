@@ -91,6 +91,7 @@ alias hachreupdate="hachreUpdate"
 
 alias egrep="egrep --color=always"
 alias grep="grep --color=always"
+alias dmesg="dmesg --color"
 
 #
 # Filesystem Helpers
