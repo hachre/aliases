@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.133.20171215.2
+hachreAliasesVersion=0.134.2017121901
 
 #
 ### hachreAliases internal stuff
@@ -2564,6 +2564,17 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 # Various
 alias pngcrush="pngcrush -rem allb -brute -reduce"
 alias serve="python -m SimpleHTTPServer 8000"
+
+function fsize {
+	if [ -z "$1" ]; then
+		echo "Usage: fsize <find parameters>"
+		echo "Will run the parameters through find and calculate the size of the results."
+		echo "Come up with a 'find' line and once you're happy with the result, change find to fsize."
+		exit 1
+	fi
+
+	find "$@" -print0 | du --files0-from=- --total -s -h | tail -1
+}
 
 # AWS
 function awshelp {
