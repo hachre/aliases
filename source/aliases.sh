@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.136.20171225.3
+hachreAliasesVersion=0.136.20171225.4
 
 #
 ### hachreAliases internal stuff
@@ -35,8 +35,9 @@ fi
 
 # Set the default editor
 EDITOR="nano"
-
 alias eix="TERM='rxvt' eix"
+alias e="$EDITOR"
+alias n=e
 
 #
 ### Aliases
