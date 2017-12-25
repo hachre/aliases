@@ -419,7 +419,8 @@ function gitbranchrm() {
 function gitit() {
 	commit="dev"
 	if [ -e "version.txt" ]; then
-		env $EDITOR "version.txt"
+		EDITOR=$(sh -c 'echo $EDITOR')
+		$EDITOR "version.txt"
 		commit=`cat version.txt | head -n 1`
 	fi
 
