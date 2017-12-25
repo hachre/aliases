@@ -33,8 +33,6 @@ fi
 ### Settings
 #
 
-# Set the default editor
-EDITOR="nano"
 alias eix="TERM='rxvt' eix"
 alias e="$EDITOR"
 alias n=e
