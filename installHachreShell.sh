@@ -21,10 +21,19 @@ source /usr/local/hachre/aliases/source/aliases.sh
 cd /usr/local/hachre/aliases
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
+cd /usr/local/
+git clone https://github.com/craigbarnes/dte.git
+cd dte
+git checkout v1.6
+dyi -y build-essential ncurses5-dev
+make -j 4
+make install
+
 cd /tmp
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.gz
 cd /root
 tar xvzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar.gz
+echo "alias nano=dte" >> /root/.zshrc
 
 chsh -s `which zsh`
 
