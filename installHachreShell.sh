@@ -25,8 +25,9 @@ cd /usr/local/
 git clone https://github.com/craigbarnes/dte.git
 cd dte
 git checkout v1.6
-dyi -y build-essential libncurses5-dev
-make -j 4
+#dyi -y build-essential libncurses5-dev
+dyi -y build-essential
+TERMINFO_DISABLE=1 make -j4
 make install
 
 cd /tmp
