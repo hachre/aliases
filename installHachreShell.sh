@@ -32,9 +32,8 @@ make install
 
 cd /tmp
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.gz
-cd /root
+cd /
 tar xvzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar.gz
-echo "export EDITOR=dte" >> /root/.zshrc
 echo "alias nano=dte" >> /root/.zshrc
 
 chsh -s `which zsh`
