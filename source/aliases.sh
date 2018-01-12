@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.138.20171226.1
+hachreAliasesVersion=0.138.20180112.1
 
 #
 ### hachreAliases internal stuff
@@ -2752,6 +2752,7 @@ function awscps {
 		fi
 
 		${cmd} --include "*" --exclude "*.htm*" --exclude "*.js" --exclude "*.css" ${defaultOptions} ${longCache} "$source" "$target"
+		${cmd} --exclude "*" --include "*.ttf*" --content-type "application/font" ${defaultOptions} ${longCache} "$source" "$target"
 		${cmd} --exclude "*" --include "*.htm*" --content-type "text/html; charset=utf-8" ${defaultOptions} ${shortCache} "$source" "$target"
 		${cmd} --exclude "*" --include "*.js" --content-type "text/javascript; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
 		${cmd} --exclude "*" --include "*.css" --content-type "text/css; charset=utf-8" ${defaultOptions} ${midCache} "$source" "$target"
