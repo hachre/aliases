@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.139.20180311.4
+hachreAliasesVersion=0.140.20180311.5
 
 #
 ### hachreAliases internal stuff
@@ -930,6 +930,7 @@ function dyh {
         echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
 				echo -e " dyq\tQuery detailed package information"
+				echo -e " dyo\tFind out which package is responsible for given file"
         echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyx\tSync the primary repository"
@@ -1575,6 +1576,19 @@ function dyii {
 
 	echo "This command is not supported on your platform. This either means dyi already handles it or it won't work at all."
 }
+
+function dyo {
+	if [ -z "$1" ]; then
+		echo "Usage: dyo <file>"
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk info --who-owns $*
+		return $?
+	fi
+}
+
 function dyr {
 	if [ -z "$1" ]; then
 		echo "Usage: dyr <package name>"
