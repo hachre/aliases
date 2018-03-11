@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.139.20180311.1
+hachreAliasesVersion=0.139.20180311.2
 
 #
 ### hachreAliases internal stuff
@@ -1092,7 +1092,11 @@ function dyx {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "opensuse" ]; then
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk update
+	fi
+
+  if [ "$dyDetectedDistro" == "opensuse" ]; then
         $hachreAliasesRoot zypper ref -s
 		return $?
 	fi
@@ -1218,7 +1222,12 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-        $root $hachreAliasesArchPM -Su --needed
+    $root $hachreAliasesArchPM -Su --needed
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk upgrade -i $*
 		return $?
 	fi
 
