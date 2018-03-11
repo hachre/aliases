@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.139.20180311.2
+hachreAliasesVersion=0.139.20180311.3
 
 #
 ### hachreAliases internal stuff
@@ -1055,6 +1055,17 @@ function dyq {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk info -L $*
+		apk info $*
+		apk info -e $* 1>/dev/null 2>&1
+ 		if [ "$?" == "0" ]; then
+			echo "$1 is installed."
+		else
+			echo "$1 is not installed."
+		fi
+		return 0
+	fi
 	echo "This command is not supported on your platform."
 }
 
