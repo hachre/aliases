@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.138.20180112.2
+hachreAliasesVersion=0.139.20180311.1
 
 #
 ### hachreAliases internal stuff
@@ -801,6 +801,18 @@ function dyDetectDistro {
 		fi
 	fi
 
+	# Alpine Linux
+	cat /etc/alpine-release 1>/dev/null 2>/dev/null
+	if [ "$?" == "0" ]; then
+		ls /sbin/apk 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDetectedDistro="alpine"
+			dyDistroName="Alpine"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apk'. It has coffee making abilities."
+			return 0
+		fi
+	fi
+
 	# CentOS, OracleLinux
 	which yum 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
@@ -917,7 +929,7 @@ function dyh {
         echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
         echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
-		echo -e " dyq\tQuery detailed package information"
+				echo -e " dyq\tQuery detailed package information"
         echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyx\tSync the primary repository"
@@ -1385,6 +1397,11 @@ function dyi {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk add -i $*
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -1435,6 +1452,11 @@ function dyif {
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		dyi $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk add -i --force-broken-world --force-overwrite --force-refresh $*
 		return $?
 	fi
 
@@ -1555,6 +1577,11 @@ function dyr {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk del -i $*
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -1605,6 +1632,11 @@ function dyrf {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk del -i --purge $*
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
 		if [ ! -z "$2" ]; then
 			echo "Error: 'osx-brew' supports only one package parameter."
@@ -1614,7 +1646,7 @@ function dyrf {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-get purge $*
 		$hachreAliasesRoot apt autoremove
 		return $?
@@ -1655,12 +1687,17 @@ function dys {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "opensuse" ]; then
+	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		$hachreAliasesRoot zypper search -s $*
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		apk search -a $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt-cache search $*
 		return $?
 	fi
@@ -1742,9 +1779,9 @@ function dyss {
 # Gentoo openrc specific init helpers
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
-	if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		initdir=""
-		if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+		if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 			initdir="/etc/init.d"
 		fi
 		if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -1770,7 +1807,7 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 start
 			fi
 			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
@@ -1795,7 +1832,7 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 stop
 			fi
 			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
@@ -1820,7 +1857,7 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 restart
 			fi
 			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
@@ -1845,7 +1882,7 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 reload
 			fi
 			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
@@ -1870,7 +1907,7 @@ if [ "$?" != "0" ]; then
 
 			existsScript "$1" || return $?
 
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 status
 			fi
 			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
@@ -1888,7 +1925,7 @@ if [ "$?" != "0" ]; then
 		}
 
 		function senable {
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				if [ -z "$1" ]; then
 					echo "Usage: senable [service] (runlevel)"
 					return 1
@@ -1919,7 +1956,7 @@ if [ "$?" != "0" ]; then
 		}
 
 		function sdisable {
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				if [ -z "$1" ]; then
 					echo "Usage: sdisable [service] (runlevel)"
 					return 1
@@ -2072,7 +2109,7 @@ if [ "$?" != "0" ]; then
 		}
 
 		function sstatus {
-			if [ "$dyDetectedDistro" == "gentoo" ]; then
+			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				rc-status
 				return $?
 			fi
