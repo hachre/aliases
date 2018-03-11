@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.139.20180311.3
+hachreAliasesVersion=0.139.20180311.4
 
 #
 ### hachreAliases internal stuff
@@ -1713,7 +1713,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "alpine" ]; then
-		apk search -a $*
+		apk search -a $* | sort | uniq
 		return $?
 	fi
 
