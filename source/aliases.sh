@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.140.20180311.5
+hachreAliasesVersion=0.140.20180311.6
 
 #
 ### hachreAliases internal stuff
@@ -1583,6 +1583,26 @@ function dyo {
 		return 1
 	fi
 
+	if [ "$dyDetectedDistro" == "ubuntu" ]; then
+		dpkg -S $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		pacman -Qo $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		equery belongs $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo query belongs $*
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "alpine" ]; then
 		apk info --who-owns $*
 		return $?
@@ -1637,14 +1657,14 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-        $hachreAliasesRoot pkg remove $*
+    $hachreAliasesRoot pkg remove $*
 		$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot $(dyYumCmd) remove $*
-        $hachreAliasesRoot $(dyYumCmd) autoremove -y		
+    $hachreAliasesRoot $(dyYumCmd) remove $*
+    $hachreAliasesRoot $(dyYumCmd) autoremove -y		
 		return $?
 	fi
 
