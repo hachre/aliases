@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.140.20180311.6
+hachreAliasesVersion=0.140.20180315.1
 
 #
 ### hachreAliases internal stuff
@@ -360,7 +360,7 @@ function btrfsScrub {
 }
 
 function logout {
-	sh -c "killall mosh-server; killall tmux"
+	sh -c "killall mosh-server; kill $(pidof tmux)"
 }
 
 #
