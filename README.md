@@ -1,4 +1,4 @@
-# aliases
+# hachreAliases
 
 Collection of personal shell aliases that I like.
 
