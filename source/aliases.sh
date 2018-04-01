@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.141.20180401.1
+hachreAliasesVersion=0.141.20180401.2
 
 #
 ### hachreAliases internal stuff
@@ -1075,10 +1075,6 @@ function dyq {
 function dyx {
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		equo update
-
-		eix-update >/dev/null 2>&1 &
-		echo ""
-		echo "Syncing is done, but the searcher database is still syncing in the background... (psall eix)"
 		return $?
 	fi
 
