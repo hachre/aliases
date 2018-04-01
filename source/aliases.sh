@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.140.20180315.1
+hachreAliasesVersion=0.141.20180401.1
 
 #
 ### hachreAliases internal stuff
@@ -36,6 +36,8 @@ fi
 alias eix="TERM='rxvt' eix"
 alias e="$EDITOR"
 alias n=e
+export LANG="en_US.UTF-8"
+export LC_ALL="$LANG"
 
 #
 ### Aliases
@@ -1714,7 +1716,7 @@ function dys {
 		return 1
 	fi
 
-	if [ "$dyDetectedDistro" == "sabayon" ] || [ "$dyDetectedDistro" == "gentoo" ]; then
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		which -p eix > /dev/null 2>&1
 		if [ "$?" != "0" ]; then
 			# Install eix
@@ -1728,6 +1730,11 @@ function dys {
 			eixupdate
 		fi
 		eix -F $* | less -rEFXKn
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "sabayon" ]; then
+		equo search $* P
 		return $?
 	fi
 
