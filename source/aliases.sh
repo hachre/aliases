@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.141.20180401.2
+hachreAliasesVersion=0.142.20180503.1
 
 #
 ### hachreAliases internal stuff
@@ -1254,8 +1254,7 @@ function dyu {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt update
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 		$hachreAliasesRoot apt full-upgrade
 		$hachreAliasesRoot apt autoremove
 

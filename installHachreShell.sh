@@ -10,7 +10,7 @@ if [ "$dyDetectedDistro" == "CentOS" ]; then
 fi
 
 dyx || true
-dyi -y git zsh byobu mosh htop aria2 zstd
+dyi -y git zsh byobu mosh htop aria2
 rehash 1>/dev/null 2>&1
 
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
@@ -21,24 +21,14 @@ source /usr/local/hachre/aliases/source/aliases.sh
 cd /usr/local/hachre/aliases
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
-cd /usr/local/
-git clone https://github.com/craigbarnes/dte.git
-cd dte
-git checkout v1.6
-#dyi -y build-essential libncurses5-dev
-dyi -y build-essential
-TERMINFO_DISABLE=1 make -j4
-make install
-
 cd /tmp
 wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.gz
 cd /
 tar xvzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar.gz
-echo "alias nano=dte" >> /root/.zshrc
+chown -R root:root /root
+chmod u=rwX,g-rwx,o-rwx /root -R
 
 chsh -s `which zsh`
 
 echo "Almost done! Please logout and back in to your shell"
 echo "and run 'byobu-enable' followed by 'byobu' to finish."
-sleep 1
-logout
