@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.142.20180509.1
+hachreAliasesVersion=0.143.20180511.1
 
 #
 ### hachreAliases internal stuff
@@ -935,6 +935,7 @@ function dyh {
 				echo -e " dyo\tFind out which package is responsible for given file"
         echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
+        echo -e " dyw\tShow all manually selected packages (world)"
         echo -e " dyx\tSync the primary repository"
         echo -e " dyxx\tSync the secondary repository"
         echo -e " dys\tSearch a package (in the main repo)"
@@ -1189,6 +1190,25 @@ function dyv {
 		$hachreAliasesRoot zypper verify
 		return $?
 	fi
+
+	echo "This command is not supported on your platform."
+}
+
+function dyw {
+	if [ "$dyDetectedDistro" == "ubuntu" ]; then
+		apt-mark showmanual
+		return $?
+  fi
+
+	if [ "$dyDetectedDistro" == "gentoo" ]; then
+		cat /var/lib/portage/world
+		return $?
+  fi
+
+	if [ "$dyDetectedDistro" == "alpine" ]; then
+		cat /etc/apk/world
+		return $?
+  fi
 
 	echo "This command is not supported on your platform."
 }
