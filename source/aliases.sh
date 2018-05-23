@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.143.20180511.1
+hachreAliasesVersion=0.144.20180523.1
 
 #
 ### hachreAliases internal stuff
@@ -102,7 +102,7 @@ function duhs {
 	du -hsx * .* --exclude "proc" | sort -h
 }
 
-alias dfh="df -h"
+alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete"
 function cpss {
