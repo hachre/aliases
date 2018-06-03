@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.144.20180604.1
+hachreAliasesVersion=0.144.20180604.2
 
 #
 ### hachreAliases internal stuff
@@ -175,7 +175,7 @@ function psall() {
 alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
 function checkcert
-function checkssl {
+function checkssl() {
 	if [ -z "$1" ]; then
 		echo "Usage: checkssl <hostname>"
 		return 1
