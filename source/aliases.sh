@@ -174,8 +174,7 @@ function psall() {
 }
 alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
-function checkcert
-function checkssl() {
+function checkssl {
 	if [ -z "$1" ]; then
 		echo "Usage: checkssl <hostname>"
 		return 1
