@@ -179,7 +179,8 @@ function checkssl {
 		echo "Usage: checkssl <hostname>"
 		return 1
 	fi
-	openssl s_client -servername $1 -connect $1:443 -showcerts -nextprotoneg '' </dev/null
+	#openssl s_client -servername $1 -connect $1:443 -showcerts -nextprotoneg '' </dev/null
+	openssl s_client -servername $1 -connect $1:443 < /dev/null
 }
 alias lp="nice -n 18 ionice -c idle"
 alias hp="nice -n -15 ionice -c best-effort"
