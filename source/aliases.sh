@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.144.20180523.1
+hachreAliasesVersion=0.144.20180604.1
 
 #
 ### hachreAliases internal stuff
@@ -174,12 +174,13 @@ function psall() {
 }
 alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
-function checkssl() {
+function checkcert
+function checkssl {
 	if [ -z "$1" ]; then
-		echo "Usage: checkssl hostname"
+		echo "Usage: checkssl <hostname>"
 		return 1
 	fi
-	openssl s_client -connect $1:443 -nextprotoneg ''
+	openssl s_client -servername $1 -connect $1:443 -showcerts -nextprotoneg '' </dev/null
 }
 alias lp="nice -n 18 ionice -c idle"
 alias hp="nice -n -15 ionice -c best-effort"
