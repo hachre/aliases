@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.144.20180604.2
+hachreAliasesVersion=0.145.20180623.1
 
 #
 ### hachreAliases internal stuff
@@ -578,8 +578,8 @@ function setupArchAliases() {
 		$hachreAliasesRoot groupdel archbuild >/dev/null 2>&1
 		$hachreAliasesRoot groupadd -g 500 archbuild
 		$hachreAliasesRoot useradd -u 500 -g 500 -m archbuild
-		$root gpg --list-keys
 		$root echo "keyring /etc/pacman.d/gnupg/pubring.gpg" >> /home/archbuild/.gnupg/gpg.conf
+		$root gpg --list-keys
 		$root $hachreAliasesArchPM -S --needed --noconfirm sudo curl binutils base base-devel
 		$root $hachreAliasesArchPM -R --noconfirm pacaur cower 2>/dev/null
 		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -2682,6 +2682,10 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 # Various
 alias pngcrush="pngcrush -rem allb -brute -reduce"
 alias serve="python -m SimpleHTTPServer 8000"
+function f {
+	echo find . -iname "*$1*"
+	find . -iname "*$1*"
+}
 
 function fsize {
 	if [ -z "$1" ]; then
