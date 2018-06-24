@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.145.20180624.5
+hachreAliasesVersion=0.145.20180624.6
 
 #
 ### hachreAliases internal stuff
@@ -541,7 +541,7 @@ function setupArchAliases() {
 		done
 	}
 	function dySetup() {
-		if [[ "$SHELL" != *zsh* ]]; then
+		if [[ "$0" != *zsh* ]]; then
 			echo "Error: dySetup must be run from within a zsh shell."
 			return 1
 		fi
