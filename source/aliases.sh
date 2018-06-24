@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.145.20180624.6
+hachreAliasesVersion=0.145.20180624.7
 
 #
 ### hachreAliases internal stuff
@@ -574,7 +574,7 @@ function setupArchAliases() {
 		$_ha_arch_build gpg --list-keys 1>/dev/null
 
 		echo "Installing required prequisite packages..."
-		$_ha_root pacman --color always -S --needed --noconfirm sudo curl wget binutils base base-devel git || true
+		$_ha_root pacman --color always -S --needed --noconfirm sudo curl wget binutils base-devel git || true
 		$_ha_root pacman --color always -R --noconfirm pacaur 2>/dev/null || true
 		$_ha_root pacman --color always -R --noconfirm cower 2>/dev/null || true
 		$_ha_root pacman --color always -R --noconfirm yay 2>/dev/null || true
