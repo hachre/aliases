@@ -77,4 +77,7 @@ echo ""
 echo "Setup complete."
 echo "Please run 'byobu-enable' and then log out and back in again."
 echo ""
-zsh
+
+if [ "$1" != "--nozsh" ]; then
+	zsh
+fi
