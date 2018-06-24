@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.146.20180624.9
+hachreAliasesVersion=0.146.20180624.10
 
 #
 ### hachreAliases internal stuff
@@ -552,7 +552,9 @@ function setupArchAliases() {
 		fi
 
 		echo "Proceeding to set up the legendary hachre Arch Build System... (CTRL+C within 3 sec to abort)"
-		sleep 3
+		if [ "$1" != "--nosleep" ]; then
+			sleep 3
+		fi
 
 		setopt local_options err_return
 
