@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.145.20180623.1
+hachreAliasesVersion=0.145.20180624.1
 
 #
 ### hachreAliases internal stuff
@@ -21,11 +21,13 @@ alias hachrealias="hachreAliases"
 alias hachreAlias="hachreAliases"
 
 # If a script needs root access, you can now call it via $hachreAliasesRoot
-hachreAliasesRoot=""
+hachreAliasesRoot="" # deprecated
+_ha_root=""
 if [ `whoami` != "root" ]; then
 	which sudo >/dev/null 2>&1
 	if [ "$?" == "0" ]; then
-		hachreAliasesRoot="sudo"
+		hachreAliasesRoot="sudo" # deprecated
+		_ha_root="sudo"
 	fi
 fi
 
@@ -482,6 +484,7 @@ alias zyporphaned="zyp -q packages --orphaned | cut -d │ -f 3 | sort | uniq | 
 # Ubuntu / Debian Package Management
 #
 
+# deprecated
 which apt >/dev/null 2>&1
 if [ "$?" == "0" ]; then
 	alias aga="sudo apt autoremove"
@@ -503,28 +506,8 @@ fi
 #
 
 function setupArchAliases() {
-	alias pm="$root $hachreAliasesArchPM"
-	alias pmc="$root $hachreAliasesArchPM -Sc"
-	alias pmi="$root $hachreAliasesArchPM -Suy --needed"
-	function pmif() {
-		$root $hachreAliasesArchPM -Suy --needed $(pacman -Ssq "$@")
-	}
-	alias pmii="$root $hachreAliasesArchPM -S"
-	alias pmin="$root $hachreAliasesArchPM -S --needed"
-	alias pmif="$root $hachreAliasesArchPM -U"
 	alias pmie="$root $hachreAliasesArchPM -Suy --asexplicit"
 	alias pmid="$root $hachreAliasesArchPM -Suy --asdeps"
-	alias pmq="$root $hachreAliasesArchPM -Q"
-	#alias pmqs="$hachreAliasesRoot pacsysclean"
-	function pmsize() {
-		which apacman >/dev/null 2>&1
-		if [ "$?" != "0" ]; then
-			echo "We need 'apacman' to be installed."
-			return 1
-		fi
-
-		apacman -L
-	}
 	alias pmqq="$root $hachreAliasesArchPM -Qq"
 	alias pmqi="$root $hachreAliasesArchPM -Qi"
 	alias pmqe="$root $hachreAliasesArchPM -Q --explicit"
@@ -535,69 +518,98 @@ function setupArchAliases() {
 	alias pmmd="$root $hachreAliasesArchPM -D --asdeps"
 	alias pmse="pmme"
 	alias pmsd="pmmd"
-	alias pmr="$root $hachreAliasesArchPM -Rc"
 	function pmrf() {
 		$root $hachreAliasesArchPM -Rcs $(pacman -Qqs "$@")
 	}
-	alias pmdepclean="$root $hachreAliasesArchPM -Qdtq | $root $hachreAliasesArchPM -Rs -"
-	alias pmdc="pmdepclean"
-	alias pmar="pmdepclean"
-	alias pmrs="$root $hachreAliasesArchPM -Rcs"
-	alias pmrss="$root $hachreAliasesArchPM -Rcss"
-	alias pms="$root $hachreAliasesArchPM -Ss"
-	alias pmsi="$root $hachreAliasesArchPM -Si"
-	alias pmsg="$root $hachreAliasesArchPM -Sgq"
-	alias pmowns="$root $hachreAliasesArchPM -Qo"
-	alias pmqo="pmowns"
-	alias pmprovides="$root pkgfile"
-	alias pmorphans="$root $hachreAliasesArchPM -Qtdq"
-	alias pmkeys="pacman-key --refresh-keys"
 	alias pmlast="$hachreAliasesRoot paclog-pkglist /var/log/pacman.log | cut -d ' ' -f 1"
-	function pmconfig() {
+	function dyconf() {
 		echoerr "This is a list of modified config files:"
-		$hachreAliasesArchPM -Qii | awk '/^MODIFIED/ {print $2}'
+		$_ha_arch_pm -Qii | awk '/^MODIFIED/ {print $2}'
 	}
-	function hachreAliasesaursh() {
+	function _ha_arch_aur() {
 		d=${BUILDDIR:-$PWD}
 		for p in ${@##-*}; do
 			cd $d
-			#$root curl https://aur.archlinux.org/packages/${p:0:2}/$p/$p.tar.gz | $root tar xz
-			$root curl https://aur.archlinux.org/cgit/aur.git/snapshot/$p.tar.gz | $root tar xz
+			$_ha_root curl https://aur.archlinux.org/cgit/aur.git/snapshot/$p.tar.gz | $_ha_root tar xz
 			cd $p
 			if [ -d "$d/proc" ]; then
-				echo "Error: $d ended up being root. This isn't normal. Exiting..."
+				echo "Error: '$d' ended up being root. This isn't normal. Exiting..."
 				return 1
 			fi
-			$root chown archbuild "$d" -R
-			su archbuild -c "makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}"
+			$_ha_root chown archbuild "$d" -R
+			$_ha_arch_build makepkg -si --needed --noconfirm --skippgpcheck ${@##[^\-]*}
 		done
 	}
-	function pmSetup() {
-		echo "Proceeding to set up hachre Arch Build system..."
-		$hachreAliasesRoot userdel -rf archbuild >/dev/null 2>&1
-		$hachreAliasesRoot groupdel archbuild >/dev/null 2>&1
-		$hachreAliasesRoot groupadd -g 500 archbuild
-		$hachreAliasesRoot useradd -u 500 -g 500 -m archbuild
-		$root echo "keyring /etc/pacman.d/gnupg/pubring.gpg" >> /home/archbuild/.gnupg/gpg.conf
-		$root gpg --list-keys
-		$root $hachreAliasesArchPM -S --needed --noconfirm sudo curl binutils base base-devel
-		$root $hachreAliasesArchPM -R --noconfirm pacaur cower 2>/dev/null
-		$hachreAliasesRoot echo "archbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-		$hachreAliasesRoot echo "Defaults env_keep += \"EDITOR\"" >> /etc/sudoers
-		mytemp=`$hachreAliasesRoot mktemp`
-		$hachreAliasesRoot rm "$mytemp"
-		$hachreAliasesRoot mkdir -p "$mytemp"
-		$hachreAliasesRoot chown -R archbuild "$mytemp"
-		cd "$mytemp"
-		echo "$mytemp"
-		hachreAliasesaursh cower
-		hachreAliasesaursh pacaur
-		cd /
-		$hachreAliasesRoot rm -Rf "$mytemp"
-		echo "Everything should be set up!"
-	}
+	function dySetup() {
+		if [[ "$SHELL" != *zsh* ]]; then
+			echo "Error: dySetup must be run from within a zsh shell."
+			return 1
+		fi
 
-	function hachreAliasesCleanLogs() {
+		if [ $(whoami) != "root" ]; then
+			echo "Error: dySetup must be run as root."
+			return 1
+		fi
+
+		echo "Proceeding to set up the legendary hachre Arch Build System... (CTRL+C within 3 sec to abort)"
+		sleep 3
+
+		setopt local_options err_return
+
+		user="archbuild"
+		echo "Setting up $user user..."
+		_ha_arch_build="sudo -u $user"
+
+		$_ha_root userdel -rf "$user" 1>/dev/null 2>&1 || true
+		$_ha_root rm -R /home/"$user" 1>/dev/null 2>&1 || true
+		$_ha_root groupdel -f "$user" 1>/dev/null 2>&1 || true
+		$_ha_root groupadd -g 500 archbuild
+		$_ha_root useradd -u 500 -g 500 -m "$user"
+		$_ha_root chown "$user" /home/"$user" -R
+		$_ha_root rm -R /home/"$user"/.gnupg 1>/dev/null 2>&1 || true
+		$_ha_arch_build mkdir /home/"$user"/.gnupg
+		$_ha_arch_build chmod 770 /home/"$user"/.gnupg -R
+		echo "keyring /etc/pacman.d/gnupg/pubring.gpg" | $_ha_arch_build tee -a /home/"$user"/.gnupg/gpg.conf
+		sync
+		$_ha_arch_build gpg --list-keys 1>/dev/null
+
+		echo "Installing required prequisite packages..."
+		$_ha_root pacman --color always -S --needed --noconfirm sudo curl binutils base base-devel git go || true
+		$_ha_root pacman --color always -R --noconfirm pacaur 2>/dev/null || true
+		$_ha_root pacman --color always -R --noconfirm cower 2>/dev/null || true
+		$_ha_root pacman --color always -R --noconfirm yay 2>/dev/null || true
+
+		$_ha_root cat /etc/sudoers | grep -v hachreLine | $_ha_root tee -a /etc/sudoers.tmp 1>/dev/null
+		$_ha_root mv /etc/sudoers.tmp /etc/sudoers
+		echo "$user ALL=(ALL) NOPASSWD: $(which pacman) # hachreLine" | $_ha_root tee -a /etc/sudoers 1>/dev/null
+		echo "Defaults env_keep += \"EDITOR\" # hachreLine" | $_ha_root tee -a /etc/sudoers 1>/dev/null
+
+		echo "Building and installing Yay..."
+		pwd=$(pwd)
+		mytemp=$($_ha_root mktemp)
+		$_ha_root rm "$mytemp"
+		$_ha_root mkdir -p "$mytemp"
+		$_ha_root chown -R archbuild "$mytemp"
+		cd "$mytemp"
+		_ha_arch_aur yay
+		$_ha_root rm -Rf "$mytemp"
+		cd "$pwd"
+
+		echo "%$user ALL=(ALL) NOPASSWD: $(which yay), $(which pacman) # hachreLine" | $_ha_root tee -a /etc/sudoers 1>/dev/null
+
+		echo "Amending Pacman configuration..."
+		$_ha_root sed -i 's|#Color|Color|' /etc/pacman.conf
+
+		# Put current user into the archbuild group
+		$_ha_root usermod -G archbuild -a $USER 1>/dev/null 2>&1 || true
+
+		echo "The set up of the legendary hachre Arch Build System was completed successfully."
+		echo " -> If you use a non-root user to do package management, add them to the 'archbuild' group."
+		echo "    Example: 'sudo usermod -G archbuild -a $USER'"
+	}
+	alias pmSetup="dySetup"
+
+	function __hachreAliasesCleanLogs() {
 		echo "Cleaning all logs, you can CTRL+C within 10 seconds..."
 		echo ""
 		echo " -> We will empty all files in the first pass and then if"
@@ -641,22 +653,9 @@ function setupArchAliases() {
 			echo " -> didn't do anything with this"
 		done
 	}
-	alias logclean="hachreAliasesCleanLogs"
-	alias baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
+	alias __logclean="hachreAliasesCleanLogs"
+	alias __baseclean="echo 'Baseclean cleans a lot of stuff... You may CTRL+C!'; $root $hachreAliasesArchPM -Scc && sudo rm -Rf /var/cache/pkgfile/* >/dev/null 2>&1 && sudo rm -Rf /var/abs/* >/dev/null 2>&1 && sudo rm -Rf /var/cache/lxc/* >/dev/null 2>&1 && hachreAliasesCleanLogs"
 }
-
-which pacman >/dev/null 2>&1
-if [ "$?" == "0" ]; then
-	hachreAliasesArchPM="pacman --color always"
-
-	which pacaur >/dev/null 2>&1
-	if [ "$?" == "0" ]; then
-		root="sudo -u archbuild -s"
-		hachreAliasesArchPM="pacaur --noedit --color always"
-	fi
-
-	setupArchAliases
-fi
 
 #
 # hachreProjects
@@ -749,6 +748,7 @@ function dyDetectDistro {
 	which -p emerge 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="gentoo"
+		dyDistroName="Gentoo Linux"
 		dyDistroInfo="\n * The native package manager for this distro is called 'emerge'.\n * You might also wanna look at 'equery'\n * Searching is best done via 'eix'."
 		return 0
 	fi
@@ -757,13 +757,28 @@ function dyDetectDistro {
 	which -p pacman 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="arch"
-		dyDistroInfo="\n * The native package manager for this distro is called 'pacman'.\n * You might also wanna look at 'pacaur'."
+		dyDistroName="Arch Linux"
+		dyDistroInfo="\n * The native package manager for this distro is called 'pacman'.\n * You might also wanna look at 'yay'."
+
+		# Manjaro
+		cat /etc/*release* | grep "Manjaro" 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDistroName="Manjaro Linux"
+		fi
+
+		# Netrunner
+		cat /etc/*release* | grep "Netrunner" 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDistroName="Netrunner OS"
+		fi
+
 		return 0
 	fi
 
 	# OS X with Brew
 	if [ -f "/usr/local/bin/brew" ]; then
 		dyDetectedDistro="osx-brew"
+		dyDistroName"macOS with brew"
 		dyDistroInfo="\n * The native package manager is 'brew'."
 		return 0
 	fi
@@ -793,6 +808,7 @@ function dyDetectDistro {
 		release=$(lsb_release -is)
 		if [ "$release" == "Ubuntu" ]; then
 			dyDetectedDistro="ubuntu"
+			dyDistroName="Ubuntu Linux"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
@@ -845,6 +861,30 @@ function dyDetectDistro {
 	return 1
 }
 dyDetectDistro
+
+# Set up Arch aliases
+if [ "$dyDetectedDistro" == "arch" ]; then
+	which pacman >/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		hachreAliasesArchPM="pacman --color always" # deprecated
+		_ha_arch_pm="$_ha_root pacman --color always"
+
+		# Pacaur is deprecated
+		which pacaur >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			root="sudo -u archbuild -s" # deprecated
+			hachreAliasesArchPM="pacaur --noedit --color always" # deprecated
+		fi
+
+		which yay >/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			_ha_arch_build="sudo -u archbuild"
+			_ha_arch_pm="$_ha_arch_build yay --nodiffmenu --nocleanmenu --answeredit N"
+		fi
+
+		setupArchAliases
+	fi
+fi
 
 usednf="unchecked"
 function dyYumCmd {
@@ -901,7 +941,9 @@ function dyFreeBSDCheckPortUtils {
 	fi
 }
 
+#
 # hachre's unified packaging commands
+#
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
 		echo "Error: Sadly, your distro is not supported."
@@ -932,8 +974,9 @@ function dyh {
         echo -e " dyu\tDo a full system upgrade after Syncing (primary repo)"
         echo -e " dyus\tInstall security updates only (not widely supported)"
         echo -e " dyuu\tDo a full system upgrade (secondary repo)"
-				echo -e " dyq\tQuery detailed package information"
-				echo -e " dyo\tFind out which package is responsible for given file"
+		echo -e " dyq\tQuery detailed package information"
+		echo -e " dyo\tFind which package owns given file"
+		echo -e " dyl\tList files owned by given package"
         echo -e " dyk\tUpdate verification signing keys"
         echo -e " dyv\tVerify system sanity"
         echo -e " dyw\tShow all manually selected packages (world)"
@@ -977,10 +1020,7 @@ function dyk {
 	if [ "$dyDetectedDistro" == "arch" ]; then
         function printinfo {
             echo ""
-            echo "If there are still GPG problems make sure your user 'archbuild'"
-            echo "has run 'gpg --list-keys' and that the file '~/.gnupg/gpg.conf'"
-            echo "contains the line 'keyring /etc/pacman.d/gnupg/pubring.gpg'"
-            echo "towards the end or at the bottom of the file."
+            echo "If there are still GPG problems, run dySetup."
         }
 
         if [ -z "$1" ]; then
@@ -1041,7 +1081,7 @@ function dyundo {
 
 function dyq {
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		$hachreAliasesRoot $hachreAliasesArchPM -Si $@
+		$_ha_arch_pm -Si $@
 		return $?
 	fi
 
@@ -1100,7 +1140,7 @@ function dyx {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-    $root $hachreAliasesArchPM -Sy
+    	$_ha_arch_pm -Sy
 		return $?
 	fi
 
@@ -1187,6 +1227,18 @@ function dyv {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		which yay 1>/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo "Error: This command is not available unless you run dySetup."
+			return 1
+		fi
+
+		$_ha_arch_pm -Ps
+		return $?
+	fi
+
+
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		$hachreAliasesRoot zypper verify
 		return $?
@@ -1254,7 +1306,12 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-    $root $hachreAliasesArchPM -Su --needed
+    	$_ha_arch_pm -Suy --needed
+		yay -h 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			echo "Removing unneeded packages..."
+			$_ha_arch_pm -Yc
+		fi
 		return $?
 	fi
 
@@ -1384,11 +1441,6 @@ function dyuu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "arch" ]; then
-		pmi $*
-		return $?
-	fi
-
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
 		$hachreAliasesRoot zypper in -l --no-recommends $*
 		return $?
@@ -1433,7 +1485,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pmi $*
+		$_ha_arch_pm -Suy --needed $@
 		return $?
 	fi
 
@@ -1501,7 +1553,7 @@ function dyif {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		$root $hachreAliasesArchPM -Suy
+		$_ha_arch_pm -S --overwrite / $@
 		return $?
 	fi
 
@@ -1596,6 +1648,20 @@ function dyii {
 	echo "This command is not supported on your platform. This either means dyi already handles it or it won't work at all."
 }
 
+function dyl {
+	if [ -z "$1" ]; then
+		echo "Usage: dyl <package name>"
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		$_ha_arch_pm -Qlq $@ | less -rEFXKn
+		return $?
+	fi
+
+	echo "This comand is not supported on your platform."
+}
+
 function dyo {
 	if [ -z "$1" ]; then
 		echo "Usage: dyo <file>"
@@ -1608,7 +1674,7 @@ function dyo {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pacman -Qo $*
+		$_ha_arch_pm -Qo $@
 		return $?
 	fi
 
@@ -1626,6 +1692,8 @@ function dyo {
 		apk info --who-owns $*
 		return $?
 	fi
+
+	echo "This comand is not supported on your platform."
 }
 
 function dyr {
@@ -1646,7 +1714,7 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pmr -s $*
+		$_ha_arch_pm -Rcs $@
 		return $?
 	fi
 
@@ -1697,6 +1765,11 @@ function dyrf {
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
 		dyr --force-system $*
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		$_ha_arch_pm -R $@
 		return $?
 	fi
 
@@ -1756,7 +1829,13 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pms $* P
+		yay -h 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			$_ha_arch_pm -Ss $@ | tac | less -rEFXKn
+			return $?
+		fi
+
+		$_ha_arch_pm -Ss $@ | less -rEFXKn
 		return $?
 	fi
 
@@ -1810,7 +1889,13 @@ function dyss {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-		pms -a $* P
+		which yay 1>/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo "Error: This command is not supported unless you first run dySetup."
+			return 1
+		fi
+		
+		$_ha_arch_pm -Ss $@ --aur | less -rEFXKn
 		return $?
 	fi
 
