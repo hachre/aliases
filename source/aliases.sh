@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.146.20180624.8
+hachreAliasesVersion=0.146.20180624.9
 
 #
 ### hachreAliases internal stuff
@@ -1311,7 +1311,7 @@ function dyu {
 		yay -h 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			echo "Removing unneeded packages..."
-			$_ha_arch_pm -Yc
+			$_ha_arch_pm -Yc $@
 		fi
 		return $?
 	fi
