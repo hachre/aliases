@@ -42,7 +42,8 @@ fi
 
 # Install the tools we'd like to have
 dyx || true
-dyi "$noconfirm" git zsh byobu mosh htop aria2 curl nano
+dyi "$noconfirm" git zsh mosh htop aria2 curl nano sudo
+dyi "$noconfirm" byobu
 rehash 1>/dev/null 2>&1
 
 # Install zsh syntax highlighting
