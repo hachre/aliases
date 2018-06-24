@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.145.20180624.2
+hachreAliasesVersion=0.145.20180624.3
 
 #
 ### hachreAliases internal stuff
@@ -581,6 +581,7 @@ function setupArchAliases() {
 
 		$_ha_root cat /etc/sudoers | grep -v hachreLine | $_ha_root tee -a /etc/sudoers.tmp 1>/dev/null
 		$_ha_root mv /etc/sudoers.tmp /etc/sudoers
+		$_ha_root chmod 600 /etc/sudoers
 		echo "$user ALL=(ALL) NOPASSWD: $(which pacman) # hachreLine" | $_ha_root tee -a /etc/sudoers 1>/dev/null
 		echo "Defaults env_keep += \"EDITOR\" # hachreLine" | $_ha_root tee -a /etc/sudoers 1>/dev/null
 
