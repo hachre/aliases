@@ -31,6 +31,7 @@ git pull origin master
 git checkout master
 echo "Updated to:"
 git reset --hard
+chmod a+x *sh
 
 cd "$prev"
 

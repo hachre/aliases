@@ -18,6 +18,7 @@ echo "Installing hachreAliases"
 mkdir -p /usr/local/hachre/
 cd /usr/local/hachre
 git clone https://github.com/hachre/aliases.git
+chmod a+x aliases/*sh
 
 if [ "$?" != "0" ]; then
    echo "Installation failed :("

@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.145.20180624.3
+hachreAliasesVersion=0.145.20180624.4
 
 #
 ### hachreAliases internal stuff
@@ -1307,7 +1307,7 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
-    	$_ha_arch_pm -Suy --needed
+    	$_ha_arch_pm -Suy --needed $@
 		yay -h 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			echo "Removing unneeded packages..."
