@@ -14,13 +14,11 @@ if [ "$?" != "0" ]; then
 	exit 1
 fi
 
-# Install hachreAliases
+# Load hachreAliases
 rm -R /usr/local/hachre/aliases 1>/dev/null 2>&1
 cd /tmp
-wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
-bash install.sh
-rm install.sh
-source /usr/local/hachre/aliases/source/aliases.sh
+wget -q https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh
+source aliases.sh
 
 # CentOS specific prequisities
 if [ "$dyDetectedDistro" == "CentOS" ]; then
@@ -40,11 +38,18 @@ if [ "$dyDetectedDistro" == "ubuntu" ]; then
 	noconfirm="-y"
 fi
 
-# Install the tools we'd like to have
+# Install the prequisites we'd like to have
 dyx || true
 dyi "$noconfirm" git zsh mosh htop aria2 curl nano sudo
 dyi "$noconfirm" byobu
 rehash 1>/dev/null 2>&1
+
+# Install hachreAliases
+cd /tmp
+wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
+bash install.sh
+rm install.sh
+source /usr/local/hachre/aliases/source/aliases.sh
 
 # Install zsh syntax highlighting
 cd /usr/local/hachre/aliases
