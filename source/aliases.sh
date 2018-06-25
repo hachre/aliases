@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.146.20180624.11
+hachreAliasesVersion=0.147.20180625.1
 
 #
 ### hachreAliases internal stuff
@@ -2771,8 +2771,8 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 alias pngcrush="pngcrush -rem allb -brute -reduce"
 alias serve="python -m SimpleHTTPServer 8000"
 function f {
-	echo find . -iname "*$1*"
-	find . -iname "*$1*"
+	echo find . -xdev -iname "*$1*" $2 $3 $4 $5 $6 >/dev/stderr
+	find . -xdev -iname "*$1*" $2 $3 $4 $5 $6 | less -rEFXKn
 }
 
 function fsize {
