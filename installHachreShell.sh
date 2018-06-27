@@ -13,7 +13,7 @@ fi
 echo "Loading hachreAliases..."
 rm -R /usr/local/hachre/aliases 2>/dev/null || true
 $c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
-source /tmp/aliases.sh
+source /tmp/aliases.sh || true
 rm /tmp/aliases.sh
 
 # Automatic installation of prequisites
@@ -58,7 +58,7 @@ fi
 # Install hachreAliases
 echo "Installing hachreAliases..."
 $c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
-source /usr/local/hachre/aliases/source/aliases.sh
+source /usr/local/hachre/aliases/source/aliases.sh || true
 
 # Install zsh syntax highlighting
 echo "Installing zsh syntax highlighting..."
