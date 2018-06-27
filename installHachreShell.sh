@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 1.0.20180624.1
+# 1.0.20180627.1
 #
 
 if [ $(whoami) != "root" ]; then
@@ -8,17 +8,10 @@ if [ $(whoami) != "root" ]; then
 	exit 1
 fi
 
-which wget 1>/dev/null 2>&1
-if [ "$?" != "0" ]; then
-	echo "Error: We need 'wget' to be installed."
-	exit 1
-fi
-
 # Load hachreAliases
 rm -R /usr/local/hachre/aliases 1>/dev/null 2>&1
-cd /tmp
-wget -q https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh
-source aliases.sh
+curl https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
+source /tmp/aliases.sh && rm /tmp/aliases.sh
 
 # CentOS specific prequisities
 if [ "$dyDetectedDistro" == "CentOS" ]; then
@@ -40,49 +33,73 @@ fi
 
 # Install the prequisites we'd like to have
 dyx || true
-dyi "$noconfirm" git zsh mosh htop aria2 curl nano sudo
-dyi "$noconfirm" byobu
-rehash 1>/dev/null 2>&1
+dyi "$noconfirm" git zsh mosh htop aria2 curl nano sudo wget
+dyi "$noconfirm" byobu 2>/dev/null || true
+rehash 2>/dev/null || true
 
 # Install hachreAliases
-cd /tmp
-wget -q https://raw.githubusercontent.com/hachre/aliases/master/install.sh
-bash install.sh
-rm install.sh
+wget -q -O /tmp/install.sh https://raw.githubusercontent.com/hachre/aliases/master/install.sh
+bash /tmp/install.sh && rm /tmp/install.sh
 source /usr/local/hachre/aliases/source/aliases.sh
 
 # Install zsh syntax highlighting
-cd /usr/local/hachre/aliases
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/local/hachre/aliases/zsh-syntax-highlighting
 
 # Install nano syntax highlighting
-cd /usr/local/hachre/aliases
-git clone https://github.com/scopatz/nanorc.git nano-syntax-highlighting
+git clone https://github.com/scopatz/nanorc.git /usr/local/hachre/aliases/nano-syntax-highlighting
 cat /etc/nanorc | grep -v "hachre/aliases" > /etc/nanorc.tmp
 mv /etc/nanorc.tmp /etc/nanorc
 echo "include /usr/local/hachre/aliases/nano-syntax-highlighting/*.nanorc" >> /etc/nanorc
 
-# Install the Root Skel
-if [ ! -f "/root/.zshrc_grml" ]; then
-	cd /tmp
-	wget -q https://raw.githubusercontent.com/hachre/aliases/master/root-skel.tar.gz
-	cd /
-	tar xzf /tmp/root-skel.tar.gz && rm /tmp/root-skel.tar.gz
-else
-	echo "Info: You already have a '/root/.zshrc-grml', so installing the Root Skel is skipped..."
+# Installing the user defaults
+if [ ! -f "$HOME/.zshrc_grml" ]; then
+	# grml ZSH Settings
+	wget -q -O $HOME/.zshrc_grml https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+	echo "SAVEHIST=10000" >> $HOME/.zshrc_grml
+
+	# hachre's Default .zshrc
+	cat << EOF > $HOME/.zshrc
+EDITOR="nano"
+source "$HOME/.zshrc_grml"
+source "/usr/local/hachre/aliases/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+emulate sh -c "source /usr/local/hachre/aliases/source/aliases.sh"
+if [ -f "/var/run/reboot-required" ]; then
+    echo " *** Reboot required ***"
 fi
-chown -R root:root /root
-chmod u=rwX,g-rwx,o-rwx /root -R
+echo "Welcome :)"
+if [ -f "/etc/motd" ]; then
+	numlines=$(cat /etc/motd | wc -l)
+	if [ "$numlines" -gt "0" ]; then
+		echo ""
+		cat /etc/motd
+	fi
+fi
+EOF
+
+	# htop
+	mkdir -p $HOME/.config/htop 2>/dev/null || true
+	echo "hide_userland_threads=1" >> $HOME/.config/htop/htoprc
+else
+	echo "Warning: You already have a '$HOME/.zshrc-grml', so installing the default user settings is skipped..."
+fi
+
+# Install byobu settings
+wget -q -O /tmp/byobu-settings.tar.gz https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz
+cd $HOME
+tar xzf /tmp/byobu-settings.tar.gz && rm /tmp/byobu-settings.tar.gz
+rm -R .byobu 2>/dev/null || true
+mv byobu .byobu
+
+# Correct home permissions
+chown -R $USER $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
+chmod -R u=rwX,g-rwx,o-rwx $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
+chmod -R u=rwX,g-rwx,o-rwx $HOME/.ssh 2>/dev/null || true
+chmod u=rwX,g-rwx,o-rwx $HOME
 
 # Switch to zsh
-chsh -s `which zsh`
+chsh -s /bin/zsh
 
 # Finished
 echo ""
-echo "Setup complete."
-echo "Please run 'byobu-enable' and then log out and back in again."
-echo ""
-
-if [ "$1" != "--nozsh" ]; then
-	zsh
-fi
+echo "Setup complete!"
+echo "Run 'byobu-enable' and 'byobu' on your next login."

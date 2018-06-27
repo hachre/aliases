@@ -13,17 +13,15 @@ if [ "$?" != "0" ]; then
    exit 1
 fi
 
-echo "Installing hachreAliases"
+echo "Installing hachreAliases..."
 
 mkdir -p /usr/local/hachre/
 cd /usr/local/hachre
 git clone https://github.com/hachre/aliases.git
-chmod a+x aliases/*sh
-
 if [ "$?" != "0" ]; then
    echo "Installation failed :("
    exit 1
 fi
+chmod a+x aliases/*sh
 
 echo "Installation succeeded!"
-echo "You can now add 'source /usr/local/hachre/aliases/source/aliases.sh' to your bashrc."
