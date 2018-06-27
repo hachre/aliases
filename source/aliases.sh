@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.149.20180627.6
+hachreAliasesVersion=0.150.20180627.7
 
 #
 ### hachreAliases internal stuff
@@ -87,6 +87,8 @@ function hachreUpdate {
 	return 0
 }
 alias hachreupdate="hachreUpdate"
+alias hachreShellUpdate="curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/installHachreShell.sh | bash"
+alias hachreshellupdate="hachreShellUpdate"
 
 #
 # Color Settings
