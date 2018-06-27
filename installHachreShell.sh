@@ -1,8 +1,9 @@
 #!/bin/bash
-#
-# 1.0.20180627.1
-#
 
+c="curl -fsSL"
+set -e
+
+# Require root to run.
 if [ $(whoami) != "root" ]; then
 	echo "Error: This setup needs to be run as root."
 	exit 1
@@ -10,40 +11,53 @@ fi
 
 # Load hachreAliases
 echo "Loading hachreAliases..."
-rm -R /usr/local/hachre/aliases 1>/dev/null 2>&1
-curl https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
-source /tmp/aliases.sh && rm /tmp/aliases.sh
+rm -R /usr/local/hachre/aliases 2>/dev/null || true
+$c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
+source /tmp/aliases.sh
+rm /tmp/aliases.sh
 
-# CentOS specific prequisities
-if [ "$dyDetectedDistro" == "CentOS" ]; then
-	yum install -y epel-release || true
-	yum-config-manager --enable epel || true
-fi
+# Automatic installation of prequisites
+function installPrequisites {
+	# CentOS specific prequisities
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+		yum install -y epel-release || true
+		yum-config-manager --enable epel || true
+	fi
 
-# Set the noconfirm flag based on the distro in use
-noconfirm=""
-if [ "$dyDetectedDistro" == "CentOS" ]; then
+	# Set the noconfirm flag based on the distro in use
 	noconfirm="-y"
-fi
-if [ "$dyDetectedDistro" == "arch" ]; then
-	noconfirm="--noconfirm"
-fi
-if [ "$dyDetectedDistro" == "ubuntu" ]; then
-	noconfirm="-y"
-fi
+	if [ "$dyDetectedDistro" == "arch" ]; then
+		noconfirm="--noconfirm"
+	fi
 
-# Install the prequisites we'd like to have
-echo "Installing prequisites..."
-dyx || true
-dyi "$noconfirm" git zsh mosh htop aria2 curl nano sudo wget
-dyi "$noconfirm" byobu 2>/dev/null || true
-rehash 2>/dev/null || true
+	# Install the prequisites we'd like to have
+	echo "Installing prequisites..."
+	dyx 2>/dev/null || true
+	dyi "$noconfirm" zsh git sudo mosh nano htop aria2 wget
+	dyi "$noconfirm" byobu 2>/dev/null || true
+	rehash 2>/dev/null || true
+}
+
+# Automatic prequisite installation is only tested on Arch and Ubuntu
+if [ "$1" == "--force" ]; then
+	installPrequisites
+else
+	if [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+		installPrequisites
+	else
+		echo "Error: Your distribution '$dyDetectedDistro' has not been tested for automatic package installation."
+		echo "       Please install the following list of tools manually and rerun the installation with '--force':"
+		echo ""
+		echo "Required:    zsh git"
+		echo "Recommended: sudo mosh nano byobu"
+		echo "Optional:    htop aria2 wget"
+		exit 1
+	fi
+fi
 
 # Install hachreAliases
 echo "Installing hachreAliases..."
-wget -q -O /tmp/install.sh https://raw.githubusercontent.com/hachre/aliases/master/install.sh
-bash /tmp/install.sh 1>/dev/null
-rm /tmp/install.sh
+$c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
 source /usr/local/hachre/aliases/source/aliases.sh
 
 # Install zsh syntax highlighting
@@ -58,9 +72,8 @@ mv /etc/nanorc.tmp /etc/nanorc
 echo "include /usr/local/hachre/aliases/nano-syntax-highlighting/*.nanorc" >> /etc/nanorc
 
 # Installing the user defaults
-echo "Installing user default settings..."
-rm $HOME/.zshrc_grml 2>/dev/null || true
-wget -q -O $HOME/.zshrc_grml https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
+echo "Installing default user profiles..."
+$c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > $HOME/.zshrc_grml
 echo "SAVEHIST=10000" >> $HOME/.zshrc_grml
 
 # hachre's Default .zshrc
@@ -90,13 +103,16 @@ mkdir -p $HOME/.config/htop 2>/dev/null || true
 echo "hide_userland_threads=1" >> $HOME/.config/htop/htoprc
 
 # Install byobu settings
-wget -q -O /tmp/byobu-settings.tar.gz https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz
+echo "Installing byobu settings..."
+$c https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz > /tmp/byobu-settings.tar.gz
 cd $HOME
-tar xzf /tmp/byobu-settings.tar.gz && rm /tmp/byobu-settings.tar.gz
+tar xzf /tmp/byobu-settings.tar.gz
+rm /tmp/byobu-settings.tar.gz
 rm -R .byobu 2>/dev/null || true
 mv byobu .byobu
 
 # Correct home permissions
+echo "Fixing some permissions in '$HOME'..."
 chown -R $USER $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
 chmod -R u=rwX,g-rwx,o-rwx $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
 chmod -R u=rwX,g-rwx,o-rwx $HOME/.ssh 2>/dev/null || true
