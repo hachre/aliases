@@ -78,8 +78,7 @@ if [ -f "/var/run/reboot-required" ]; then
 fi
 echo "Welcome :)"
 if [ -f "/etc/motd" ]; then
-	numlines=$(cat /etc/motd | wc -l)
-	if [ "$numlines" -gt "0" ]; then
+	if [ \$(cat /etc/motd | wc -l) -gt "0" ]; then
 		echo ""
 		cat /etc/motd
 	fi
