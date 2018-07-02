@@ -101,6 +101,7 @@ EOF
 # htop
 mkdir -p $HOME/.config/htop 2>/dev/null || true
 echo "hide_userland_threads=1" >> $HOME/.config/htop/htoprc
+echo "hide_kernel_threads=1" >> $HOME/.config/htop/htoprc
 
 # Install byobu settings
 echo "Installing byobu settings..."
