@@ -18,22 +18,23 @@ rm /tmp/aliases.sh
 
 # Automatic installation of prequisites
 function installPrequisites {
-	# CentOS specific prequisities
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		yum install -y epel-release || true
-		yum-config-manager --enable epel || true
-	fi
-
 	# Set the noconfirm flag based on the distro in use
 	noconfirm="-y"
 	if [ "$dyDetectedDistro" == "arch" ]; then
 		noconfirm="--noconfirm"
 	fi
 
+	# CentOS specific prequisities
+	if [ "$dyDetectedDistro" == "CentOS" ]; then
+		yum install -y epel-release || true
+		yum-config-manager --enable epel 2>/dev/null || true
+		dyi "$noconfirm" which
+	fi
+
 	# Install the prequisites we'd like to have
 	echo "Installing prequisites..."
 	dyx 2>/dev/null || true
-	dyi "$noconfirm" which zsh git sudo mosh nano htop aria2 wget
+	dyi "$noconfirm" zsh git sudo mosh nano htop aria2 wget
 	dyi "$noconfirm" byobu 2>/dev/null || true
 	rehash 2>/dev/null || true
 }
