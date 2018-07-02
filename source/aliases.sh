@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.150.20180627.7
+hachreAliasesVersion=0.151.20180702.1
 
 #
 ### hachreAliases internal stuff
@@ -838,7 +838,8 @@ function dyDetectDistro {
 	fi
 
 	# CentOS, OracleLinux
-	which yum 1>/dev/null 2>&1
+	# TODO: switch all uses of which to command -v
+	command -v yum 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="CentOS"
 		dyDistroName="$dyDetectedDistro"

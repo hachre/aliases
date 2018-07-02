@@ -33,7 +33,7 @@ function installPrequisites {
 	# Install the prequisites we'd like to have
 	echo "Installing prequisites..."
 	dyx 2>/dev/null || true
-	dyi "$noconfirm" zsh git sudo mosh nano htop aria2 wget
+	dyi "$noconfirm" which zsh git sudo mosh nano htop aria2 wget
 	dyi "$noconfirm" byobu 2>/dev/null || true
 	rehash 2>/dev/null || true
 }
@@ -42,13 +42,13 @@ function installPrequisites {
 if [ "$1" == "--force" ]; then
 	installPrequisites
 else
-	if [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "CentOS" ]; then
 		installPrequisites
 	else
 		echo "Error: Your distribution '$dyDetectedDistro' has not been tested for automatic package installation."
 		echo "       Please install the following list of tools manually and rerun the installation with '--force':"
 		echo ""
-		echo "Required:    zsh git"
+		echo "Required:    which zsh git"
 		echo "Recommended: sudo mosh nano byobu"
 		echo "Optional:    htop aria2 wget"
 		exit 1
