@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.151.20180702.3
+hachreAliasesVersion=0.151.20180702.4
 
 #
 ### hachreAliases internal stuff
@@ -1092,7 +1092,7 @@ function dyq {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		$hachreAliasesRoot $(dyYumCmd) info $@
+		$hachreAliasesRoot $(dyYumCmd) info $@ | tee
 		return $?
 	fi
 
@@ -1362,10 +1362,10 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot $(dyYumCmd) update
+        $hachreAliasesRoot $(dyYumCmd) update | tee
 		ret="$?"
 		if [ "$?" == "0" ]; then
-			$hachreAliasesRoot $(dyYumCmd) autoremove -y
+			$hachreAliasesRoot $(dyYumCmd) autoremove -y | tee
 		fi
 		return $ret
 	fi
@@ -1400,7 +1400,7 @@ function dyus {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		$hachreAliasesRoot $(dyYumCmd) update --security
+		$hachreAliasesRoot $(dyYumCmd) update --security | tee
 		return $?
 	fi
 
@@ -1525,7 +1525,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot $(dyYumCmd) install $*
+        $hachreAliasesRoot $(dyYumCmd) install $* | tee
 		return $?
 	fi
 
@@ -1756,8 +1756,8 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-    $hachreAliasesRoot $(dyYumCmd) remove $*
-    $hachreAliasesRoot $(dyYumCmd) autoremove -y		
+    $hachreAliasesRoot $(dyYumCmd) remove $* | tee
+    $hachreAliasesRoot $(dyYumCmd) autoremove -y | tee	
 		return $?
 	fi
 
@@ -1871,7 +1871,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot $(dyYumCmd) search $*
+        $hachreAliasesRoot $(dyYumCmd) search $* | tee
 		return $?
 	fi
 
