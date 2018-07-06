@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.151.20180702.4
+hachreAliasesVersion=0.152.20180706.1
 
 #
 ### hachreAliases internal stuff
@@ -2593,6 +2593,11 @@ if [ "$?" == "0" ]; then
 
 			echo "$serviceName"
 		done
+
+		if [ $(systemctl list-units --state=failed | wc -l) -gt 3 ]; then 
+			echo
+			systemctl list-units --state=failed
+		fi
 
 		IPS="$sIPS"
 	}
