@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.152.20180706.1
+hachreAliasesVersion=0.152.20180708.1
 
 #
 ### hachreAliases internal stuff
@@ -2489,16 +2489,16 @@ if [ "$?" == "0" ]; then
 		searchterm="$@"
 
 		sfinddir="/lib/systemd"
-		if [ ! -d "$sfindir" ]; then
+		if [ ! -d "$sfinddir" ]; then
 			sfinddir="/usr/lib64/systemd"
 		fi
-		if [ ! -d "$sfindir" ]; then
+		if [ ! -d "$sfinddir" ]; then
 			sfinddir="/usr/lib/systemd"
 		fi
 		spwd=`pwd`
 		cd "$sfinddir"
 
-		echo "Searching in $sfinddir..."
+		echo "Searching in '$sfinddir'..."
 		echo " If you want to customize one of these, copy them to /etc/systemd, customize there and use sreload"
 		echo ""
 		find . -iname "*${searchterm}*"
