@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.152.20180708.1
+hachreAliasesVersion=0.153.20180712.1
 
 #
 ### hachreAliases internal stuff
@@ -3020,3 +3020,8 @@ function awsreset {
 	fi
 	awscps -r -w "$1"
 }
+
+# ZFS
+alias zl="zfs list -o name,refer,avail,compress,mountpoint"
+alias zpl="zpool list -o name,size,alloc,free,frag,cap,dedup,health"
+alias zps="zpool status -D"
