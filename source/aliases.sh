@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.153.20180717.3
+hachreAliasesVersion=0.153.20180718.1
 
 #
 ### hachreAliases internal stuff
@@ -2524,15 +2524,15 @@ if [ "$?" == "0" ]; then
 		fi
 
 		# The output is 0, we can now simply disable the unit.
-		systemctl disable "$1"
-		systemctl reset-failed "$1" >/dev/null 2>&1
-		systemctl disable "$1" >/dev/null 2>&1
+		systemctl disable $@
+		systemctl reset-failed $@ >/dev/null 2>&1
+		systemctl disable $@ >/dev/null 2>&1
 	}
 	function senable() {
 		sreload
-		systemctl reset-failed "$1" >/dev/null 2>&1
-		systemctl enable -f "$1"
-		systemctl reenable "$1" >/dev/null 2>&1
+		systemctl reset-failed $@ >/dev/null 2>&1
+		systemctl enable -f $@
+		systemctl reenable $@ >/dev/null 2>&1
 	}
 	function sstatus() {
 		function echook() {
