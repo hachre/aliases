@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.153.20180712.3
+hachreAliasesVersion=0.153.20180717.1
 
 #
 ### hachreAliases internal stuff
@@ -1830,7 +1830,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		equo search $* P
+		equo search $* | less -rEFXKn
 		return $?
 	fi
 
@@ -1846,32 +1846,32 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		brew search $*
+		brew search $* | less -rEFXKn
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper search -s $*
+		$hachreAliasesRoot zypper search -s $* | less -rEFXKn
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "alpine" ]; then
-		apk search -a $* | sort | uniq
+		apk search -a $* | sort | uniq | less -rEFXKn
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt-cache search $*
+		$hachreAliasesRoot apt-cache search $* | less -rEFXKn
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-        $hachreAliasesRoot pkg search $*
+        $hachreAliasesRoot pkg search $* | less -rEFXKn
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-        $hachreAliasesRoot $(dyYumCmd) search $* | tee
+        $hachreAliasesRoot $(dyYumCmd) search $* | less -rEFXKn
 		return $?
 	fi
 
