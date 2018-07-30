@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.153.20180718.1
+hachreAliasesVersion=0.153.20180730.1
 
 #
 ### hachreAliases internal stuff
@@ -1830,7 +1830,7 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
-		equo search $* | less -rEFXKn
+		equo search --color $* | less -rEFXKn
 		return $?
 	fi
 
