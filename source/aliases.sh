@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.153.20180730.1
+hachreAliasesVersion=0.154.20180823.1
 
 #
 ### hachreAliases internal stuff
@@ -2404,6 +2404,11 @@ function echoGreen() {
 function echoYellow() {
 	echo -ne "\e[93m$1\e[0m"
 }
+
+# Arch specific commands
+if [ "$dyDetectedDistro" == "arch" ]; then
+	alias mirrorlist="curl -s "https://www.archlinux.org/mirrorlist/?country=DE&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 5 - > /etc/pacman.d/mirrorlist"
+fi
 
 #
 # Systemctl
