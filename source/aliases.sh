@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.154.20180823.2
+hachreAliasesVersion=0.155.20180919.1
 
 #
 ### hachreAliases internal stuff
@@ -3033,3 +3033,11 @@ alias _ha_zpl="zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="zpool status -D"
 alias zps="_ha_zps"
+
+function showipv6 {
+	device=""
+	if [ ! -z "$1" ]; then
+		device="$1"
+	fi
+	ip -o -6 addr list scope global $device | grep -v "inet6 fc" | grep -v "inet6 fd" | grep -v "preferred_lft 0sec" | sed -n 's/.*inet6 \([0-9a-f:]\+\).*/\1/p' | head -n 1
+}
