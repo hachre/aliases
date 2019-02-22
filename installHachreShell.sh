@@ -68,6 +68,10 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/local/ha
 # Install nano syntax highlighting
 echo "Installing nano syntax highlighting..."
 git clone https://github.com/scopatz/nanorc.git /usr/local/hachre/aliases/nano-syntax-highlighting
+prev=$(PWD)
+cd /usr/local/hachre/aliases/nano-syntax-highlighting
+git checkout fe659cb3f69f7fa382aa321c8f20259c442d5d3e
+cd "$prev"
 cat /etc/nanorc | grep -v "hachre/aliases" > /etc/nanorc.tmp
 mv /etc/nanorc.tmp /etc/nanorc
 echo "include /usr/local/hachre/aliases/nano-syntax-highlighting/*.nanorc" >> /etc/nanorc
