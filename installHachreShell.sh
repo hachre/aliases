@@ -68,7 +68,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/local/ha
 # Install nano syntax highlighting
 echo "Installing nano syntax highlighting..."
 git clone https://github.com/scopatz/nanorc.git /usr/local/hachre/aliases/nano-syntax-highlighting
-prev=$(PWD)
+prev=$(pwd)
 cd /usr/local/hachre/aliases/nano-syntax-highlighting
 git checkout fe659cb3f69f7fa382aa321c8f20259c442d5d3e
 cd "$prev"
