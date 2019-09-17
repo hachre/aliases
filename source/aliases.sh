@@ -1026,12 +1026,22 @@ function dyk {
 	if [ "$dyDetectedDistro" == "arch" ]; then
         function printinfo {
             echo ""
-            echo "If there are still GPG problems, run dySetup."
+            echo "If there are still GPG problems, try running 'dyk --reset' and/or run dySetup."
         }
 
         if [ -z "$1" ]; then
             echo "Updating all keys. To update a specific key use 'dyk <keyid>'"
             $hachreAliasesRoot pacman-key --refresh-keys
+			echo "Refresh done."
+            printinfo
+    		return $?
+        fi
+        if [ "$1" == "--reset" ]; then
+            echo "Resetting key system..."
+            $hachreAliasesRoot pacman-key --init
+            $hachreAliasesRoot pacman-key --populate
+            $hachreAliasesRoot pacman-key --refresh-keys
+			echo "Full key reset done."
             printinfo
     		return $?
         fi
