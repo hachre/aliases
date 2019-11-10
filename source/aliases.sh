@@ -3048,7 +3048,7 @@ function zrmsnaps {
 	if [ -z "$1" ]; then
 		echo "Usage: zrmsnaps <zfs volume> <keyword>"
 		echo "Will erase all snaps under <zfs volume> recursively if they contain <keyword>."
-		exit 127
+		return 127
 	fi
 	volume="$1"
 
@@ -3061,7 +3061,7 @@ function zrmsnaps {
 	zfs get compress "$volume" 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		echo "Error: Given volume '$volume' doesn't exist."
-		exit 1
+		return 1
 	fi
 
 	# Prepare parameters
