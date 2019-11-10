@@ -3078,7 +3078,7 @@ function zrmsnaps {
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
-				zfs destroy -rv "$entry"
+				zfs destroy -rv "$entry" 2>/dev/null
 			fi
 		done
 	}
