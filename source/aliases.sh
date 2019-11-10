@@ -3046,8 +3046,9 @@ alias zps="_ha_zps"
 function zrmsnaps {
 	volume=""
 	if [ -z "$1" ]; then
-		echo "Usage: zrmsnaps <zfs volume> <keyword>"
+		echo "Usage: zrmsnaps <zfs volume> [keyword]"
 		echo "Will erase all snaps under <zfs volume> recursively if they contain <keyword>."
+		echo "Please note: keyword is optional. If it is ommitted, will delete ALL snapshots in volume."
 		return 127
 	fi
 	volume="$1"
