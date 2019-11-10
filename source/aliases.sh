@@ -3074,7 +3074,7 @@ function zrmsnaps {
 	# Execute
 	function execute() {
 		# Create the todo list...
-		for entry in $(zfs list -t snapshot -r "$volume" $keywordcmd); do
+		for entry in $(zfs list -t snapshot -r "$volume" -H -o name $keywordcmd); do
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
@@ -3086,11 +3086,9 @@ function zrmsnaps {
 	# Execute in pretend mode
 	execute
 
-	set -e
 	echo ""
 	echo "Does this look ok? Press ENTER to continue or CTRL+C to cancel..."
 	read
-	set +e
 
 	# Execute in actual mode
 	execute --actual
