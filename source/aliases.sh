@@ -3043,6 +3043,57 @@ alias _ha_zpl="zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="zpool status -D"
 alias zps="_ha_zps"
+function zrmsnaps {
+	volume=""
+	if [ -z "$1" ]; then
+		echo "Usage: zrmsnaps <zfs volume> <keyword>"
+		echo "Will erase all snaps under <zfs volume> recursively if they contain <keyword>."
+		exit 127
+	fi
+	volume="$1"
+
+	keyword=""
+	if [ ! -z "$2" ]; then
+		keyword="$2"
+	fi
+
+	# Check if given volume exists
+	zfs get compress "$volume" 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: Given volume '$volume' doesn't exist."
+		exit 1
+	fi
+
+	# Prepare parameters
+	keywordcmd="| grep --color=none -i $keyword"
+	if [ -z "$keyword" ]; then
+		keywordcmd=""
+	fi
+
+	# Execute
+	function execute() {
+		# Create the todo list...
+		for entry in $(zfs list -t snapshot -r "$volume" $keywordcmd); do
+			if [ -z "$1" ]; then
+				echo "destroying: '$entry'..."
+			else
+				zfs destroy -rv "$entry"
+			fi
+		done
+	}
+
+	# Execute in pretend mode
+	execute
+
+	set -e
+	echo ""
+	echo "Does this look ok? Press ENTER to continue or CTRL+C to cancel..."
+	read
+	set +e
+
+	# Execute in actual mode
+	execute --actual
+}
 
 function showipv6 {
 	device=""
