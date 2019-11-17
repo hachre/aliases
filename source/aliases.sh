@@ -3096,9 +3096,13 @@ function zrmsnaps {
 function zfree() {
 	target="$1"
 	if [ -z "$target" ]; then
-		target="tank"
+		# Special list mode for all zpools
+		for entry in $(zpool list -o name -H); do
+			zfs get avail -o name,value -H "$entry" | awk '{ print $1" "$2 }'
+		done
+		return
 	fi
-	zfs get avail "$target" -o value -H
+	zfs get avail -o value -H "$target"
 }
 
 function showipv6 {
