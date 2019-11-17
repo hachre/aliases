@@ -3093,6 +3093,13 @@ function zrmsnaps {
 	# Execute in actual mode
 	execute --actual
 }
+function zfree() {
+	target="$1"
+	if [ -z "$target" ]; then
+		target="tank"
+	fi
+	zfs get avail "$target" -o value -H
+}
 
 function showipv6 {
 	device=""
