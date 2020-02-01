@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.156.20190917.1
+hachreAliasesVersion=0.159.20200201.1
 
 #
 ### hachreAliases internal stuff
@@ -149,6 +149,7 @@ function mkcd() {
 # Various / Misc
 #
 
+alias ytd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s'"
 alias varnishreset="varnishadm 'ban req.url ~ .'"
 
 function webrip() {
