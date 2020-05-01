@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.159.20200201.1
+hachreAliasesVersion=0.160.20200501.1
 
 #
 ### hachreAliases internal stuff

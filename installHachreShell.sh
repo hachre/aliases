@@ -9,6 +9,13 @@ if [ $(whoami) != "root" ]; then
 	exit 1
 fi
 
+# FreeBSD has no curl by default
+which curl 1>/dev/null 2>&1
+if [ "$?" != "0" ]; then
+	echo "Please install 'curl' and then run this again."
+	exit 1
+fi
+
 # Load hachreAliases
 echo "Loading hachreAliases..."
 rm -R /usr/local/hachre/aliases 2>/dev/null || true
@@ -43,7 +50,7 @@ function installPrequisites {
 if [ "$1" == "--force" ]; then
 	installPrequisites
 else
-	if [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "CentOS" ]; then
 		installPrequisites
 	else
 		echo "Error: Your distribution '$dyDetectedDistro' has not been tested for automatic package installation."
@@ -72,8 +79,10 @@ prev=$(pwd)
 cd /usr/local/hachre/aliases/nano-syntax-highlighting
 git checkout fe659cb3f69f7fa382aa321c8f20259c442d5d3e
 cd "$prev"
-cat /etc/nanorc | grep -v "hachre/aliases" > /etc/nanorc.tmp
-mv /etc/nanorc.tmp /etc/nanorc
+if [ -f "/etc/nanorc" ]; then
+	cat /etc/nanorc | grep -v "hachre/aliases" > /etc/nanorc.tmp
+	mv /etc/nanorc.tmp /etc/nanorc
+fi
 echo "include /usr/local/hachre/aliases/nano-syntax-highlighting/*.nanorc" >> /etc/nanorc
 
 # Installing the user defaults
@@ -125,7 +134,7 @@ chmod -R u=rwX,g-rwx,o-rwx $HOME/.ssh 2>/dev/null || true
 chmod u=rwX,g-rwx,o-rwx $HOME
 
 # Switch to zsh
-chsh -s /bin/zsh
+chsh -s $(which zsh)
 
 # Finished
 echo ""
