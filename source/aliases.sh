@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.160.20200502.1
+hachreAliasesVersion=0.161.20200502.2
 
 #
 ### hachreAliases internal stuff
@@ -1021,6 +1021,21 @@ function dyh {
 	fi
 
 	return 0
+}
+
+function dyc {
+	if [ -z "$1" ]; then
+		echo "Usage: dyc <package name>"
+		echo "Configures the package for later installation with dyii"
+		return 1
+	fi
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		make -C $(dyFreeBSDResolvePortPath $1) config-recursive
+		echo "All done :) Now you can install with dyii <package name>"
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
 }
 
 function dyk {
