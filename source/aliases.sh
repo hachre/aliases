@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.160.20200501.1
+hachreAliasesVersion=0.160.20200502.1
 
 #
 ### hachreAliases internal stuff
@@ -3113,3 +3113,13 @@ function showipv6 {
 	fi
 	ip -o -6 addr list scope global $device | grep -v "inet6 fc" | grep -v "inet6 fd" | grep -v "preferred_lft 0sec" | sed -n 's/.*inet6 \([0-9a-f:]\+\).*/\1/p' | head -n 1
 }
+
+# Distro Specific Changes
+if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+	unalias dmesg
+	unalias halt
+	unset -f reboot
+	unset -f poweroff
+	unalias aria2c
+	alias aria2c="aria2c -x 10 -j 10"
+fi
