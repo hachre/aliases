@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.161.20200502.2
+hachreAliasesVersion=0.161.20200502.3
 
 #
 ### hachreAliases internal stuff
@@ -1027,11 +1027,60 @@ function dyc {
 	if [ -z "$1" ]; then
 		echo "Usage: dyc <package name>"
 		echo "Configures the package for later installation with dyii"
+		echo "Also check: dyc, dycc (recursive), dycr (remove single), dyccr (remove, recursive)"
+		return 1
+	fi
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		make -C $(dyFreeBSDResolvePortPath $1) config
+		echo "All done :) Now you can install with dyii <package name>"
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
+
+function dycc {
+	if [ -z "$1" ]; then
+		echo "Usage: dycc <package name>"
+		echo "Configures the package and its dependencies for later installation with dyii"
+		echo "Also check: dyc, dycc (recursive), dycr (remove single), dyccr (remove, recursive)"
 		return 1
 	fi
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		make -C $(dyFreeBSDResolvePortPath $1) config-recursive
 		echo "All done :) Now you can install with dyii <package name>"
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
+
+function dycr {
+	if [ -z "$1" ]; then
+		echo "Usage: dycr <package name>"
+		echo "Removes the package configuration and resets it to defaults"
+		echo "Also check: dyc, dycc (recursive), dycr (remove single), dyccr (remove, recursive)"
+		return 1
+	fi
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		make -C $(dyFreeBSDResolvePortPath $1) rmconfig
+		echo "All done :)"
+		return $?
+	fi
+
+	echo "This command is not supported on your platform."
+}
+
+function dyccr {
+	if [ -z "$1" ]; then
+		echo "Usage: dyccr <package name>"
+		echo "Removes the package configuration recursively and resets it to defaults"
+		echo "Also check: dyc, dycc (recursive), dycr (remove single), dyccr (remove, recursive)"
+		return 1
+	fi
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		make -C $(dyFreeBSDResolvePortPath $1) rmconfig-recursive
+		echo "All done :)"
 		return $?
 	fi
 
