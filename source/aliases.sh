@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.162.20200503.2
+hachreAliasesVersion=0.162.20200503.3
 
 #
 ### hachreAliases internal stuff
@@ -964,6 +964,10 @@ function dyFreeBSDCheckPortsUtils {
 
 	if [ ! -f "/usr/ports/CHANGES" ]; then
 		portsnap fetch extract
+	fi
+
+	if [ ! -d "/usr/ports/distfiles" ]; then
+		mkdir /usr/ports/distfiles
 	fi
 
 	which psearch 1>/dev/null 2>&1
