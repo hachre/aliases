@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.161.20200502.3
+hachreAliasesVersion=0.162.20200503.1
 
 #
 ### hachreAliases internal stuff
@@ -804,6 +804,7 @@ function dyDetectDistro {
 	which freebsd-version 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="FreeBSD"
+		dyDistroName="FreeBSD"
 		dyDistroInfo="\n * The native package manager for this distro is called 'pkg'.\n * The alternate package manager is called ports and runs through 'portmaster'\n * To search inside of ports use 'psearch'\n * To install new major versions you should use 'freebsd-update fetch' and 'freebsd-update install'."
 		return 0
 	fi
@@ -913,14 +914,17 @@ function dyYumCmd {
 }
 
 # helper functions
-function dyFreeBSDResolvePortPath {
+function dyFreeBSDResolvePortPathOld {
 	pwd="$PWD"
 	cd /usr/ports
 	echo `make search name="$*" display=path | head -n 1 | awk '{print $2}'`
 	cd "$pwd"
 }
+function dyFreeBSDResolvePortPath {
+	echo /usr/ports/*/$1
+}
 
-function dyFreeBSDCheckPortUtils {
+function dyFreeBSDCheckPortsUtilsOld {
 	if [ "$dyDetectedDistro" != "FreeBSD" ]; then
 		return 0
 	fi
@@ -930,7 +934,7 @@ function dyFreeBSDCheckPortUtils {
 		# Use traditional installation method to install portmaster
 		pwd="$PWD"
 		cd /usr/ports
-		path=`dyFreeBSDResolvePortPath portmaster`
+		path=`dyFreeBSDResolvePortPathOld portmaster`
 		if [ ! -d "path" ]; then
 			echo "Error: Couldn't install portmaster."
 			return 1
@@ -943,14 +947,45 @@ function dyFreeBSDCheckPortUtils {
 	which psearch 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		# Install psearch via just installed portmaster
-		path=`dyFreeBSDResolvePortPath psearch`
+		path=`dyFreeBSDResolvePortPathOld psearch`
 		$hachreAliasesRoot portmaster "$path"
 	fi
 }
 
+function dyFreeBSDCheckPortsUtils {
+	if [ "$dyDetectedDistro" != "FreeBSD" ]; then
+		return 0
+	fi
+
+	which portsnap 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		dyi -y portsnap
+	fi
+
+	if [ ! -f "/usr/ports/CHANGES" ]; then
+		portsnap fetch extract
+	fi
+
+	which psearch 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		dyi -y psearch
+	fi
+
+	which synth 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		dyi -y synth
+		synth configure
+		echo "Run 'synth configure' to configure synth some more."
+	fi
+fi
+
 #
 # hachre's unified packaging commands
 #
+dyAltPkgManager=""
+if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+	dyAltPkgManager="synth"
+fi
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
 		echo "Error: Sadly, your distro is not supported."
@@ -1287,8 +1322,13 @@ function dyxx {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-        $hachreAliasesRoot portsnap fetch
-        $hachreAliasesRoot portsnap update
+		if [ "$dyAltPkgManager" == "portmaster" ]; then
+			dyFreeBSDCheckPortsUtilsOld
+		fi
+		if [ "$dyAltPkgManager" == "synth" ]; then
+			dyFreeBSDCheckPortsUtils
+		fi
+        $hachreAliasesRoot portsnap fetch update
 		return $?
 	fi
 
@@ -1528,13 +1568,21 @@ function dyuu {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyxx
-		dyFreeBSDCheckPortUtils
-		echo "This command is not very useful. You should use dyii 'package' or dyu instead."
-		sleep 3
-        $hachreAliasesRoot portmaster -adwv
-		#$hachreAliasesRoot pkg autoremove
-		return $?
+		if [ "$dyAltPkgManager" == "portmaster" ]; then
+			dyxx
+			dyFreeBSDCheckPortsUtilsOld
+			echo "This command is not very useful. You should use dyii 'package' or dyu instead."
+			sleep 3
+	        $hachreAliasesRoot portmaster -adwv
+			#$hachreAliasesRoot pkg autoremove
+			return $?
+		fi
+		if [ "$dyAltPkgManager" == "synth" ]; then
+			dyFreeBSDCheckPortsUtils
+			dyxx
+			$hachreAliasesRoot synth upgrade-system
+			return $?
+		fi
 	fi
 
 	echo "This command is not supported on your platform."
@@ -1720,10 +1768,18 @@ function dyii {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortUtils
-		path=`dyFreeBSDResolvePortPath $*`
-		$hachreAliasesRoot portmaster --force-config "$path"
-		return $?
+		if [ "$dyAltPkgManager" == "portmaster" ]; then
+			dyFreeBSDCheckPortsUtilsOld
+			path=`dyFreeBSDResolvePortPathOld $*`
+			$hachreAliasesRoot portmaster --force-config "$path"
+			return $?
+		fi
+		if [ "$dyAltPkgManager" == "synth" ]; then
+			dyFreeBSDCheckPortsUtils
+			path=$(dyFreeBSDResolvePortPath $1)
+			$hachreAliasesRoot synth install $path
+			return $?
+		fi
 	fi
 
 	echo "This command is not supported on your platform. This either means dyi already handles it or it won't work at all."
@@ -1825,14 +1881,14 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-    $hachreAliasesRoot pkg remove $*
+    	$hachreAliasesRoot pkg remove $*
 		$hachreAliasesRoot pkg autoremove
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-    $hachreAliasesRoot $(dyYumCmd) remove $* | tee
-    $hachreAliasesRoot $(dyYumCmd) autoremove -y | tee	
+	    $hachreAliasesRoot $(dyYumCmd) remove $* | tee
+	    $hachreAliasesRoot $(dyYumCmd) autoremove -y | tee
 		return $?
 	fi
 
@@ -1975,7 +2031,7 @@ function dyss {
 			echo "Error: This command is not supported unless you first run dySetup."
 			return 1
 		fi
-		
+
 		$_ha_arch_pm -Ss $@ --aur | less -rEFXKn
 		return $?
 	fi
@@ -2002,7 +2058,7 @@ function dyss {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortUtils
+		dyFreeBSDCheckPortsUtilsOld
 		$hachreAliasesRoot psearch -n $*
 		return $?
 		#pwd="$PWD"
