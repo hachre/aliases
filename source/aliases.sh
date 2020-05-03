@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.162.20200503.1
+hachreAliasesVersion=0.162.20200503.2
 
 #
 ### hachreAliases internal stuff
@@ -977,7 +977,7 @@ function dyFreeBSDCheckPortsUtils {
 		synth configure
 		echo "Run 'synth configure' to configure synth some more."
 	fi
-fi
+}
 
 #
 # hachre's unified packaging commands
