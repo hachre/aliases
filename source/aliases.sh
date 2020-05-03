@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.162.20200503.3
+hachreAliasesVersion=0.163.20200503.4
 
 #
 ### hachreAliases internal stuff
@@ -805,7 +805,7 @@ function dyDetectDistro {
 	if [ "$?" == "0" ]; then
 		dyDetectedDistro="FreeBSD"
 		dyDistroName="FreeBSD"
-		dyDistroInfo="\n * The native package manager for this distro is called 'pkg'.\n * The alternate package manager is called ports and runs through 'portmaster'\n * To search inside of ports use 'psearch'\n * To install new major versions you should use 'freebsd-update fetch' and 'freebsd-update install'."
+		dyDistroInfo="\n * The native package manager for this distro is called 'pkg'.\n * The alternate package manager is called ports and runs through '$dyAltPkgManager'\n * To search inside of ports use 'psearch'\n * To install new major versions you should use 'freebsd-update fetch install'."
 		return 0
 	fi
 
@@ -1376,17 +1376,22 @@ function dyw {
 	if [ "$dyDetectedDistro" == "ubuntu" ]; then
 		apt-mark showmanual
 		return $?
-  fi
+	fi
 
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
 		cat /var/lib/portage/world
 		return $?
-  fi
+	fi
 
 	if [ "$dyDetectedDistro" == "alpine" ]; then
 		cat /etc/apk/world
 		return $?
-  fi
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		$hachreAliasesRoot pkg info
+		return $?
+	fi
 
 	echo "This command is not supported on your platform."
 }
@@ -1797,6 +1802,11 @@ function dyl {
 
 	if [ "$dyDetectedDistro" == "arch" ]; then
 		$_ha_arch_pm -Qlq $@ | less -rEFXKn
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
+		$hachreAliasesRoot pkg info --list-file $@
 		return $?
 	fi
 
