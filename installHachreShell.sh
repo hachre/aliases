@@ -16,15 +16,22 @@ if [ "$?" != "0" ]; then
 	exit 1
 fi
 
+cmd="$1"
 # Load hachreAliases
 echo "Loading hachreAliases..."
 rm -R /usr/local/hachre/aliases 2>/dev/null || true
-$c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
-source /tmp/aliases.sh || true
-rm /tmp/aliases.sh
+if [ "$cmd" != "--no-internet" ]; then
+	$c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
+	source /tmp/aliases.sh || true
+	rm /tmp/aliases.sh
+fi
 
 # Automatic installation of prequisites
 function installPrequisites {
+	if [ "$cmd" == "--no-internet" ]; then
+		return 0
+	fi
+
 	# Set the noconfirm flag based on the distro in use
 	noconfirm="-y"
 	if [ "$dyDetectedDistro" == "arch" ]; then
@@ -65,16 +72,22 @@ fi
 
 # Install hachreAliases
 echo "Installing hachreAliases..."
-$c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
-source /usr/local/hachre/aliases/source/aliases.sh || true
+if [ "$cmd" != "--no-internet" ]; then
+	$c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
+	source /usr/local/hachre/aliases/source/aliases.sh || true
+fi
 
 # Install zsh syntax highlighting
 echo "Installing zsh syntax highlighting..."
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/local/hachre/aliases/zsh-syntax-highlighting
+if [ "$cmd" != "--no-internet" ]; then
+	git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /usr/local/hachre/aliases/zsh-syntax-highlighting
+fi
 
 # Install nano syntax highlighting
 echo "Installing nano syntax highlighting..."
-git clone https://github.com/scopatz/nanorc.git /usr/local/hachre/aliases/nano-syntax-highlighting
+if [ "$cmd" != "--no-internet" ]; then
+	git clone https://github.com/scopatz/nanorc.git /usr/local/hachre/aliases/nano-syntax-highlighting
+fi
 prev=$(pwd)
 cd /usr/local/hachre/aliases/nano-syntax-highlighting
 git checkout fe659cb3f69f7fa382aa321c8f20259c442d5d3e
@@ -91,7 +104,9 @@ fi
 
 # Installing the user defaults
 echo "Installing default user profiles..."
-$c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > $HOME/.zshrc_grml
+if [ "$cmd" != "--no-internet" ]; then
+	$c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > $HOME/.zshrc_grml
+fi
 echo "SAVEHIST=10000" >> $HOME/.zshrc_grml
 
 # hachre's Default .zshrc
@@ -123,12 +138,18 @@ echo "hide_kernel_threads=1" >> $HOME/.config/htop/htoprc
 
 # Install byobu settings
 echo "Installing byobu settings..."
-$c https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz > /tmp/byobu-settings.tar.gz
-cd $HOME
-tar xzf /tmp/byobu-settings.tar.gz
-rm /tmp/byobu-settings.tar.gz
-rm -R .byobu 2>/dev/null || true
-mv byobu .byobu
+if [ "$cmd" != "--no-internet" ]; then
+	$c https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz > /tmp/byobu-settings.tar.gz
+fi
+if [ -f "/tmp/byobu-settings.tar.gz" ]; then
+	cd $HOME
+	tar xzf /tmp/byobu-settings.tar.gz
+	rm /tmp/byobu-settings.tar.gz
+	rm -R .byobu 2>/dev/null || true
+	mv byobu .byobu
+else
+	touch $HOME/.byobu
+fi
 
 # Correct home permissions
 echo "Fixing some permissions in '$HOME'..."
@@ -136,6 +157,7 @@ chown -R $USER $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
 chmod -R u=rwX,g-rwx,o-rwx $HOME/.zshrc* $HOME/.config/htop $HOME/.byobu
 chmod -R u=rwX,g-rwx,o-rwx $HOME/.ssh 2>/dev/null || true
 chmod u=rwX,g-rwx,o-rwx $HOME
+rm $HOME/.bybou 1>/dev/null 2>&1 || true
 
 # Switch to zsh
 chsh -s $(which zsh)
