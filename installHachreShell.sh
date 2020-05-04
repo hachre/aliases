@@ -86,6 +86,7 @@ fi
 echo "include /usr/local/hachre/aliases/nano-syntax-highlighting/*.nanorc" >> /etc/nanorc
 if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 	mv /etc/nanorc /usr/local/etc/nanorc
+	ln -s /usr/local/bin/bash /bin/bash
 fi
 
 # Installing the user defaults
