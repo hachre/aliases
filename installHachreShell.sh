@@ -28,10 +28,6 @@ fi
 
 # Automatic installation of prequisites
 function installPrequisites {
-	if [ "$cmd" == "--no-internet" ]; then
-		return 0
-	fi
-
 	# Set the noconfirm flag based on the distro in use
 	noconfirm="-y"
 	if [ "$dyDetectedDistro" == "arch" ]; then
@@ -54,6 +50,7 @@ function installPrequisites {
 }
 
 # Automatic prequisite installation is only tested on Arch and Ubuntu
+if [ "$cmd" != "--no-internet" ]; then
 if [ "$1" == "--force" ]; then
 	installPrequisites
 else
@@ -68,6 +65,7 @@ else
 		echo "Optional:    htop aria2 wget"
 		exit 1
 	fi
+fi
 fi
 
 # Install hachreAliases
