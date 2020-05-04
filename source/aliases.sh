@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.163.20200503.5
+hachreAliasesVersion=0.163.20200504.1
 
 #
 ### hachreAliases internal stuff
@@ -3233,11 +3233,11 @@ function zfree() {
 	if [ -z "$target" ]; then
 		# Special list mode for all zpools
 		for entry in $(zpool list -o name -H); do
-			zfs get avail -o name,value -H "$entry" | awk '{ print $1" "$2 }'
+			zfs get -o name,value -H avail "$entry" | awk '{ print $1" "$2 }'
 		done
 		return
 	fi
-	zfs get avail -o value -H "$target"
+	zfs get -o value -H avail "$target"
 }
 
 function showipv6 {
