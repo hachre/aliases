@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.163.20200504.1
+hachreAliasesVersion=0.163.20200504.2
 
 #
 ### hachreAliases internal stuff
@@ -2072,14 +2072,16 @@ function dyss {
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-		dyFreeBSDCheckPortsUtilsOld
-		$hachreAliasesRoot psearch -n $*
-		return $?
-		#pwd="$PWD"
-		#cd /usr/ports
-		#$hachreAliasesRoot make quicksearch name=$*
-		#cd "$pwd"
-		#return $?
+		if [ "$dyAltPkgManager" == "portmaster" ]; then
+			dyFreeBSDCheckPortsUtilsOld
+			$hachreAliasesRoot psearch -n $*
+			return $?
+		fi
+		if [ "$dyAltPkgManager" == "synth" ]; then
+			dyFreeBSDCheckPortsUtils
+			$hachreAliasesRoot psearch -no $*
+			return $?
+		fi
 	fi
 
 	echo "This command is not supported on your platform."
