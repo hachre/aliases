@@ -19,11 +19,11 @@ fi
 cmd="$1"
 # Load hachreAliases
 echo "Loading hachreAliases..."
-rm -R /usr/local/hachre/aliases 2>/dev/null || true
 if [ "$cmd" != "--no-internet" ]; then
 	$c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
 	source /tmp/aliases.sh || true
 	rm /tmp/aliases.sh
+	rm -R /usr/local/hachre/aliases 2>/dev/null || true
 fi
 
 # Automatic installation of prequisites
@@ -74,8 +74,8 @@ fi
 echo "Installing hachreAliases..."
 if [ "$cmd" != "--no-internet" ]; then
 	$c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
-	source /usr/local/hachre/aliases/source/aliases.sh || true
 fi
+source /usr/local/hachre/aliases/source/aliases.sh || true
 
 # Install zsh syntax highlighting
 echo "Installing zsh syntax highlighting..."
