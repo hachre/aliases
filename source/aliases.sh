@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.164.20200504.6
+hachreAliasesVersion=0.165.20200510.1
 
 #
 ### hachreAliases internal stuff
@@ -3203,15 +3203,15 @@ function zrmsnaps {
 	fi
 
 	# Prepare parameters
-	keywordcmd="| grep --color=none -i $keyword"
+	keywordcmd="grep --color=none -i $keyword"
 	if [ -z "$keyword" ]; then
-		keywordcmd=""
+		keywordcmd="cat"
 	fi
 
 	# Execute
 	function execute() {
 		# Create the todo list...
-		for entry in $(zfs list -t snapshot -r "$volume" -H -o name $keywordcmd); do
+		for entry in $(zfs list -t snapshot -r "$volume" -H -o name | $keywordcmd); do
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
