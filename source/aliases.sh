@@ -3181,9 +3181,14 @@ alias zpl="_ha_zpl"
 alias _ha_zps="zpool status -D"
 alias zps="_ha_zps"
 function zrmsnaps {
+	autoconfirm=0
+	if [[ "$@" == *"--yes"* ]]; then
+		autoconfirm=1
+	fi
+
 	volume=""
 	if [ -z "$1" ]; then
-		echo "Usage: zrmsnaps <zfs volume> [keyword]"
+		echo "Usage: zrmsnaps <zfs volume> [keyword] [--yes]"
 		echo "Will erase all snaps under <zfs volume> recursively if they contain <keyword>."
 		echo "Please note: keyword is optional. If it is ommitted, will delete ALL snapshots in volume."
 		return 127
@@ -3220,12 +3225,14 @@ function zrmsnaps {
 		done
 	}
 
-	# Execute in pretend mode
-	execute
+	if [ "$autoconfirm" != 1 ]; then
+		# Execute in pretend mode
+		execute
 
-	echo ""
-	echo "Does this look ok? Press ENTER to continue or CTRL+C to cancel..."
-	read
+		echo ""
+		echo "Does this look ok? Press ENTER to continue or CTRL+C to cancel..."
+		read
+	fi
 
 	# Execute in actual mode
 	execute --actual
