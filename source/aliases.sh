@@ -3229,7 +3229,7 @@ function zrmsnaps {
 		done
 	}
 
-	if [ "$autoconfirm" != 1 ]; then
+	if [ $autoconfirm == 0 ]; then
 		# Execute in pretend mode
 		execute
 
