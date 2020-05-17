@@ -3196,7 +3196,7 @@ function zrmsnaps {
 	volume="$1"
 
 	keyword=""
-	if [ ! -z "$2" ]; then
+	if [ ! -z "$2" ] && [ "$2" != "--yes" ]; then
 		keyword="$2"
 	fi
 
@@ -3217,6 +3217,10 @@ function zrmsnaps {
 	function execute() {
 		# Create the todo list...
 		for entry in $(zfs list -t snapshot -r "$volume" -H -o name | $keywordcmd); do
+			if [[ "$entry" != *"@"* ]]; then
+                echo "Invalid entry '$entry' skipped... Spaces in snapshot names are not supported."
+                continue
+            fi
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
