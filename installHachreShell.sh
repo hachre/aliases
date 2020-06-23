@@ -54,7 +54,7 @@ if [ "$cmd" != "--no-internet" ]; then
 if [ "$1" == "--force" ]; then
 	installPrequisites
 else
-	if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "arch" ] || [ "$dyDetectedDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "CentOS" ] || [ "$dyDetectedDistro" == "windows" ]; then
 		installPrequisites
 	else
 		echo "Error: Your distribution '$dyDetectedDistro' has not been tested for automatic package installation."
