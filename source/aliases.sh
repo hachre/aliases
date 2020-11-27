@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.166.20200624.1
+hachreAliasesVersion=0.166.20201127.1
 
 #
 ### hachreAliases internal stuff
@@ -784,7 +784,7 @@ function dyDetectDistro {
 	# OS X with Brew
 	if [ -f "/usr/local/bin/brew" ]; then
 		dyDetectedDistro="osx-brew"
-		dyDistroName"macOS with brew"
+		dyDistroName="macOS with brew"
 		dyDistroInfo="\n * The native package manager is 'brew'."
 		return 0
 	fi
