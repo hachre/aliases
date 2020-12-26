@@ -13,9 +13,9 @@ if [ "$dir" == "unknown" ]; then
 		echo "Error: hachreupdate has to be run by root."
 		exit 1
 	fi
-		
+
 	if [ -d "/usr/local/hachre/aliases" ]; then
-		dir="/usr/local/hachre/aliases"		
+		dir="/usr/local/hachre/aliases"
 	fi
 fi
 
@@ -24,6 +24,7 @@ cd "$dir"
 
 set -e
 
+git config pull.ff only
 git fetch -f
 echo "Updated from:"
 git reset --hard
