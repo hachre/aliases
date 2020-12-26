@@ -170,19 +170,19 @@ function ytdc() {
 	}
 	if [ -z "$1" ] || [ -z "$2" ]; then
 		usage
-		exit 127
+		return 127
 	fi
 	channel="$1"
 	destPath="$2"
 	if [ -z "$channel" ]; then
 		echo "Error: No channel given."
 		usage
-		exit 127
+		return 127
 	fi
 	if [ -z "$destPath" ]; then
 		echo "Error: No destPath given."
 		usage
-		exit 127
+		return 127
 	fi
 	whereami=$(pwd)
 
@@ -190,7 +190,7 @@ function ytdc() {
 	cd "$destPath"
 	if [ "$?" != "0" ]; then
 		echo "Error: Given destPath '$destPath' doesn't exist."
-		exit 127
+		return 127
 	fi
 	mkdir "$descriptionsFolderName" 2>/dev/null || true
 
