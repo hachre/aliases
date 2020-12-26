@@ -150,6 +150,82 @@ function mkcd() {
 #
 
 alias ytd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s'"
+function ytdc() {
+	downloadArchiveName="$_ha_ytdc_downloadArchiveName"
+	descriptionsFolderName="$_ha_ytdc_descriptionsFolderName"
+
+	# Customizable settings
+	if [ -z "$downloadArchiveName" ]; then
+		downloadArchiveName="1A_Download-History.txt"
+	fi
+	if [ -z "$descriptionsFolderName" ]; then
+		descriptionsFolderName="Descriptions"
+	fi
+
+	# Some parameter checking
+	function usage {
+		echo "Usage: ytdc <channel> <destPath>"
+		echo " channel:  the YouTube channel URL enclosed in quotes"
+		echo " destPath: the path where you want the downloads for this channel to go"
+	}
+	if [ -z "$1" ] || [ -z "$2" ]; then
+		usage
+		exit 127
+	fi
+	channel="$1"
+	destPath="$2"
+	if [ -z "$channel" ]; then
+		echo "Error: No channel given."
+		usage
+		exit 127
+	fi
+	if [ -z "$destPath" ]; then
+		echo "Error: No destPath given."
+		usage
+		exit 127
+	fi
+	whereami=$(pwd)
+
+	# Prepare the destPath
+	cd "$destPath"
+	if [ "$?" != "0" ]; then
+		echo "Error: Given destPath '$destPath' doesn't exist."
+		exit 127
+	fi
+	mkdir "$descriptionsFolderName" 2>/dev/null || true
+
+	# Let the magic happen
+	youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s' -ciw -v "$channel" --download-archive "$downloadArchiveName" --write-description
+
+	# Move all Descriptions to $descriptionsFolderName and rename them to .txt
+	sIFS="$IFS"
+	IFS="
+	"
+	echo "Moving Descriptions..."
+	for file in $(ls *.description 2>/dev/null); do
+		size=$(stat -c %s $file | awk '{ print $1 }')
+		if [ "$size" == "0" ]; then
+			rm "$file"
+		fi
+		mv "$file" "$descriptionsFolderName"
+	done
+	for file in $(ls "$descriptionsFolderName"/*.description 2>/dev/null); do
+		mv -- "$file" "${file%.description}.txt"
+	done
+
+	# Set the file dates
+	echo "Changing modifications dates on all downloaded files to YouTube upload date..."
+	for file in `ls *.mp4`; do
+		time=`echo "$file" | awk '{ print $1 }'`
+		touch -t "${time}0000" "$file"
+	done
+	IFS="$sIFS"
+
+	fixpermissions . 1>/dev/null 2>&1 || true
+	cd "$whereami"
+}
+
+
 alias varnishreset="varnishadm 'ban req.url ~ .'"
 
 function webrip() {
