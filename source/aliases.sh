@@ -3252,6 +3252,8 @@ function awsreset {
 # ZFS (_ha_zl allow custom extends through zshrc_local)
 alias _ha_zl="zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint"
 alias zl="_ha_zl"
+alias _ha_zls="zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
+alias zls="_ha_zls"
 alias _ha_zpl="zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="zpool status -D"
