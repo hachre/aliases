@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.168.20201230.1
+hachreAliasesVersion=0.168.20201230.2
 
 #
 ### hachreAliases internal stuff
@@ -129,6 +129,7 @@ function cpr {
 }
 unalias ls 2>/dev/null
 alias rls="$(which -a ls | head -n 1)"
+rls="$(which -a ls | head -n 1)"
 alias ls="ls -F --color"
 alias lsd="ls -alh"
 alias l="ls -l"
@@ -204,20 +205,20 @@ function ytdc() {
 	IFS="
 	"
 	echo "Moving Descriptions..."
-	for file in $(rls *.description 2>/dev/null); do
+	for file in $($rls *.description 2>/dev/null); do
 		size=$(stat -c %s $file | awk '{ print $1 }')
 		if [ "$size" == "0" ]; then
 			rm "$file"
 		fi
 		mv "$file" "$descriptionsFolderName"
 	done
-	for file in $(rls "$descriptionsFolderName"/*.description 2>/dev/null); do
+	for file in $($rls "$descriptionsFolderName"/*.description 2>/dev/null); do
 		mv -- "$file" "${file%.description}.txt"
 	done
 
 	# Set the file dates
 	echo "Changing modifications dates on all downloaded files to YouTube upload date..."
-	for file in $(rls *.mp4); do
+	for file in $($rls *.mp4); do
 		time=$(echo "$file" | awk '{ print $1 }')
 		touch -t "${time}0000" "$file"
 	done
