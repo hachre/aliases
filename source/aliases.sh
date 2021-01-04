@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.168.20201230.2
+hachreAliasesVersion=0.169.20210104.1
 
 #
 ### hachreAliases internal stuff
@@ -3261,6 +3261,18 @@ alias _ha_zpl="zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="zpool status -D"
 alias zps="_ha_zps"
+function snapnow {
+	defaultTank="$_ha_defaultTank"
+	if [ -z "$defaultTank" ]; then
+		defaultTank="tank"
+	fi
+	name="-$1"
+	if [ -z "$1" ]; then
+		name=""
+	fi
+	snapName="$(date +%Y-%m-%d--%H-%M)--snapnow$name"
+	zfs snap -r "$defaultTank"@"$snapName"
+}
 function zrmsnaps {
 	autoconfirm=0
 	if [[ "$@" == *"--yes"* ]]; then
