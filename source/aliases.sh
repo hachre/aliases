@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.170.20210116.2
+hachreAliasesVersion=0.170.20210117.1
 
 #
 ### hachreAliases internal stuff
@@ -3253,7 +3253,13 @@ function awsreset {
 }
 
 # ZFS (_ha_zl allow custom extends through zshrc_local)
-alias _ha_zl="zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint"
+function _ha_zl {
+	r=""
+	if [ ! -z "$1" ]; then
+		r="-r"
+	fi
+	zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint $r $@
+}
 alias zl="_ha_zl"
 alias _ha_zls="zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
 alias zls="_ha_zls"
