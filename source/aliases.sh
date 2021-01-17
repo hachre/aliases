@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.171.20210117.5
+hachreAliasesVersion=0.171.20210117.6
 
 #
 ### hachreAliases internal stuff
@@ -3273,7 +3273,7 @@ function snapnow {
 	if [ "$1" == "--help" ]; then
 		echo "Usage: snapnow [name] [pool/dataset]"
 		echo " name: optional, adds a custom string to the resulting snapshot name"
-		echo " pool: optional, runs zfs snap -r on given pool/dataset; defaults to $_ha_defaultPool 'tank'"
+		echo " pool: optional, runs zfs snap -r on given pool/dataset; defaults to \$_ha_defaultPool 'tank'"
 		return 127
 	fi
 	pool="$_ha_defaultPool"
