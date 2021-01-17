@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.171.20210117.7
+hachreAliasesVersion=0.171.20210117.8
 
 #
 ### hachreAliases internal stuff
@@ -3301,7 +3301,7 @@ function zrmsnaps {
 	fi
 
 	volume=""
-	if [ -z "$1" ]; then
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
 		echo "Usage: zrmsnaps <zfs volume> [keyword] [--yes]"
 		echo "Will erase all snaps under <zfs volume> recursively if they contain <keyword>."
 		echo "Please note: keyword is optional. If it is ommitted, will delete ALL snapshots in volume."
