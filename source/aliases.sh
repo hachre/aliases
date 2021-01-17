@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.170.20210117.2
+hachreAliasesVersion=0.170.20210117.3
 
 #
 ### hachreAliases internal stuff
@@ -3274,11 +3274,11 @@ function snapnow {
 	if [ -z "$defaultTank" ]; then
 		defaultTank="tank"
 	fi
-	name="-$1"
+	name="_$1"
 	if [ -z "$1" ]; then
 		name=""
 	fi
-	snapName="$(date +%Y-%m-%d--%H-%M)--snapnow$name"
+	snapName="dySnapnow_$(date +%Y-%m-%d_%H:%M)$name"
 	set -e
 	zfs snap -r "$defaultTank"@"$snapName"
 	if [ ! "$1" == "--quiet" ]; then
