@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.170.20210117.4
+hachreAliasesVersion=0.171.20210117.5
 
 #
 ### hachreAliases internal stuff
@@ -3270,17 +3270,27 @@ alias _ha_zps="zpool status -D"
 alias zps="_ha_zps"
 alias zlperf="zfs get primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 function snapnow {
-	defaultPool="$_ha_defaultPool"
-	if [ -z "$defaultPool" ]; then
-		defaultPool="tank"
+	if [ "$1" == "--help" ]; then
+		echo "Usage: snapnow [name] [pool/dataset]"
+		echo " name: optional, adds a custom string to the resulting snapshot name"
+		echo " pool: optional, runs zfs snap -r on given pool/dataset; defaults to $_ha_defaultPool 'tank'"
+		return 127
+	fi
+	pool="$_ha_defaultPool"
+	if [ -z "$pool" ]; then
+		pool="tank"
 	fi
 	name="_$1"
 	if [ -z "$1" ]; then
 		name=""
+	else
+		if [ ! -z "$2" ]; then
+			pool="$2"
+		fi
 	fi
-	snapName="dySnapnow_$(date +%Y-%m-%d_%H:%M)$name"
+	snapName="dySnapNow_$(date +%Y-%m-%d_%H:%M)$name"
 	set -e
-	zfs snap -r "$defaultPool"@"$snapName"
+	zfs snap -r "$pool"@"$snapName"
 	if [ ! "$1" == "--quiet" ]; then
 		echo "$snapName"
 	fi
