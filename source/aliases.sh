@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.170.20210117.1
+hachreAliasesVersion=0.170.20210117.2
 
 #
 ### hachreAliases internal stuff
@@ -3253,6 +3253,7 @@ function awsreset {
 }
 
 # ZFS (_ha_zl allow custom extends through zshrc_local)
+export ZFS_COLOR=1
 function _ha_zl {
 	r=""
 	if [ ! -z "$1" ]; then
