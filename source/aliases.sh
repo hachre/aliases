@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.171.20210117.8
+hachreAliasesVersion=0.172.20210119.1
 
 #
 ### hachreAliases internal stuff
@@ -230,6 +230,7 @@ function ytdc() {
 
 
 alias varnishreset="varnishadm 'ban req.url ~ .'"
+alias nanozsh="nano /root/.zshrc_local"
 
 function webrip() {
 	if [ -z "$1" ]; then
