@@ -230,7 +230,7 @@ function ytdc() {
 
 
 alias varnishreset="varnishadm 'ban req.url ~ .'"
-alias nanozsh="nano /root/.zshrc_local"
+alias nanozsh="nano ~/.zshrc_local"
 
 function webrip() {
 	if [ -z "$1" ]; then
