@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.172.20210126.1
+hachreAliasesVersion=0.172.20210126.2
 
 #
 ### hachreAliases internal stuff
@@ -1551,6 +1551,8 @@ function dyu {
 			which youtube-dl >/dev/null 2>&1
 			if [ "$?" == "0" ]; then
 				dyi python3-pip
+				apt remove -y youtube-dl
+				apt autoremove -y
 				sudo pip3 install --upgrade youtube-dl
 			fi
 		fi
