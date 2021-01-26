@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.172.20210123.1
+hachreAliasesVersion=0.172.20210126.1
 
 #
 ### hachreAliases internal stuff
@@ -1547,12 +1547,11 @@ function dyu {
 		$hachreAliasesRoot apt full-upgrade
 		$hachreAliasesRoot apt autoremove
 
-		if [ "$dyDetectedDistro" == "windows" ]; then
+		if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
 			which youtube-dl >/dev/null 2>&1
 			if [ "$?" == "0" ]; then
-				dyi python-setuptools
-				sudo easy_install pip
-				sudo pip install --upgrade youtube-dl
+				dyi python3-pip
+				sudo pip3 install --upgrade youtube-dl
 			fi
 		fi
 
