@@ -1,6 +1,6 @@
 #!/bin/bash
 
-c="curl -fsSL"
+c="curl -kfsSL"
 set -e
 
 # Require root to run.
