@@ -3386,3 +3386,12 @@ if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 	unalias aria2c
 	alias aria2c="aria2c -x 10 -j 10"
 fi
+
+# isRunning - Usage: isRunning scriptname - ends the new invocation if running, otherwise proceeds
+function isRunning {
+    out=$(ps aux | grep "$1" | grep -v grep | grep -v nano | wc -l)
+    if [ "$out" == "2" ]; then
+        return 0
+    fi
+    exit 0
+}
