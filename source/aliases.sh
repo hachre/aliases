@@ -3389,9 +3389,27 @@ fi
 
 # isRunning - Usage: isRunning scriptname - ends the new invocation if running, otherwise proceeds
 function isRunning {
-    out=$(ps aux | grep "$1" | grep -v grep | grep -v nano | wc -l)
-    if [ "$out" == "2" ]; then
-        return 0
-    fi
-    exit 0
+        if [ -z "$1" ]; then
+            echo "Error: Usage for isRunning is isRunning name"
+            exit 1
+        fi
+        targetdir="/tmp/hachreIsRunning"
+        mkdir -p "$targetdir" 1>/dev/null 2>&1
+        oldpid=$(cat "$targetdir/$1" 2>/dev/null)
+        if [ -z "$oldpid" ]; then
+            #echo "DEBUG: not running due to oldpid being empty"
+            # We're not running
+            echo $$ > "$targetdir/$1"
+            return 0
+        fi
+        numlines=$(ps -p "$oldpid" -h | wc -l)
+        if [ "$numlines" == "0" ]; then
+            #echo "DEBUG: not running due to numlines not 0"
+            # We're not running.
+            echo $$ > "$targetdir/$1"
+            return 0
+        fi
+        # Already running
+        #echo "DEBUG: already running: $oldpid"
+        exit 1
 }
