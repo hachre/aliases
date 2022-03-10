@@ -3370,7 +3370,7 @@ function zfree() {
 }
 # Accidential destruction protection (any ZFS command must come before this)
 function zpool() {
-    if [ "$1" = "destroy" ]; then
+    if [ "$1" == "destroy" ]; then
         echo "Warning!!! You're about to destroy the pool '$2 $3 $4'. Are you SURE you want to proceed?"
         echo "Hit ENTER to confirm, CTRL+C to abort"
         read
@@ -3381,7 +3381,7 @@ function zpool() {
     $(which -p zpool) $@
 }
 function zfs() {
-    if [ "$1" = "destroy" ]; then
+    if [ "$1" == "destroy" ]; then
         echo "Warning!!! You're about to destroy the subvolume(s) '$2 $3 $4'. Are you SURE you want to proceed?"
         echo "Hit ENTER to confirm, CTRL+C to abort"
         read
