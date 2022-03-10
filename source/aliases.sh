@@ -3368,6 +3368,30 @@ function zfree() {
 	fi
 	zfs get -o value -H avail "$target"
 }
+# Accidential destruction protection (any ZFS command must come before this)
+function zpool() {
+    if [ "$1" = "destroy" ]; then
+        echo "Warning!!! You're about to destroy the pool '$2 $3 $4'. Are you SURE you want to proceed?"
+        echo "Hit ENTER to confirm, CTRL+C to abort"
+        read
+        echo "Destroying ZFS pool in 5 seconds... CTRL+C to abort now"
+        sleep 10
+    fi
+
+    $(which -p zpool) $@
+}
+function zfs() {
+    if [ "$1" = "destroy" ]; then
+        echo "Warning!!! You're about to destroy the subvolume(s) '$2 $3 $4'. Are you SURE you want to proceed?"
+        echo "Hit ENTER to confirm, CTRL+C to abort"
+        read
+        echo "Destroying ZFS subvolumes in 5 seconds... CTRL+C to abort now"
+        sleep 10
+    fi
+
+    $(which -p zfs) $@
+}
+
 
 function showipv6 {
 	device=""
