@@ -3416,7 +3416,6 @@ fi
 function isRunning {
         if [ -z "$1" ]; then
             echo "Error: Usage for isRunning is isRunning name"
-			set -e
             return 1
         fi
         targetdir="/tmp/hachreIsRunning"
