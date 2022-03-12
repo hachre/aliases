@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220310.2
+hachreAliasesVersion=0.175.20220312.1
 
 #
 ### hachreAliases internal stuff
@@ -3368,6 +3368,7 @@ function zfree() {
 	fi
 	$(which -p zfs) get -o value -H avail "$target"
 }
+if [ $(which zsh) == "$SHELL" ]; then
 # Accidential destruction protection (any ZFS command must come before this)
 function zpool() {
     if [ "$1" == "destroy" ]; then
@@ -3391,7 +3392,7 @@ function zfs() {
 
     $(which -p zfs) $@
 }
-
+fi
 
 function showipv6 {
 	device=""
