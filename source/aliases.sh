@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220312.1
+hachreAliasesVersion=0.175.20220312.2
 
 #
 ### hachreAliases internal stuff
@@ -3416,7 +3416,7 @@ fi
 function isRunning {
         if [ -z "$1" ]; then
             echo "Error: Usage for isRunning is isRunning name"
-            exit 1
+            return 1
         fi
         targetdir="/tmp/hachreIsRunning"
         mkdir -p "$targetdir" 1>/dev/null 2>&1
@@ -3436,5 +3436,5 @@ function isRunning {
         fi
         # Already running
         #echo "DEBUG: already running: $oldpid"
-        exit 1
+        return 1
 }
