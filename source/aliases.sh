@@ -3416,6 +3416,7 @@ fi
 function isRunning {
         if [ -z "$1" ]; then
             echo "Error: Usage for isRunning is isRunning name"
+			set -e
             return 1
         fi
         targetdir="/tmp/hachreIsRunning"
@@ -3436,5 +3437,6 @@ function isRunning {
         fi
         # Already running
         #echo "DEBUG: already running: $oldpid"
+		set -e
         return 1
 }
