@@ -3256,21 +3256,23 @@ function awsreset {
 
 # ZFS (_ha_zl allow custom extends through zshrc_local)
 export ZFS_COLOR=1
+zpool=$(which zpool)
+zfs=$(which zfs)
 function _ha_zl {
 	r=""
 	if [ ! -z "$1" ]; then
 		r="-r"
 	fi
-	$(which -p zfs) list -o name,refer,used,usedsnap,avail,compressratio,mountpoint $r $@
+	$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint $r $@
 }
 alias zl="_ha_zl"
-alias _ha_zls="$(which -p zfs) list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
+alias _ha_zls="$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
 alias zls="_ha_zls"
-alias _ha_zpl="$(which -p zpool) list -o name,size,alloc,free,frag,cap,dedup,health"
+alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
-alias _ha_zps="$(which -p zpool) status -D"
+alias _ha_zps="$zpool status -D"
 alias zps="_ha_zps"
-alias zlperf="$(which -p zfs) get dedup,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
+alias zlperf="$zfs get dedup,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 function snapnow {
 	if [ "$1" == "--help" ]; then
 		echo "Usage: snapnow [name] [pool/dataset]"
@@ -3291,7 +3293,7 @@ function snapnow {
 		fi
 	fi
 	snapName="dySnapNow_$(date +%Y-%m-%d_%H:%M)$name"
-	$(which -p zfs) snap -r "$pool"@"$snapName"
+	$zfs snap -r "$pool"@"$snapName"
 	if [ ! "$1" == "--quiet" ]; then
 		echo "$snapName"
 	fi
@@ -3317,7 +3319,7 @@ function zrmsnaps {
 	fi
 
 	# Check if given volume exists
-	$(which -p zfs) get compress "$volume" 1>/dev/null 2>&1
+	$zfs get compress "$volume" 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		echo "Error: Given volume '$volume' doesn't exist."
 		return 1
@@ -3332,7 +3334,7 @@ function zrmsnaps {
 	# Execute
 	function execute() {
 		# Create the todo list...
-		for entry in $($(which -p zfs) list -t snapshot -r "$volume" -H -o name | $keywordcmd); do
+		for entry in $($zfs list -t snapshot -r "$volume" -H -o name | $keywordcmd); do
 			if [[ "$entry" != *"@"* ]]; then
                 echo "Invalid entry '$entry' skipped... Spaces in snapshot names are not supported."
                 continue
@@ -3340,7 +3342,7 @@ function zrmsnaps {
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
-				$(which -p zfs) destroy -rv "$entry" 2>/dev/null
+				$zfs destroy -rv "$entry" 2>/dev/null
 			fi
 		done
 	}
@@ -3361,14 +3363,13 @@ function zfree() {
 	target="$1"
 	if [ -z "$target" ]; then
 		# Special list mode for all zpools
-		for entry in $($(which -p zpool) list -o name -H); do
-			$(which -p zfs) get -o name,value -H avail "$entry" | awk '{ print $1" "$2 }'
+		for entry in $($zpool list -o name -H); do
+			$zfs get -o name,value -H avail "$entry" | awk '{ print $1" "$2 }'
 		done
 		return
 	fi
-	$(which -p zfs) get -o value -H avail "$target"
+	$zfs get -o value -H avail "$target"
 }
-if [ $(which zsh) == "$SHELL" ]; then
 # Accidential destruction protection (any ZFS command must come before this)
 function zpool() {
     if [ "$1" == "destroy" ]; then
@@ -3379,7 +3380,7 @@ function zpool() {
         sleep 10
     fi
 
-    $(which -p zpool) $@
+    $zpool $@
 }
 function zfs() {
     if [ "$1" == "destroy" ]; then
@@ -3390,9 +3391,8 @@ function zfs() {
         sleep 10
     fi
 
-    $(which -p zfs) $@
+    $zfs $@
 }
-fi
 
 function showipv6 {
 	device=""
