@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220313.1
+hachreAliasesVersion=0.175.20220313.2
 
 #
 ### hachreAliases internal stuff
@@ -863,7 +863,7 @@ function dyDetectDistro {
 
 	# OS X with Brew
 	if [ -f "/usr/local/bin/brew" ] || [ -f "/opt/homebrew/bin/brew" ]; then
-		dyDetectedDistro="osx-brew"
+		dyDetectedDistro="macOS-brew"
 		dyDistroName="macOS with brew"
 		dyDistroInfo="\n * The native package manager is 'brew'."
 		return 0
@@ -1334,7 +1334,7 @@ function dyx {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		brew update
 		return $?
 	fi
@@ -1427,7 +1427,7 @@ function dyv {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		brew doctor
 		return $?
 	fi
@@ -1530,8 +1530,8 @@ function dyu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
-		brew upgrade --cleanup
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+		brew upgrade
 		return $?
 	fi
 
@@ -1713,9 +1713,9 @@ function dyi {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		if [ ! -z "$2" ]; then
-			echo "Error: 'osx-brew' supports only one package parameter."
+			echo "Error: 'macOS-brew' supports only one package parameter."
 			return 1
 		fi
 		brew install "$1"
@@ -1761,7 +1761,7 @@ function dyif {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		dyi $*
 		return $?
 	fi
@@ -1955,9 +1955,9 @@ function dyr {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		if [ ! -z "$2" ]; then
-			echo "Error: 'osx-brew' supports only one package parameter."
+			echo "Error: 'macOS-brew' supports only one package parameter."
 			return 1
 		fi
 		brew uninstall "$1"
@@ -2015,9 +2015,9 @@ function dyrf {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		if [ ! -z "$2" ]; then
-			echo "Error: 'osx-brew' supports only one package parameter."
+			echo "Error: 'macOS-brew' supports only one package parameter."
 			return 1
 		fi
 		brew uninstall --force "$1"
@@ -2071,7 +2071,7 @@ function dys {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "osx-brew" ]; then
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		brew search $* | less -rEFXKn
 		return $?
 	fi
