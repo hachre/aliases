@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220313.2
+hachreAliasesVersion=0.175.20220314.1
 
 #
 ### hachreAliases internal stuff
@@ -3419,6 +3419,9 @@ function isRunning {
             return 1
         fi
         targetdir="/tmp/hachreIsRunning"
+		if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+			targetdir="$HOME/.local/.tmp/hachreIsRunning"
+		fi
         mkdir -p "$targetdir" 1>/dev/null 2>&1
         oldpid=$(cat "$targetdir/$1" 2>/dev/null)
         if [ -z "$oldpid" ]; then
@@ -3428,8 +3431,15 @@ function isRunning {
             return 0
         fi
         numlines=$(ps -p "$oldpid" -h | wc -l)
+		if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+			numlines="0"
+			ps -p "$oldpid" 1>/dev/null 2>&1
+			if [ "$?" == "0" ]; then
+				numlines="1"
+			fi
+		fi
         if [ "$numlines" == "0" ]; then
-            #echo "DEBUG: not running due to numlines not 0"
+            #echo "DEBUG: not running due to numlines = 0"
             # We're not running.
             echo $$ > "$targetdir/$1"
             return 0
