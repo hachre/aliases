@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220314.1
+hachreAliasesVersion=0.175.20220323.1
 
 #
 ### hachreAliases internal stuff
@@ -3370,7 +3370,7 @@ function zfree() {
 	fi
 	$zfs get -o value -H avail "$target"
 }
-# Accidential destruction protection (any ZFS command must come before this)
+# Accidental destruction protection (any ZFS command must come before this)
 function zpool() {
     if [ "$1" == "destroy" ]; then
         echo "Warning!!! You're about to destroy the pool '$2 $3 $4'. Are you SURE you want to proceed?"
@@ -3392,6 +3392,9 @@ function zfs() {
     fi
 
     $zfs $@
+}
+function zfshistogram() {
+	find . -type f -print0 | xargs -0 ls -l | awk '{ n=int(log($5)/log(2)); if (n<10) { n=10; } size[n]++ } END { for (i in size) printf("%d %d\n", 2^i, size[i]) }' | sort -n | awk 'function human(x) { x[1]/=1024; if (x[1]>=1024) { x[2]++; human(x) } } { a[1]=$1; a[2]=0; human(a); printf("%3d%s: %6d\n", a[1],substr("kMGTEPYZ",a[2]+1,1),$2) }'
 }
 
 function showipv6 {
