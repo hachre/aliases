@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.175.20220323.1
+hachreAliasesVersion=0.175.20220326.1
 
 #
 ### hachreAliases internal stuff
@@ -2981,6 +2981,11 @@ function poweroff() {
 	fi
 
 	location=`sh -c 'which poweroff'`
+
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+		location=$(sh -c 'which halt')
+	fi
+
 	hachreAliasesExecuteCommand "$location"
 }
 function reboot() {
