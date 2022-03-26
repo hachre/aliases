@@ -3457,3 +3457,8 @@ function isRunning {
 		set -e
         return 1
 }
+
+# macOS
+if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+	alias dmesg="sudo dmesg"
+fi
