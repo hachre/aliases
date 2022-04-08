@@ -152,7 +152,7 @@ function mkcd() {
 # Various / Misc
 #
 
-alias ytd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s'"
+alias ytd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title).150s - [%(uploader)s].%(ext)s'"
 function ytdc() {
 	downloadArchiveName="$_ha_ytdc_downloadArchiveName"
 	descriptionsFolderName="$_ha_ytdc_descriptionsFolderName"
