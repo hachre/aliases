@@ -3462,3 +3462,6 @@ function isRunning {
 if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 	alias dmesg="sudo dmesg"
 fi
+
+# Various
+alias exifthis="exiftool -R '-FileModifyDate<DateTimeOriginal' ."
