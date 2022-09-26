@@ -1567,7 +1567,7 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
-    $hachreAliasesRoot $(dyYumCmd) update | tee
+    	$hachreAliasesRoot $(dyYumCmd) update | tee
 		ret="$?"
 		if [ "$?" == "0" ]; then
 			$hachreAliasesRoot $(dyYumCmd) autoremove -y | tee
@@ -3465,3 +3465,28 @@ fi
 
 # Various
 alias exifthis="exiftool -R '-FileModifyDate<DateTimeOriginal' ."
+function vc {
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+		echo "Usage: vc <inputvideo.mov>"
+		echo "Will create 'outputvideo.mp4' in the same path as inputvideo."
+		return 127
+	fi
+
+	in="$1"
+	out="${in}.mp4"
+	out=$(echo $out | sed 's|.MOV.mp4|.mp4|' | sed 's|.mov.mp4|.mp4|' | sed 's|.mp4.mp4|.mp4|' | sed 's|.MP4.mp4|.mp4|' | sed 's|.MKV.mp4|.mp4|' | sed 's|.mkv.mp4|.mp4|' | sed 's|.AVI.mp4|.mp4|' | sed 's|.avi.mp4|.mp4|')
+
+	if [ ! -f "$in" ]; then
+		echo "Error: File '$1' not found."
+		return 1
+	fi
+
+	if [ "$in" == "$out" ]; then
+		output=$(echo ${in}.old.mp4 | sed 's|.mp4.old.mp4|.old.mp4|')
+		mv -v "$in" "$output"
+		in="$output"
+	fi
+
+	# VideoCompress
+	ffmpeg -i "$in" -vcodec h264 -acodec aac -vf scale='min(1080,iw)':'min(1080,ih)':force_original_aspect_ratio=decrease -af "loudnorm" $out
+}
