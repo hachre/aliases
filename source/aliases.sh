@@ -3488,5 +3488,5 @@ function vc {
 	fi
 
 	# VideoCompress
-	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm" $out
+	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm,aresample=resampler=soxr -ar 48000" $out
 }
