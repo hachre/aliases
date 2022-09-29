@@ -905,6 +905,12 @@ function dyDetectDistro {
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
+		if [ "$release" == "Kali" ]; then
+			dyDetectedDistro="ubuntu"
+			dyDistroName="Kali"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			return 0
+		fi
 	fi
 
 	# Alpine Linux
