@@ -3283,7 +3283,7 @@ alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="$zpool status -D"
 alias zps="_ha_zps"
-alias zlperf="$zfs get dedup,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
+alias zlperf="$zfs get dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 function snapnow {
 	if [ "$1" == "--help" ]; then
 		echo "Usage: snapnow [name] [pool/dataset]"
