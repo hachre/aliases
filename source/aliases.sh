@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.178.20221205.5
+hachreAliasesVersion=0.178.20221205.6
 
 #
 ### hachreAliases internal stuff
@@ -1492,8 +1492,8 @@ function dyu {
         fi
     fi
 
-	# CentOS does this on its own
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	# CentOS and Alpine do this on its own
+	if [ "$dyDetectedDistro" == "CentOS" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 		skip="1"
 	fi
 
