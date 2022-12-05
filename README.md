@@ -14,7 +14,7 @@ This will automatically install the git repo to /usr/local/hachre/aliases.
 
 ## Installation of hachreShell (Optional)
 ```
-curl -fsSL https://raw.githubusercontent.com/hachre/aliases/master/installHachreShell.sh | bash
+wget https://raw.githubusercontent.com/hachre/aliases/master/installHachreShell.sh -qO - | sh
 ```
 
 This will install the hachreShell, a zsh-centric default shell setup I use.

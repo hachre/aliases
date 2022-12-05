@@ -1,7 +1,22 @@
 #!/bin/sh
 # linted by https://www.shellcheck.net/
 
-c="curl -kfsSL"
+wgetavail="-1"
+c() {
+	if [ "$wgetavail" = "-1" ]; then
+		if which wget 1>/dev/null 2>&1; then
+			wgetavail="1"
+		else
+			wgetavail="0"
+		fi
+	fi
+	if [ "$wgetavail" = "1" ]; then
+		wget "$1" -qO -
+	else
+		curl -kfsSL
+	fi
+}
+
 set -e
 
 # Require root to run.
@@ -17,7 +32,7 @@ checktool() {
 		exit 1
 	fi
 }
-checktool curl
+checktool wget
 
 # If on Alpine, a lot of stuff we need will be missing. Hardcoded APK Bootstrapping
 if cat /etc/*release* | grep NAME | head -n 1 | grep Alpine >/dev/null 2>&1; then
@@ -30,7 +45,7 @@ cmd="$1"
 # Load hachreAliases
 echo "Loading hachreAliases..."
 if [ "$cmd" != "--no-internet" ] && [ "$SHELL" = "/bin/bash" ]; then
-	$c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
+	c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
 	. /tmp/aliases.sh || true
 	rm /tmp/aliases.sh
 fi
@@ -51,21 +66,20 @@ installPrequisites() {
 		dyi "$noconfirm" which
 	fi
 
-	function dyinc {
+	dyinc() {
 		if [ "$dyDetectedDistro" != "alpine" ]; then
-			dyi $noconfirm $@
+			dyi $noconfirm "$@"
 		else
-			dyi $@
+			dyi "$@"
 		fi
 	}
 
 	# Install the prequisites we'd like to have
 	echo "Installing prequisites..."
 	dyx 2>/dev/null || true
-	dyinc zsh git sudo mosh nano htop aria2 wget bash tar
-	dyinc shadow 2>/dev/null || true
-	dyinc less 2>/dev/null || true
+	dyinc zsh git sudo mosh nano htop aria2 bash tar nano wget curl
 	dyinc byobu 2>/dev/null || true
+	dyinc coreutils grep sed findutils less shadow 2>/dev/null || true
 	rehash 2>/dev/null || true
 }
 
@@ -91,7 +105,7 @@ fi
 # Install hachreAliases
 echo "Installing hachreAliases..."
 if [ "$cmd" != "--no-internet" ]; then
-	$c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
+	c https://raw.githubusercontent.com/hachre/aliases/master/install.sh | bash
 fi
 aliases="/usr/local/hachre/aliases/source/aliases.sh"
 if [ "$SHELL" = "/bin/bash" ]; then
@@ -126,7 +140,7 @@ fi
 # Installing the user defaults
 echo "Installing default user profiles..."
 if [ "$cmd" != "--no-internet" ]; then
-	$c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > "$HOME"/.zshrc_grml
+	c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > "$HOME"/.zshrc_grml
 fi
 echo "SAVEHIST=10000" >> "$HOME"/.zshrc_grml
 
@@ -160,7 +174,7 @@ echo "hide_kernel_threads=1" >> "$HOME"/.config/htop/htoprc
 # Install byobu settings
 echo "Installing byobu settings..."
 if [ "$cmd" != "--no-internet" ]; then
-	$c https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz > /tmp/byobu-settings.tar.gz
+	c https://raw.githubusercontent.com/hachre/aliases/master/byobu-settings.tar.gz > /tmp/byobu-settings.tar.gz
 fi
 if [ -f "/tmp/byobu-settings.tar.gz" ]; then
 	cd "$HOME"
