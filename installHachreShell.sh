@@ -79,7 +79,7 @@ installPrequisites() {
 	dyx 2>/dev/null || true
 	dyinc zsh git sudo mosh nano htop aria2 bash tar wget curl
 	dyinc byobu 2>/dev/null || true
-	dyinc coreutils grep sed findutils less shadow 2>/dev/null || true
+	dyinc coreutils grep sed findutils less shadow util-linux-misc 2>/dev/null || true
 	rehash 2>/dev/null || true
 }
 
