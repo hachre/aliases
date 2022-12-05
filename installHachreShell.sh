@@ -51,15 +51,21 @@ installPrequisites() {
 		dyi "$noconfirm" which
 	fi
 
-	alias dyi="dyi $noconfirm"
+	function dyinc {
+		if [ "$dyDetectedDistro" != "alpine" ]; then
+			dyi $noconfirm $@
+		else
+			dyi $@
+		fi
+	}
 
 	# Install the prequisites we'd like to have
 	echo "Installing prequisites..."
 	dyx 2>/dev/null || true
-	dyi zsh git sudo mosh nano htop aria2 wget bash tar
-	dyi shadow 2>/dev/null || true
-	dyi less 2>/dev/null || true
-	dyi byobu 2>/dev/null || true
+	dyinc zsh git sudo mosh nano htop aria2 wget bash tar
+	dyinc shadow 2>/dev/null || true
+	dyinc less 2>/dev/null || true
+	dyinc byobu 2>/dev/null || true
 	rehash 2>/dev/null || true
 }
 
