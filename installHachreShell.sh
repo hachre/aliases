@@ -68,7 +68,7 @@ installPrequisites() {
 
 	dyinc() {
 		if [ "$dyDetectedDistro" != "alpine" ]; then
-			dyi $noconfirm "$@"
+			dyi "$noconfirm" "$@"
 		else
 			dyi "$@"
 		fi
@@ -77,7 +77,7 @@ installPrequisites() {
 	# Install the prequisites we'd like to have
 	echo "Installing prequisites..."
 	dyx 2>/dev/null || true
-	dyinc zsh git sudo mosh nano htop aria2 bash tar nano wget curl
+	dyinc zsh git sudo mosh nano htop aria2 bash tar wget curl
 	dyinc byobu 2>/dev/null || true
 	dyinc coreutils grep sed findutils less shadow 2>/dev/null || true
 	rehash 2>/dev/null || true
@@ -139,10 +139,15 @@ fi
 
 # Installing the user defaults
 echo "Installing default user profiles..."
-if [ "$cmd" != "--no-internet" ]; then
-	c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > "$HOME"/.zshrc_grml
+if [ "$dyDetectedDistro" != "alpine" ]; then
+	if [ "$cmd" != "--no-internet" ]; then
+		c https://git.grml.org/f/grml-etc-core/etc/zsh/zshrc > "$HOME"/.zshrc_grml
+	fi
+	echo "SAVEHIST=10000" >> "$HOME"/.zshrc_grml
+else
+	dyinc zsh grml-zsh-config
+	touch "$HOME"/.zshrc_grml
 fi
-echo "SAVEHIST=10000" >> "$HOME"/.zshrc_grml
 
 # hachre's Default .zshrc
 touch "$HOME"/.zshrc_local
