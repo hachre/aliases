@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.179.20221205.7
+hachreAliasesVersion=0.179.20221209.1
 
 #
 ### hachreAliases internal stuff
@@ -3407,7 +3407,7 @@ function zfs() {
 function zfshistogram() {
 	find . -type f -print0 | xargs -0 ls -l | awk '{ n=int(log($5)/log(2)); if (n<10) { n=10; } size[n]++ } END { for (i in size) printf("%d %d\n", 2^i, size[i]) }' | sort -n | awk 'function human(x) { x[1]/=1024; if (x[1]>=1024) { x[2]++; human(x) } } { a[1]=$1; a[2]=0; human(a); printf("%3d%s: %6d\n", a[1],substr("kMGTEPYZ",a[2]+1,1),$2) }'
 }
-function zpool-create() {
+function zpoolcreate() {
 	zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
 }
