@@ -44,7 +44,7 @@ fi
 cmd="$1"
 # Load hachreAliases
 echo "Loading hachreAliases..."
-if [ "$cmd" != "--no-internet" ] && [ "$SHELL" = "/bin/bash" ]; then
+if [ "$cmd" != "--no-internet" ] && [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]; then
 	c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
 	. /tmp/aliases.sh || true
 	rm /tmp/aliases.sh
