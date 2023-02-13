@@ -1,5 +1,4 @@
 #!/bin/sh
-# linted by https://www.shellcheck.net/
 
 wgetavail="-1"
 c() {
