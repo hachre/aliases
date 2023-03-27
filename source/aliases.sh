@@ -3276,6 +3276,9 @@ function _ha_zl {
 	fi
 	$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint $r $@
 }
+function zlsize {
+	$zfs list -r -t snapshot "$1" -o used,name -H | sort -h
+}
 alias zl="_ha_zl"
 alias _ha_zls="$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
 alias zls="_ha_zls"
