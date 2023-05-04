@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.181.20230504.1
+hachreAliasesVersion=0.181.20230505.1
 
 #
 ### hachreAliases internal stuff
@@ -3504,7 +3504,7 @@ function vc {
 	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm" -ar 48000 $out
 }
 
-function find-dupes {
+function finddupes {
 	if [ "$1" == "--help" ]; then
 		echo "find-dupes scans files within the current directory for duplicates, creates a list of them in 'find-dupes.state' and offers to delete all but the file with the shortest filename within each set of duplicates with '--delete'"
 		echo ""
@@ -3566,3 +3566,4 @@ function find-dupes {
 	fi
 
 }
+alias find-dupes="finddupes"
