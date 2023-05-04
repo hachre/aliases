@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.180.20230327.1
+hachreAliasesVersion=0.181.20230504.1
 
 #
 ### hachreAliases internal stuff
@@ -3502,4 +3502,67 @@ function vc {
 
 	# VideoCompress
 	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm" -ar 48000 $out
+}
+
+function find-dupes {
+	if [ "$1" == "--help" ]; then
+		echo "find-dupes scans files within the current directory for duplicates, creates a list of them in 'find-dupes.state' and offers to delete all but the file with the shortest filename within each set of duplicates with '--delete'"
+		echo ""
+		echo "Usage: find-dupes [--delete]"
+		echo " - running without any parameters scans and creates the list of duplicates in 'find-dupes.state'"
+		echo " - running a second time (or directly) with '--delete' deletes duplicates from the list and renames the list to 'find-dupes.deleted'"
+		return 127
+	fi
+
+	statefile="find-dupes.state"
+	deletionfile="find-dupes.deleted"
+
+	mode="$1"
+	IFS=$'\n'
+
+	function delete {
+		if [ "$mode" == "--delete" ]; then
+			rm -v "$1"
+		else
+			echo "would delete: $1"
+		fi
+	}
+
+	if [ "$1" != "--delete" ]; then
+		if [ -s "$statefile" ]; then
+			echo "Error: A '$statefile' file already exists here, however you didn't give '--delete'. If you want to do a new Duplicates search, delete the state file and run again or give '--delete' to start deleting duplicates."
+			exit 1
+		fi
+
+		echo "$(date): Looking for duplicates and storing state in ./$statefile... This can take a while..."
+		find . ! -empty -type f -exec md5sum {} + | sort | uniq -w32 -dD | sort -r > "$statefile"
+		echo ""
+	fi
+
+	lasthash=""
+	for each in $(cat "$statefile"); do
+		parsehash=$(echo $each | cut -d ' ' -f 1)
+		parsefile=$(echo ${each#"$parsehash  "})
+
+		if [ "$parsehash" == "$lasthash" ]; then
+			# This is a duplicate, delete it!
+			delete "$parsefile"
+		fi
+		lasthash="$parsehash"
+	done
+
+	if [ ! -s "$statefile" ]; then
+		echo "$(date): No duplicates found."
+		rm "$statefile"
+		return 0
+	fi
+
+	if [ "$mode" != "--delete" ]; then
+		echo ""
+		echo "$(date): This was a dry run. If you actually want to delete run again with '--delete'."
+	else
+		mv "$deletionfile" "$deletionfile.$(date +%s)" 2>/dev/null || true
+		mv "$statefile" "$deletionfile"
+	fi
+
 }
