@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.181.20230505.1
+hachreAliasesVersion=0.181.20230727.1
 
 #
 ### hachreAliases internal stuff
@@ -3567,3 +3567,9 @@ function finddupes {
 
 }
 alias find-dupes="finddupes"
+function swappiness {
+	if [ ! -z "$1" ]; then
+		echo "$1" > /proc/sys/vm/swappiness
+	fi
+	cat /proc/sys/vm/swappiness
+}
