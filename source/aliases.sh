@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.181.20230805.1
+hachreAliasesVersion=0.181.20230806.1
 
 #
 ### hachreAliases internal stuff
@@ -1691,6 +1691,7 @@ function dyuu {
 
 	if [ "$dyDetectedDistro" == "ubuntu" ]; then
 		apt update; unattended-upgrade -d
+		return $?
 	fi
 
 	echo "This command is not supported on your platform."
