@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.181.20230806.1
+hachreAliasesVersion=0.181.20230814.1
 
 #
 ### hachreAliases internal stuff
@@ -3586,3 +3586,4 @@ function swappiness {
 	fi
 	cat /proc/sys/vm/swappiness
 }
+alias cp="cp -p"
