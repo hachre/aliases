@@ -1690,7 +1690,8 @@ function dyuu {
 	fi
 
 	if [ "$dyDetectedDistro" == "ubuntu" ]; then
-		apt update; unattended-upgrade -d
+		$hachreAliasesRoot apt update
+		$hachreAliasesRoot unattended-upgrade -d
 		return $?
 	fi
 
