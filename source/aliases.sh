@@ -3589,3 +3589,4 @@ function swappiness {
 }
 alias cp="cp -p"
 alias genPassword="dd if=/dev/random bs=128 count=1 2>/dev/null | md5sum | cut -d ' ' -f 1"
+alias genpassword="genPassword"
