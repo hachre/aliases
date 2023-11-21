@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.12
+hachreAliasesVersion=0.183.20231121.13
 
 #
 ### hachreAliases internal stuff
@@ -3533,6 +3533,10 @@ function installNix {
 		# Update the zshrc to the latest version
 		rm "$HOME"/.zshrc 1>/dev/null 2>&1
 		installZSHrc
+	fi
+
+	if [ ! -f "$HOME"/.nix ]; then
+		echo "nano" > "$HOME/.nix"
 	fi
 
 	# For macOS
