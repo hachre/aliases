@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.182.20231121.2
+hachreAliasesVersion=0.183.20231121.3
 
 #
 ### hachreAliases internal stuff
@@ -3587,3 +3587,15 @@ function swappiness {
 alias cp="cp -p"
 alias genPassword="dd if=/dev/random bs=128 count=1 2>/dev/null | md5sum | cut -d ' ' -f 1"
 alias genpassword="genPassword"
+function installNix {
+	# For macOS
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+		sh <(curl -L https://nixos.org/nix/install)
+		return $?
+	fi
+
+	# For Linux and Windows WSL
+	sh <(curl -L https://nixos.org/nix/install) --daemon
+	return $?
+}
+alias installnix="installNix"
