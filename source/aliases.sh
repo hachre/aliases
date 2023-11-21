@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.9
+hachreAliasesVersion=0.183.20231121.10
 
 #
 ### hachreAliases internal stuff
@@ -166,7 +166,7 @@ fi
 if [ ! -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ]; then
 	which -p byobu 1>/dev/null 2>&1
 	if [ "\$?" = "0" ]; then
-		byobu
+		byobu && exit \$?
 	fi
 fi
 
