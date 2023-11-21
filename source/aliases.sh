@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.6
+hachreAliasesVersion=0.183.20231121.7
 
 #
 ### hachreAliases internal stuff
@@ -212,7 +212,7 @@ function installZSHrc() {
 			cat /etc/motd
 		fi
 	fi
-	EOF
+EOF
 }
 
 #
