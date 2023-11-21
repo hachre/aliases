@@ -1487,6 +1487,11 @@ function dyw {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+		brew list
+		return $?
+	fi
+
 	echo "This command is not supported on your platform."
 }
 
