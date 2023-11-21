@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.182.20231121.1
+hachreAliasesVersion=0.182.20231121.2
 
 #
 ### hachreAliases internal stuff
@@ -1739,11 +1739,7 @@ function dyi {
 	fi
 
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
-		if [ ! -z "$2" ]; then
-			echo "Error: 'macOS-brew' supports only one package parameter."
-			return 1
-		fi
-		brew install "$1"
+		brew install $@
 		return $?
 	fi
 
@@ -1981,11 +1977,7 @@ function dyr {
 	fi
 
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
-		if [ ! -z "$2" ]; then
-			echo "Error: 'macOS-brew' supports only one package parameter."
-			return 1
-		fi
-		brew uninstall "$1"
+		brew remove $@
 		return $?
 	fi
 
