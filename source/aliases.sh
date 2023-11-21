@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.13
+hachreAliasesVersion=0.183.20231121.14
 
 #
 ### hachreAliases internal stuff
@@ -2873,18 +2873,18 @@ if [ "$?" == "0" ]; then
 			serviceName=${serviceName/.service/}
 
 			# Find out if it is running
-			state=`systemctl show "$serviceName" --plain --no-pager | grep -i "SubState\="`
+			state=`systemctl show "$serviceName" --plain --no-pager | grep -i "SubState="`
 			state=${state/SubState=/}
 
 			# Our OK state
 			stateknown="false"
 
 			# Find out the type (because on oneshot we need the success flag)
-			type=`systemctl show "$serviceName" --plain --no-pager | grep -i "Type\="`
+			type=`systemctl show "$serviceName" --plain --no-pager | grep -i "Type="`
 			type=${type/Type=/}
 			if [[ "$type" == *"oneshot"* ]]; then
 				# If the Type is oneshot we need to look at the success variable
-				result=`systemctl show "$serviceName" --plain --no-pager | grep -i "Result\=" | head -n 1`
+				result=`systemctl show "$serviceName" --plain --no-pager | grep -i "Result=" | head -n 1`
 				result=${result/Result=/}
 				if [[ "$result" == *"success"* ]]; then
 					# This status overwrites the status assignments later on
@@ -3521,6 +3521,28 @@ alias genPassword="dd if=/dev/random bs=128 count=1 2>/dev/null | md5sum | cut -
 alias genpassword="genPassword"
 
 # Nix Support
+function nixenable {
+	if [ -f "$HOME/.nix.disabled" ]; then
+		mv "$HOME/.nix.disabled" "$HOME/.nix"
+		echo "All done, relog into your shell to re-activate Nix."
+		return 0
+	fi
+
+	if [ ! -f "$HOME/.nix" ]; then
+		echo "wget" > "$HOME/.nix"
+	fi
+
+	echo "All done, relog into your shell to activate Nix."
+}
+alias enablenix="nixenable"
+function nixdisable {
+	if [ -f "$HOME/.nix" ]; then
+		mv "$HOME/.nix" "$HOME/.nix.disabled"
+		echo "All done, relog into your shale to deactivate Nix."
+		return 0
+	fi
+}
+alias disablenix="nixdisable"
 function installNix {
 	# Add latest changes to Byobu configuration
 	if [ -d "$HOME/.byobu" ]; then
@@ -3535,9 +3557,7 @@ function installNix {
 		installZSHrc
 	fi
 
-	if [ ! -f "$HOME"/.nix ]; then
-		echo "nano" > "$HOME/.nix"
-	fi
+	enablenix 1>/dev/null 2>&1
 
 	# For macOS
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
@@ -3551,22 +3571,4 @@ function installNix {
 }
 alias installnix="installNix"
 alias nixinstall="installNix"
-function nixenable {
-	if [ -f "$HOME/.nix.disabled" ]; then
-		mv "$HOME/.nix.disabled" "$HOME/.nix"
-		echo "All done, relog into your shell to re-activate Nix."
-		return 0
-	fi
 
-	echo "nano" >> "$HOME/.nix"
-	echo "All done, relog into your shell to activate Nix."
-}
-alias enablenix="nixenable"
-function nixdisable {
-	if [ -f "$HOME/.nix" ]; then
-		mv "$HOME/.nix" "$HOME/.nix.disabled"
-		echo "All done, relog into your shale to deactivate Nix."
-		return 0
-	fi
-}
-alias disablenix="nixdisable"
