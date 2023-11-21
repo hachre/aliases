@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.7
+hachreAliasesVersion=0.183.20231121.9
 
 #
 ### hachreAliases internal stuff
@@ -157,40 +157,40 @@ cat << EOF > "$HOME"/.zshrc
 
 # Is Byobu already running?
 ps aux | grep --color=none "tmuxrc" | grep -v grep 1>/dev/null 2>&1
-if [ "$?" = "0" ] && [ -z "$BYOBU_BACKEND" ]; then
+if [ "\$?" = "0" ] && [ -z "\$BYOBU_BACKEND" ]; then
 	# Byobu is probably already running, we instantly resume the session.
-	byobu && exit $?
+	byobu && exit \$?
 fi
 
 # Is Nix disabled or unused? Is Byobu installed?  We wanna start Byobu as well then.
-if [ ! -f "$HOME/.nix" ] && [ -z "$BYOBU_BACKEND" ]; then
+if [ ! -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ]; then
 	which -p byobu 1>/dev/null 2>&1
-	if [ "$?" = "0" ]; then
+	if [ "\$?" = "0" ]; then
 		byobu
 	fi
 fi
 
 # Is Nix enabled? We wanna start Nix and then Byobu through Nix.
-if [ -z "$NIX_STORE" ] && [ -f "$HOME/.nix" ] && [ -z "$BYOBU_BACKEND" ] ; then
+if [ -z "\$NIX_STORE" ] && [ -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ] ; then
 	clear
 	echo "Launching Nix..."
 	apps=""
-	IFS=$'\n'
-	for each in $(cat "$HOME/.nix"); do
-		apps="$apps $each"
+	IFS=\$'\n'
+	for each in \$(cat "\$HOME/.nix"); do
+		apps="\$apps \$each"
 	done
 	shell="zsh"
 	which -p byobu 1>/dev/null 2>&1
-	if [ "$?" = "0" ]; then
+	if [ "\$?" = "0" ]; then
 		shell="byobu"
 	fi
-	echo "nix-shell -p $apps --command $shell && exit 0" > .exec
+	echo "nix-shell -p \$apps --command \$shell && exit 0" > .exec
 	bash .exec
-	retval="$?"
+	retval="\$?"
 	rm .exec 1>/dev/null 2>&1
-	if [ "$retval" != "0" ]; then
+	if [ "\$retval" != "0" ]; then
 		echo ""
-		echo "Something went wrong while launching Nix (Error: $retval)..."
+		echo "Something went wrong while launching Nix (Error: \$retval)..."
 		echo " -> Hit ENTER to close the shell or CTRL-C to drop into a non-nix shell..."
 		read
 	fi
@@ -198,16 +198,16 @@ if [ -z "$NIX_STORE" ] && [ -f "$HOME/.nix" ] && [ -z "$BYOBU_BACKEND" ] ; then
 fi
 
 EDITOR="nano"
-source "$HOME/.zshrc_grml"
+source "\$HOME/.zshrc_grml"
 source "/usr/local/hachre/aliases/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 emulate sh -c "source /usr/local/hachre/aliases/source/aliases.sh"
-source "$HOME/.zshrc_local"
+source "\$HOME/.zshrc_local"
 if [ -f "/var/run/reboot-required" ]; then
 	echo " *** Reboot required ***"
 fi
 echo "Welcome :)"
 if [ -f "/etc/motd" ]; then
-	if [ $(cat /etc/motd | wc -l) -gt "0" ]; then
+	if [ \$(cat /etc/motd | wc -l) -gt "0" ]; then
 		echo ""
 		cat /etc/motd
 	fi
