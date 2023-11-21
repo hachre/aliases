@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.11
+hachreAliasesVersion=0.183.20231121.12
 
 #
 ### hachreAliases internal stuff
@@ -3519,6 +3519,8 @@ function swappiness {
 alias cp="cp -p"
 alias genPassword="dd if=/dev/random bs=128 count=1 2>/dev/null | md5sum | cut -d ' ' -f 1"
 alias genpassword="genPassword"
+
+# Nix Support
 function installNix {
 	# Add latest changes to Byobu configuration
 	if [ -d "$HOME/.byobu" ]; then
@@ -3544,6 +3546,7 @@ function installNix {
 	return $?
 }
 alias installnix="installNix"
+alias nixinstall="installNix"
 function nixenable {
 	if [ -f "$HOME/.nix.disabled" ]; then
 		mv "$HOME/.nix.disabled" "$HOME/.nix"
@@ -3554,7 +3557,7 @@ function nixenable {
 	echo "nano" >> "$HOME/.nix"
 	echo "All done, relog into your shell to activate Nix."
 }
-
+alias enablenix="nixenable"
 function nixdisable {
 	if [ -f "$HOME/.nix" ]; then
 		mv "$HOME/.nix" "$HOME/.nix.disabled"
@@ -3562,3 +3565,4 @@ function nixdisable {
 		return 0
 	fi
 }
+alias disablenix="nixdisable"
