@@ -149,7 +149,6 @@ else
 fi
 
 # hachre's Default .zshrc
-touch "$HOME"/.zshrc_local
 installZSHrc
 
 # htop

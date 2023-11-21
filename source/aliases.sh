@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.10
+hachreAliasesVersion=0.183.20231121.11
 
 #
 ### hachreAliases internal stuff
@@ -83,7 +83,7 @@ function hachreUpdate {
 
 	cd "$cur"
 
-	echo "hachreAliases has been updated, please run . /etc/profile or relog to use it."
+	echo "hachreAliases has been updated, please relog to activate it"
 	return 0
 }
 alias hachreupdate="hachreUpdate"
@@ -2919,141 +2919,6 @@ if [ "$?" == "0" ]; then
 		IPS="$sIPS"
 	}
 fi
-
-# Automatic zsh grml settings install
-function zshSetup {
-	if [ ! "$USER" == "root" ]; then
-		echo "We need root to continue."
-		return 1
-	fi
-
-	which zsh >/dev/null 2>&1
-	if [ "$?" != "0" ]; then
-		echo "Please install zsh before running this setup..."
-		return 1
-	fi
-
-	if [ -z "$1" ]; then
-		echo "This will (re)install the zsh configuration in 3 seconds..."
-		echo "Any previously existing configuration will be deleted. CTRL+C to abort now!"
-		sleep 3
-	fi
-
-	wget -O /tmp/zshrc http://git.grml.org/f/grml-etc-core/etc/zsh/zshrc
-	if [ "$?" != "0" ]; then
-		echo "Download problem, bailing out..."
-		return 1
-	fi
-
-	rm -R /etc/zsh >/dev/null 2>&1
-	mkdir /etc/zsh
-	mv /tmp/zshrc /etc/zsh/
-	rm /etc/skel/.zshrc /etc/skel/.zprofile >/dev/null 2>&1
-	echo "source /etc/profile" >> /etc/skel/.zshrc
-	cp /etc/skel/.zshrc $HOME/
-	chown $USER $HOME/.zshrc >/dev/null 2>&1
-	chsh -s /bin/zsh
-
-	echo ""
-	echo "zsh configuration is installed!"
-}
-
-# Automatic byobu settings install
-function byobuSetup {
-	if [ ! "$USER" == "root" ]; then
-		echo "We need root to continue."
-		return 1
-	fi
-
-	# which byobu >/dev/null 2>&1
-	# if [ "$?" != "0" ]; then
-	# 	echo "Please install 'byobu' before running this setup..."
-	# 	return 1
-	# fi
-
-	# if [ -z "$BYOBU_BACKEND" ]; then
-	# 	echo "Please launch 'byobu' before running this..."
-	# 	return 1
-	# fi
-
-	byobu &
-
-	sleep 1
-	killall -9 tmux
-	sleep 1
-
-	echo 'tmux_left=" #logo #distro #release #arch session"' >> "$HOME"/.byobu/status
-	echo 'tmux_right=" #network #disk_io #custom #entropy #raid reboot_required updates_available #apport #services #mail #users uptime #ec2_cost #rcs_cost #fan_speed #cpu_temp #battery #wifi_quality #processes load_average #cpu_count #cpu_freq #memory #swap #disk #whoami hostname #ip_address #time_utc date time"' >> "$HOME"/.byobu/status
-
-	destination="$HOME/.bashrc"
-	if [ "$SHELL" == "zsh" ]; then
-		destination="$HOME/.zshrc"
-	fi
-	if [ "$1" == "forcezsh" ]; then
-		destination="$HOME/.zshrc"
-	fi
-	echo -e '# Launch byobu on login\nif [ -z "$BYOBU_BACKEND" ]; then\nbyobu\nfi' >> "$destination"
-
-	echo ""
-	echo "All done. On your next login byobu will launch automatically. Or you can use 'byobu' now."
-	echo "You can use ctrl+a-d inside of byobu to detach and drop back to a normal shell."
-	echo "To get back simply relog or launch 'byobu' again!"
-	return 0
-}
-
-# Automatic hachre Shell Setup
-function hachreShellSetup {
-	if [ ! "$USER" == "root" ]; then
-		echo "We need root to continue."
-		return 1
-	fi
-
-	if [ "$dyDetectedDistro" == "unknown" ]; then
-		echo "Your distro is not supported for fully automatic install."
-		echo "Please run zshSetup and byobuSetup on your own."
-		return 1
-	fi
-
-	which zsh >/dev/null 2>&1
-	if [ "$?" == "0" ]; then
-		echo "Error: You should use this before installing anything."
-		echo "To continue either use zshSetup manually or remove zsh and its config."
-		echo "The config is /etc/zsh* and $HOME/.zsh*"
-		return 1
-	fi
-
-	which byobu >/dev/null 2>&1
-	if [ "$?" == "0" ]; then
-		echo "Error: You should use this before installing anything."
-		echo "To continue either use byobuSetup manually or remove byobu and its config."
-		echo "The config is $HOME/.byobu"
-		return 1
-	fi
-
-	echo "Welcome to the hachre Shell installation."
-	echo "Please make sure that all instances of your current shell ($SHELL) can be killed."
-	echo "If you are not ready to install, press CTRL+C now, otherwise press enter."
-	read
-
-	# Install zsh and byobu
-	echo "Installing zsh and byobu..."
-	dyi zsh byobu
-	if [ "$?" != "0" ]; then
-		echo "Error: Something bad happened during installation of 'zsh' and 'byobu'. Installation aborted."
-		return 1
-	fi
-
-	# Set up zsh
-	zshSetup skipIntro
-
-	# Set up byobu
-	byobuSetup forcezsh
-
-	# Kill all current shells cause they are corrupt now anyway.
-	echo "Please login again..."
-	sleep 1
-	killall -9 $SHELL
-}
 
 function poweroff() {
 	if [ "$dyDetectedDistro" == "gentoo" ]; then
