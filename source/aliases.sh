@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.5
+hachreAliasesVersion=0.183.20231121.6
 
 #
 ### hachreAliases internal stuff
@@ -148,7 +148,7 @@ function mkcd() {
 	cd "$1"
 }
 
-function installZSHrc {
+function installZSHrc() {
 	# (re)installs hachre's Default .zshrc
 	touch "$HOME"/.zshrc_local
 	cat << EOF > "$HOME"/.zshrc
@@ -207,7 +207,7 @@ function installZSHrc {
 	fi
 	echo "Welcome :)"
 	if [ -f "/etc/motd" ]; then
-		if [ \$(cat /etc/motd | wc -l) -gt "0" ]; then
+		if [ $(cat /etc/motd | wc -l) -gt "0" ]; then
 			echo ""
 			cat /etc/motd
 		fi
