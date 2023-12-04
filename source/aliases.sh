@@ -3580,4 +3580,5 @@ function startNix {
     fi
     exit 0
 }
-
+alias startnix="startNix"
+alias nixstart="nixstart"
