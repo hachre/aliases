@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.184.20231204.4
+hachreAliasesVersion=0.184.20231204.5
 
 #
 ### hachreAliases internal stuff
@@ -3557,7 +3557,7 @@ function startNix {
 		echo "Nix is not enabled. Try running 'enableNix'. Or add package names to ~/.nix to get started."
 		return 1
 	fi
-	if [ ! -z "$IN_NIX_SHELL" ]; then
+	if [ ! -z "$NIX_PROFILES" ]; then
 		echo "You're already within Nix. Refusing to nest."
 		return 1
 	fi
