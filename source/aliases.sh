@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.184.20231204.3
+hachreAliasesVersion=0.184.20231204.4
 
 #
 ### hachreAliases internal stuff
@@ -3555,6 +3555,10 @@ alias nixinstall="installNix"
 function startNix {
 	if [ ! -f "$HOME/.nix" ]; then
 		echo "Nix is not enabled. Try running 'enableNix'. Or add package names to ~/.nix to get started."
+		return 1
+	fi
+	if [ ! -z "$IN_NIX_SHELL" ]; then
+		echo "You're already within Nix. Refusing to nest."
 		return 1
 	fi
 	echo "Launching Nix..."
