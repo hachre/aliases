@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231204.1
+hachreAliasesVersion=0.184.20231204.2
 
 #
 ### hachreAliases internal stuff
@@ -173,28 +173,7 @@ fi
 # Is Nix enabled? We wanna start Nix and then Byobu through Nix.
 if [ -z "\$NIX_STORE" ] && [ -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ] ; then
 	clear
-	echo "Launching Nix..."
-	apps=""
-	IFS=\$'\n'
-	for each in \$(cat "\$HOME/.nix"); do
-		apps="\$apps \$each"
-	done
-	shell="zsh"
-	which -p byobu 1>/dev/null 2>&1
-	if [ "\$?" = "0" ]; then
-		shell="byobu"
-	fi
-	echo "nix-shell -p \$apps --command \$shell && exit 0" > .exec
-	bash .exec
-	retval="\$?"
-	rm .exec 1>/dev/null 2>&1
-	if [ "\$retval" != "0" ]; then
-		echo ""
-		echo "Something went wrong while launching Nix (Error: \$retval)..."
-		echo " -> Hit ENTER to close the shell or CTRL-C to drop into a non-nix shell..."
-		read
-	fi
-	exit 0
+	startNix
 fi
 
 EDITOR="nano"
@@ -3535,6 +3514,7 @@ function nixenable {
 	echo "All done, relog into your shell to activate Nix."
 }
 alias enablenix="nixenable"
+alias enableNix="nixenable"
 function nixdisable {
 	if [ -f "$HOME/.nix" ]; then
 		mv "$HOME/.nix" "$HOME/.nix.disabled"
@@ -3543,6 +3523,7 @@ function nixdisable {
 	fi
 }
 alias disablenix="nixdisable"
+alias disableNix="nixdisable"
 function installNix {
 	# Add latest changes to Byobu configuration
 	if [ -d "$HOME/.byobu" ]; then
@@ -3571,4 +3552,32 @@ function installNix {
 }
 alias installnix="installNix"
 alias nixinstall="installNix"
+function startNix {
+	if [ ! -f "$HOME/.nix" ]; then
+		echo "Nix is not enabled. Try running 'enableNix'. Or add package names to ~/.nix to get started."
+		return 1
+	fi
+	echo "Launching Nix..."
+    apps=""
+    IFS=$'\n'
+    for each in $(cat "$HOME/.nix"); do
+        apps="$apps $each"
+    done
+    shell="zsh"
+    which -p byobu 1>/dev/null 2>&1
+    if [ "$?" = "0" ]; then
+        shell="byobu"
+    fi
+    echo "nix-shell -p $apps --command $shell && exit 0" > .exec
+    bash .exec
+    retval="$?"
+    rm .exec 1>/dev/null 2>&1
+    if [ "$retval" != "0" ]; then
+        echo ""
+        echo "Something went wrong while launching Nix (Error: $retval)..."
+        echo " -> Hit ENTER to close the shell or CTRL-C to drop into a non-nix shell..."
+        read
+    fi
+    exit 0
+}
 
