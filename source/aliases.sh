@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.184.20231204.2
+hachreAliasesVersion=0.184.20231204.3
 
 #
 ### hachreAliases internal stuff
@@ -3565,7 +3565,7 @@ function startNix {
     done
     shell="zsh"
     which -p byobu 1>/dev/null 2>&1
-    if [ "$?" = "0" ]; then
+    if [ "$?" = "0" ] && [ -z "$BYOBU_BACKEND" ]; then
         shell="byobu"
     fi
     echo "nix-shell -p $apps --command $shell && exit 0" > .exec
