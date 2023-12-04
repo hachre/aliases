@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.183.20231121.14
+hachreAliasesVersion=0.183.20231204.1
 
 #
 ### hachreAliases internal stuff
@@ -1048,7 +1048,7 @@ if [ "$dyDetectedDistro" == "arch" ]; then
 		which yay >/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			_ha_arch_build="sudo -u archbuild"
-			_ha_arch_pm="$_ha_arch_build yay --nodiffmenu --nocleanmenu --answeredit N"
+			_ha_arch_pm="$_ha_arch_build yay --diffmenu=false --cleanmenu=false --answeredit N"
 		fi
 
 		setupArchAliases
