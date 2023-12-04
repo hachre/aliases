@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.184.20231204.5
+hachreAliasesVersion=0.184.20231204.6
 
 #
 ### hachreAliases internal stuff
@@ -173,7 +173,7 @@ fi
 # Is Nix enabled? We wanna start Nix and then Byobu through Nix.
 if [ -z "\$NIX_STORE" ] && [ -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ] ; then
 	clear
-	startNix
+	startNix --skip-startup-checks
 fi
 
 EDITOR="nano"
@@ -3557,7 +3557,7 @@ function startNix {
 		echo "Nix is not enabled. Try running 'enableNix'. Or add package names to ~/.nix to get started."
 		return 1
 	fi
-	if [ ! -z "$NIX_PROFILES" ]; then
+	if [ ! -z "$NIX_PROFILES" ] && [ "$1" != "--skip-startup-checks" ]; then
 		echo "You're already within Nix. Refusing to nest."
 		return 1
 	fi
@@ -3585,4 +3585,4 @@ function startNix {
     exit 0
 }
 alias startnix="startNix"
-alias nixstart="nixstart"
+alias nixstart="startNix"
