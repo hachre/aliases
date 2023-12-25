@@ -108,7 +108,7 @@ function duhs {
 
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
-alias cps="rsync -aHhP --numeric-ids --delete"
+alias cps="rsync -aHhP --numeric-ids --delete --partial"
 function cpss {
 	if [ -z "$1" ]; then
 		echo "Usage: cpss <sourcedir> <targetdir>"
