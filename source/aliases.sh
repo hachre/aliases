@@ -125,7 +125,7 @@ function cpr {
 	if [ -d "$1" ]; then
 		echo "Error: Directories are not supported by cpr, consider cps."
 	fi
-	rsync --progress --append -v $*
+	rsync --progress --append --inplace --partial -v $*
 }
 unalias ls 2>/dev/null
 alias rls="$(which -a ls | head -n 1)"
