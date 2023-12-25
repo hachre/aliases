@@ -108,7 +108,7 @@ function duhs {
 
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
-alias cps="rsync -aHhP --numeric-ids --delete --partial"
+alias cps="rsync -aHhP --numeric-ids --delete"
 function cpss {
 	if [ -z "$1" ]; then
 		echo "Usage: cpss <sourcedir> <targetdir>"
@@ -121,12 +121,7 @@ function cpss {
 	fi
 	tar cpzf - -C "$1" . | tar xpzvf - -C "$2"
 }
-function cpr {
-	if [ -d "$1" ]; then
-		echo "Error: Directories are not supported by cpr, consider cps."
-	fi
-	rsync --progress --append --inplace --partial -v $*
-}
+alias cpr="rsync -aHhP --numeric-ids --delete --partial --append-verify"
 unalias ls 2>/dev/null
 alias rls="$(which -a ls | head -n 1)"
 rls="$(which -a ls | head -n 1)"
