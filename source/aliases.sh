@@ -3582,7 +3582,7 @@ function startNix {
 alias startnix="startNix"
 alias nixstart="startNix"
 
-function get-twitter-guest-account-engine {
+function _ha_getTwitterGuestAccountEngine {
 guest_token=$(curl -s -XPOST https://api.twitter.com/1.1/guest/activate.json -H 'Authorization: Bearer AAAAAAAAAAAAAAAAAAAAAFXzAwAAAAAAMHCxpeSDG1gLNLghVe8d74hl6k4%3DRUMF4xAQLsbeBhTSRrCiQpJtxoGWeyHrDb5te2jpGskWDFW82F' | jq -r '.guest_token')
 
 flow_token=$(curl -s -XPOST 'https://api.twitter.com/1.1/onboarding/task.json?flow_name=welcome' \
@@ -3599,7 +3599,8 @@ curl -s -XPOST 'https://api.twitter.com/1.1/onboarding/task.json' \
           -H "X-Guest-Token: ${guest_token}" \
           -d "{\"flow_token\":\"${flow_token}\",\"subtask_inputs\":[{\"open_link\":{\"link\":\"next_link\"},\"subtask_id\":\"NextTaskOpenLink\"}]}" | jq -c -r '.subtasks[0]|if(.open_account) then {oauth_token: .open_account.oauth_token, oauth_token_secret: .open_account.oauth_token_secret} else empty end'
 }
-function get-twitter-guest-account {
+function _ha_getTwitterGuestAccount {
 	get-twitter-guest-account-engine >> $HOME/.twitter-guest-accounts
 	cat $HOME/.twitter-guest-accounts
 }
+alias get-twitter-guest-account="_ha_getTwitterGuestAccount"
