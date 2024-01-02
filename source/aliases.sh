@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.185.20231230.1
+hachreAliasesVersion=0.185.20240101.1
 
 #
 ### hachreAliases internal stuff
@@ -3600,7 +3600,7 @@ curl -s -XPOST 'https://api.twitter.com/1.1/onboarding/task.json' \
           -d "{\"flow_token\":\"${flow_token}\",\"subtask_inputs\":[{\"open_link\":{\"link\":\"next_link\"},\"subtask_id\":\"NextTaskOpenLink\"}]}" | jq -c -r '.subtasks[0]|if(.open_account) then {oauth_token: .open_account.oauth_token, oauth_token_secret: .open_account.oauth_token_secret} else empty end'
 }
 function _ha_getTwitterGuestAccount {
-	get-twitter-guest-account-engine >> $HOME/.twitter-guest-accounts
+	_ha_getTwitterGuestAccountEngine >> $HOME/.twitter-guest-accounts
 	cat $HOME/.twitter-guest-accounts
 }
 alias get-twitter-guest-account="_ha_getTwitterGuestAccount"
