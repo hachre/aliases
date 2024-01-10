@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.185.20240101.1
+hachreAliasesVersion=0.186.20240110.1
 
 #
 ### hachreAliases internal stuff
@@ -3604,3 +3604,11 @@ function _ha_getTwitterGuestAccount {
 	cat $HOME/.twitter-guest-accounts
 }
 alias get-twitter-guest-account="_ha_getTwitterGuestAccount"
+function arcset {
+	if [ -f "/sys/module/zfs/parameters/zfs_arc_max" ]; then
+		size=$(expr "$1" \* 1024 \* 1024 \* 1024)
+		echo "$size" > /sys/module/zfs/parameters/zfs_arc_max
+		echo "ARC max size now set to $size GB..."
+	fi
+}
+alias dropcaches="sync; echo 3 > /proc/sys/vm/drop_caches"
