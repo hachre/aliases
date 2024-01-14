@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.186.20240110.1
+hachreAliasesVersion=0.187.20240114.1
 
 #
 ### hachreAliases internal stuff
@@ -3331,6 +3331,9 @@ function zpoolcreate() {
 	zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
 }
+alias zfs1="while true; do clear; zpool status tank; sleep 10; done"
+alias zfs2="watch -n 5 zpool list -v"
+alias zfs3="zpool iostat -v 3"
 
 function showipv6 {
 	device=""
