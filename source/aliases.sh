@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.187.20240114.1
+hachreAliasesVersion=0.188.20240115.1
 
 #
 ### hachreAliases internal stuff
@@ -3615,3 +3615,49 @@ function arcset {
 	fi
 }
 alias dropcaches="sync; echo 3 > /proc/sys/vm/drop_caches"
+function alacconv {
+	# Description: Scans a path and subfolders for FLACs and converts to ALAC
+
+	function usage {
+		echo "Usage: $0 <path>"
+	}
+
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+		usage
+		return 1
+	fi
+
+	if [ ! -d "$1" ]; then
+		usage
+		echo ""
+		echo "Error: '$1' is an invalid path."
+		return 1
+	fi
+
+	which ffmpeg >/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'ffmpeg' to be installed."
+		return 1
+	fi
+
+	path="$1"
+	IFS=$'\n'
+
+	echo "Searching for FLACs in '$path'..."
+	for each in $(find "$path" -type f -iname "*.flac"); do
+		newname=$(echo "$each" | sed 's|.flac|.m4a|')
+		echo " -> $newname"
+		ffmpeg -y -i "$each" -vn -acodec alac -sample_fmt s16p "${each}.m4a" 1>/dev/null 2>&1
+		touch -r "$each" "$each".m4a && rm "$each"
+		mv "$each".m4a "$newname"
+		if [ -s "$newname" ]; then
+			rm "$newname"
+		fi
+	done
+
+	which fixpermissions 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then 
+		fixpermissions "$path" >/dev/null 2>&1
+	fi
+	echo "All done!"
+}
