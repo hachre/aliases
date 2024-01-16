@@ -3621,7 +3621,7 @@ function arcset {
 
 	# macOS
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
-		sysctl kstat.zfs.darwin.tunable.zfs_arc.max="$size"
+		sudo sysctl kstat.zfs.darwin.tunable.zfs_arc.max="$size"
 		echo "ARC max size now set to $1 GB..."
 		return 0
 	fi
