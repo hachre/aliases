@@ -3306,7 +3306,10 @@ function zfree() {
 function zfreeing {
 	target="$1"
 	if [ -z "$target" ]; then
-		$zpool get freeing tank
+		# Special list mode for all zpools
+		for entry in $($zpool list -o name -H); do
+			$zpool get freeing "$entry"
+		done
 		return
 	fi
 	$zpool get freeing "$target"
