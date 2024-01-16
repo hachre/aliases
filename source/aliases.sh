@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240116.2
+hachreAliasesVersion=0.188.20240116.3
 
 #
 ### hachreAliases internal stuff
@@ -3302,6 +3302,14 @@ function zfree() {
 		return
 	fi
 	$zfs get -o value -H avail "$target"
+}
+function zfreeing {
+	target="$1"
+	if [ -z "$target" ]; then
+		$zpool get freeing tank
+		return
+	fi
+	$zpool get freeing "$target"
 }
 # Accidental destruction protection (any ZFS command must come before this)
 function zpool() {
