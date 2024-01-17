@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240117.1
+hachreAliasesVersion=0.188.20240117.2
 
 #
 ### hachreAliases internal stuff
@@ -3206,6 +3206,7 @@ alias zps="_ha_zps"
 alias zlperf="$zfs get dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
 alias zlapple="zlaapl"
+alias zfsrecheck="zpool checkpoint -dw tank; zpool checkpoint tank"
 function snapnow {
 	if [ "$1" == "--help" ]; then
 		echo "Usage: snapnow [name] [pool/dataset]"
