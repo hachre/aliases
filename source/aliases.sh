@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240116.3
+hachreAliasesVersion=0.188.20240117.1
 
 #
 ### hachreAliases internal stuff
@@ -3267,7 +3267,7 @@ function zrmsnaps {
 	# Execute
 	function execute() {
 		# Create the todo list...
-		for entry in $($zfs list -t snapshot -r "$volume" -H -o name | $keywordcmd); do
+		for entry in $($zfs list -H -o name -t snapshot -r "$volume" | $keywordcmd); do
 			if [[ "$entry" != *"@"* ]]; then
                 echo "Invalid entry '$entry' skipped... Spaces in snapshot names are not supported."
                 continue
