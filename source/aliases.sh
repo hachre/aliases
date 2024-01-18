@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240117.2
+hachreAliasesVersion=0.188.20240118.1
 
 #
 ### hachreAliases internal stuff
@@ -494,10 +494,6 @@ function btrfsScrub {
 	fi
 
 	btrfs scrub start -B "$1"
-}
-
-function logout {
-	sh -c "killall mosh-server; kill $(pidof tmux)"
 }
 
 #
@@ -2938,7 +2934,7 @@ alias dnsreset="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder;"
 
 # Various
 alias pngcrush="pngcrush -rem allb -brute -reduce"
-alias serve="python -m SimpleHTTPServer 8000"
+alias serve="python3 -m RangeHTTPServer 8000"
 function f {
 	echo find . -xdev -iname "*$1*" $2 $3 $4 $5 $6 >/dev/stderr
 	find . -xdev -iname "*$1*" $2 $3 $4 $5 $6 | less -rEFXKn
