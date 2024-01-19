@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240118.1
+hachreAliasesVersion=0.188.20240119.1
 
 #
 ### hachreAliases internal stuff
@@ -3261,6 +3261,11 @@ function zrmsnaps {
 		keywordcmd="cat"
 	fi
 
+	sudo=""
+	if [ $(whoami) != root ]; then
+		sudo="sudo"
+	fi
+
 	# Execute
 	function execute() {
 		# Create the todo list...
@@ -3272,7 +3277,7 @@ function zrmsnaps {
 			if [ -z "$1" ]; then
 				echo "destroying: '$entry'..."
 			else
-				$zfs destroy -rv "$entry" 2>/dev/null
+				$sudo $zfs destroy -rv "$entry" 2>/dev/null
 			fi
 		done
 	}
