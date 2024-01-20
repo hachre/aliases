@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240120.1
+hachreAliasesVersion=0.188.20240120.2
 
 #
 ### hachreAliases internal stuff
@@ -44,6 +44,11 @@ export LC_ALL="$LANG"
 #
 ### Aliases
 #
+
+sudo=""
+if [ $(whoami) != root ]; then
+	sudo="sudo"
+fi
 
 function hachreAliasesExecuteCommand() {
 	hachreAliasesCommand="$1"
@@ -3207,8 +3212,8 @@ function zfsrecheck {
 	if [ -z "$target" ]; then
 		target="tank"
 	fi
-	zpool checkpoint -dw $target 2>/dev/null
-	zpool checkpoint $target
+	$sudo $zpool checkpoint -dw $target 2>/dev/null
+	$sudo $zpool checkpoint $target
 }
 function snapnow {
 	if [ "$1" == "--help" ]; then
