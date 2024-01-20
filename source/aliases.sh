@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240120.2
+hachreAliasesVersion=0.188.20240120.3
 
 #
 ### hachreAliases internal stuff
@@ -3235,11 +3235,12 @@ function snapnow {
 		fi
 	fi
 	snapName="dySnapNow_$(date +%Y-%m-%d_%H:%M)$name"
-	$zfs snap -r "$pool"@"$snapName"
+	$sudo $zfs snap -r "$pool"@"$snapName"
 	if [ ! "$1" == "--quiet" ]; then
 		echo "$snapName"
 	fi
 }
+alias zsnapnow=snapnow
 function zrmsnaps {
 	autoconfirm=0
 	if [[ "$@" == *"--yes"* ]]; then
@@ -3338,7 +3339,7 @@ function zpool() {
         sleep 10
     fi
 
-    $zpool $@
+    $sudo $zpool $@
 }
 function zfs() {
     if [ "$1" == "destroy" ]; then
@@ -3349,16 +3350,16 @@ function zfs() {
         sleep 10
     fi
 
-    $zfs $@
+    $sudo $zfs $@
 }
 function zfshistogram() {
 	find . -type f -print0 | xargs -0 ls -l | awk '{ n=int(log($5)/log(2)); if (n<10) { n=10; } size[n]++ } END { for (i in size) printf("%d %d\n", 2^i, size[i]) }' | sort -n | awk 'function human(x) { x[1]/=1024; if (x[1]>=1024) { x[2]++; human(x) } } { a[1]=$1; a[2]=0; human(a); printf("%3d%s: %6d\n", a[1],substr("kMGTEPYZ",a[2]+1,1),$2) }'
 }
 function zpoolcreate() {
-	zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
+	$sudo $zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
 }
-alias zfs1="while true; do clear; zpool status tank; sleep 10; done"
+alias zfs1="watch -n 10 zpool status tank"
 alias zfs2="watch -n 5 zpool list -v"
 alias zfs3="zpool iostat -v 3"
 
