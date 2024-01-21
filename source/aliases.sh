@@ -3544,7 +3544,7 @@ alias enableNix="nixenable"
 function nixdisable {
 	if [ -f "$HOME/.nix" ]; then
 		mv "$HOME/.nix" "$HOME/.nix.disabled"
-		echo "All done, relog into your shale to deactivate Nix."
+		echo "All done, relog into your shell to deactivate Nix."
 		return 0
 	fi
 }
