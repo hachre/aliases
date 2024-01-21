@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240120.3
+hachreAliasesVersion=0.188.20240121.1
 
 #
 ### hachreAliases internal stuff
@@ -3700,3 +3700,4 @@ function alacconv {
 	fi
 	echo "All done!"
 }
+alias iotop="iotop -o"
