@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240121.2
+hachreAliasesVersion=0.188.20240122.1
 
 #
 ### hachreAliases internal stuff
@@ -3359,7 +3359,8 @@ function zpoolcreate() {
 	$sudo $zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
 }
-alias zfs1="watch -n 10 zpool status tank"
+# using loop in zfs1 for color output
+alias zfs1="while true; do clear; zpool status; sleep 10; done"
 alias zfs2="watch -n 5 zpool list -v"
 alias zfs3="zpool iostat -v 3"
 
