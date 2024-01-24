@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240122.1
+hachreAliasesVersion=0.188.20240124.1
 
 #
 ### hachreAliases internal stuff
@@ -3360,8 +3360,8 @@ function zpoolcreate() {
 	echo "Using lz4 compression and the default recordsize of 128K..."
 }
 # using loop in zfs1 for color output
-alias zfs1="while true; do clear; zpool status; sleep 10; done"
-alias zfs2="watch -n 5 zpool list -v"
+alias zfs1="while true; do clear; echo -n '$HOST - '; date; echo; zpool status; sleep 10; done"
+alias zfs2="while true; do clear; echo -n '$HOST - '; date; echo; zpool list -v; sleep 10; done"
 alias zfs3="zpool iostat -v 3"
 
 function showipv6 {
