@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.188.20240124.1
+hachreAliasesVersion=0.189.20240126.1
 
 #
 ### hachreAliases internal stuff
@@ -1353,6 +1353,11 @@ function dyq {
 
 	if [ "$dyDetectedDistro" == "ubuntu" ]; then
 		apt show $@
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
+		brew info $@
 		return $?
 	fi
 
