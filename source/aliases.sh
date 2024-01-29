@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.189.20240129.1
+hachreAliasesVersion=0.189.20240129.2
 
 #
 ### hachreAliases internal stuff
@@ -3368,7 +3368,24 @@ function zpoolcreate() {
 alias zfs1="while true; do clear; echo -n '$HOST - '; date; echo; zpool status; sleep 10; done"
 alias zfs2="while true; do clear; echo -n '$HOST - '; date; echo; zpool list -v; sleep 10; done"
 alias zfs3="zpool iostat -v 3"
-alias zlspace="touch space; chmod 600 space; zfs list -o name,used,refer,usedsnap > space; nano space; rm space"
+function zlspace {
+	location="$1"
+	if [ -z "$location" ]; then
+		location="tank"
+	fi
+
+	file=$(mktemp)
+	if [ -z "$file" ]; then
+		echo "Error: Please install 'mktemp'"
+		return 1
+	fi
+
+	touch "$file"
+	chmod 600 "$file"
+	zfs list -o name,refer,usedsnap,used -r "$location" > "$file"
+	nano "$file"
+	rm "$file"
+}
 
 function showipv6 {
 	device=""
