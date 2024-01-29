@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.189.20240129.2
+hachreAliasesVersion=0.189.20240129.3
 
 #
 ### hachreAliases internal stuff
@@ -3197,10 +3197,14 @@ function _ha_zl {
 	if [ ! -z "$1" ]; then
 		r="-r"
 	fi
-	$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint $r $@
+	$zfs list -o name,refer,usedsnap,used,avail,compressratio,mountpoint $r $@
 }
-function zlsize {
-	$zfs list -r -t snapshot "$1" -o used,name -H | sort -h
+function zlssize {
+	location="$1"
+	if [ -z "$location" ]; then
+		location="tank"
+	fi
+	$zfs list -r -t snapshot "$location" -o used,name -H | sort -h
 }
 alias zl="_ha_zl"
 alias _ha_zls="$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpoint -t snapshot"
