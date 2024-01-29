@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.189.20240126.1
+hachreAliasesVersion=0.189.20240129.1
 
 #
 ### hachreAliases internal stuff
@@ -3368,6 +3368,7 @@ function zpoolcreate() {
 alias zfs1="while true; do clear; echo -n '$HOST - '; date; echo; zpool status; sleep 10; done"
 alias zfs2="while true; do clear; echo -n '$HOST - '; date; echo; zpool list -v; sleep 10; done"
 alias zfs3="zpool iostat -v 3"
+alias zlspace="touch space; chmod 600 space; zfs list -o name,used,refer,usedsnap > space; nano space; echo 'The zfs-list output has been stored in a file called space. \'rm space\' now to delete it.'"
 
 function showipv6 {
 	device=""
