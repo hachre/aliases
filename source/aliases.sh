@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240130.1
+hachreAliasesVersion=0.190.20240130.2
 
 #
 ### hachreAliases internal stuff
@@ -3731,11 +3731,12 @@ function alacconv {
 alias iotop="iotop -o"
 
 alias sr="snapraid"
-alias srx="snapraid sync; snapraid pool 1>/dev/null 2>&1"
+alias srx="snapraid sync; snapraid pool 1>/dev/null 2>&1; snapraid scrub"
 alias srsync=srx
 alias srp="snapraid pool"
 alias srpool=srp
 alias srps="snapraid status"
+alias srpl=srps
 alias srstat=srps
 alias srf="snapraid fix"
 alias srfix=srf
