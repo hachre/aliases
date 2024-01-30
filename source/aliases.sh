@@ -3732,7 +3732,7 @@ alias iotop="iotop -o"
 
 alias sr="snapraid"
 function srx {
-	snapraid sync
+	snapraid sync $@
 	if [ "$?" != "0" ]; then
 		echo "Errors occured."
 		return 1
