@@ -3743,3 +3743,14 @@ alias srl="snapraid list"
 alias srlist=srl
 alias srs="snapraid scrub"
 alias srscrub=srs
+function srh {
+	echo "hachre's SnapRAID commands:"
+	echo ""
+	echo "sr: snapraid"
+	echo "srx: snapraid sync"
+	echo "srp: snapraid pool"
+	echo "srps: snapraid (pool) status"
+	echo "srf: snapraid fix"
+	echo "srl: snapraid list"
+	echo "srs: snapraid scrub"
+}
