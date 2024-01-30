@@ -3731,7 +3731,15 @@ function alacconv {
 alias iotop="iotop -o"
 
 alias sr="snapraid"
-alias srx="snapraid sync; snapraid pool 1>/dev/null 2>&1; snapraid scrub"
+function srx {
+	snapraid sync
+	if [ "$?" != "0" ]; then
+		echo "Errors occured."
+		return 1
+	fi
+	snapraid pool 1>/dev/null 2>&1 || true
+	snapraid scrub 1>/dev/null 2>&1 || true
+}
 alias srsync=srx
 alias srp="snapraid pool"
 alias srpool=srp
