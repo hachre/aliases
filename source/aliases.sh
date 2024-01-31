@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240131.1
+hachreAliasesVersion=0.190.20240131.2
 
 #
 ### hachreAliases internal stuff
@@ -3752,7 +3752,7 @@ alias srfix=srf
 alias srl="snapraid list"
 alias srlist=srl
 alias srs="snapraid scrub"
-alias srscrub=srs
+alias srscrub="snapraid scrub -p 100 -o 0"
 alias src="nano /etc/snapraid.conf"
 alias srconf=src
 function srh {
