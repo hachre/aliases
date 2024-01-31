@@ -3737,6 +3737,7 @@ function srx {
 		echo "Errors occured."
 		return 1
 	fi
+	snapraid touch 1>/dev/null 2>&1 || true
 	snapraid pool 1>/dev/null 2>&1 || true
 	snapraid scrub 1>/dev/null 2>&1 || true
 }
