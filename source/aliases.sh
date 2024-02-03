@@ -3771,7 +3771,7 @@ function srh {
 # Install Apt Proxy on suitable systems
 if [ "$dyDetectDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro"="windows" ]; then
 	if [ ! -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
-		ip=$(host aptcache 2>/dev/null)
+		ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
 		if [ "$?" == "0" ]; then
 			echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
 		fi
