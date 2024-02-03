@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240203.1
+hachreAliasesVersion=0.190.20240203.2
 
 #
 ### hachreAliases internal stuff
@@ -3767,3 +3767,13 @@ function srh {
 	echo "srs: snapraid scrub"
 	echo "src: nano /etc/snapraid.conf"
 }
+
+# Install Apt Proxy on suitable systems
+if [ "$dyDetectDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro"="windows" ]; then
+	if [ ! -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
+		ip=$(host aptcache 2>/dev/null)
+		if [ "$?" == "0" ]; then
+			echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
+		fi
+	fi
+fi
