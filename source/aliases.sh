@@ -1153,7 +1153,7 @@ if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 fi
 dyAPTCmd="apt"
 which -p nala 1>/dev/null 2>&1
-if [ "$?" == "0" ]; then
+if [ "$?" == "0" ] && [ ! -f "$HOME"/.nonala ]; then
 	dyAPTCmd="nala"
 fi
 function dyh {
