@@ -971,6 +971,7 @@ function dyDetectDistro {
 		if [ "$?" == "0" ]; then
 			dyDetectedDistro="debian"
 		fi
+		return 0
 	fi
 
 	# Alpine Linux
