@@ -1172,7 +1172,7 @@ if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 	dyAltPkgManager="synth"
 fi
 dyAPTCmd="apt"
-which -p nala 1>/dev/null 2>&1
+which nala 1>/dev/null 2>&1
 if [ "$?" == "0" ] && [ ! -f "$HOME"/.nonala ]; then
 	dyAPTCmd="nala"
 fi
