@@ -82,15 +82,15 @@ installPrequisites() {
 	rehash 2>/dev/null || true
 }
 
-# Automatic prequisite installation is only tested on Arch and Ubuntu
+# Automatic prequisite installation
 if [ "$cmd" != "--no-internet" ]; then
 if [ "$1" = "--force" ]; then
 	installPrequisites
 else
-	if [ "$dyDetectedDistro" = "FreeBSD" ] || [ "$dyDetectedDistro" = "arch" ] || [ "$dyDetectedDistro" = "ubuntu" ] || [ "$dyDetectedDistro" = "CentOS" ] || [ "$dyDetectedDistro" = "windows" ] || [ "$dyDetectedDistro" = "alpine" ]; then
+	if [ "$dyDetectedDistro" != "unknown" ]; then
 		installPrequisites
 	else
-		echo "Error: Your distribution '$dyDetectedDistro' has not been tested for automatic package installation."
+		echo "Error: Your distribution is unknown and has not been tested for automatic package installation."
 		echo "       Please install the following list of tools manually and rerun the installation with '--force':"
 		echo ""
 		echo "Required:    which zsh git"

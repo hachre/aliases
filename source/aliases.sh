@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240203.2
+hachreAliasesVersion=0.190.20240204.1
 
 #
 ### hachreAliases internal stuff
@@ -939,27 +939,37 @@ function dyDetectDistro {
 		return 0
 	fi
 
-	# Ubuntu
+	# Debian Distros
 	which lsb_release 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		release=$(lsb_release -is)
 		if [ "$release" == "Ubuntu" ]; then
-			dyDetectedDistro="ubuntu"
+			dyDetectedDistro="debian"
 			dyDistroName="Ubuntu Linux"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
 		if [ "$release" == "Debian" ]; then
-			dyDetectedDistro="ubuntu"
+			dyDetectedDistro="debian"
 			dyDistroName="Debian"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
 		if [ "$release" == "Kali" ]; then
-			dyDetectedDistro="ubuntu"
+			dyDetectedDistro="debian"
 			dyDistroName="Kali"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
+		fi
+	else
+		# If LSB_release isn't available try to guess based on availability of apt-get or apt
+		which -p apt-get 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDetectedDistro="debian"
+		fi
+		which -p apt 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDetectedDistro="debian"
 		fi
 	fi
 
@@ -1005,6 +1015,21 @@ function dyDetectDistro {
 	return 1
 }
 dyDetectDistro
+
+# Set up Nala
+function _ha_installNala {
+	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
+	curl -fSsL https://deb.volian.org/volian/scar.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
+	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ scar main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive-scar-unstable.list
+	$hachreAliasesRoot apt update
+	$hachreAliasesRoot apt install -y nala
+}
+if [ "$dyDetectedDistro" == "debian" ]; then
+	which -p nala 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		_ha_installNala
+	fi
+fi
 
 # Set up Arch aliases
 if [ "$dyDetectedDistro" == "arch" ]; then
@@ -1126,6 +1151,11 @@ dyAltPkgManager=""
 if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 	dyAltPkgManager="synth"
 fi
+dyAPTCmd="apt"
+which -p nala 1>/dev/null 2>&1
+if [ "$?" == "0" ]; then
+	dyAPTCmd="nala"
+fi
 function dyh {
 	if [ "$dyDetectedDistro" == "unknown" ]; then
 		echo "Error: Sadly, your distro is not supported."
@@ -1193,6 +1223,10 @@ function dyh {
 
 	if [ "$dyDetectedDistro" == "CentOS" ]; then
 		echo -e "\nAs a user of CentOS features, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
+	fi
+
+	if [ "$dyDetectedDistro" == "debian" ] && [ $dyAPTCmd == "nala" ]; then
+		echo -e "\nAs a user of Debian with Nala, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
 	fi
 
 	return 0
@@ -1294,44 +1328,40 @@ function dyk {
 	echo "This command is not supported on your platform."
 }
 
-# This is CentOS (yum) only
 function dyundo {
-	if [ "$dyDetectedDistro" != "CentOS" ]; then
+	if [ "$dyDetectedDistro" != "CentOS" ] && [ "$dyDetectedDistro" != "debian" ]; then
 		return 1
 	fi
-
-	if [ -z "$1" ] || [ "$1" == "--help" ]; then
-		echo -e "Usage: dyundo <command> [command parameter]\n"
-		echo -e " Note: You can also use 'yum history' directly.\n"
-		echo " Possible commands are:"
-		#echo "  --stats:        display various historic stats"
-		echo "  --history:      display a list of previous transactions"
-		echo "  --undo <N>:     undo the single transaction with id N"
-		echo "  --rollback <N>: rollback everything up until transaction with id N"
-		return 1
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		if [ "$dyAPTCmd" != "nala" ]; then
+			return 1
+		fi
 	fi
 
-	#if [ "$1" == "--stats" ]; then
-	#	$hachreAliasesRoot $(dyYumCmd) history stats
-	#	return $?
-	#fi
+	if [ -z "$1" ]; then
+		if [ "$dyDetectedDistro" == "CentOS" ]; then
+			$hachreAliasesRoot $(dyYumCmd) history
+		fi
 
-	if [ "$1" == "--history" ]; then
-		$hachreAliasesRoot $(dyYumCmd) history
-		return $?
+		if [ "$dyDetectedDistro" == "debian" ]; then
+			$hachreAliasesRoot $dyAPTCmd history
+		fi
+
+		return 0
 	fi
 
-	if [ "$1" == "--undo" ]; then
-		$hachreAliasesRoot $(dyYumCmd) history undo "$2"
-		return $?
+	if [ ! -z "$1" ]; then
+		if [ "$dyDetectedDistro" == "CentOS" ]; then
+			$hachreAliasesRoot $(dyYumCmd) history undo "$1"
+			return $?
+		fi
+
+		if [ "$dyDetectedDistro" == "debian" ]; then
+			$hachreAliasesRoot $dyAPTCmd undo "$1"
+			return $?
+		fi
 	fi
 
-	if [ "$1" == "--rollback" ]; then
-		$hachreAliasesRoot $(dyYumCmd) history rollback "$2"
-		return $?
-	fi
-
-	echo "Given command '$1' not understood. Check '--help'."
 	return 1
 }
 
@@ -1351,8 +1381,8 @@ function dyq {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "ubuntu" ]; then
-		apt show $@
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		$dyAPTCmd show $@
 		return $?
 	fi
 
@@ -1415,8 +1445,8 @@ function dyx {
 		return $?
 	fi
 
-  if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-    $hachreAliasesRoot apt update
+  if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+    $hachreAliasesRoot $dyAPTCmd update
 		return $?
 	fi
 
@@ -1514,8 +1544,13 @@ function dyv {
 }
 
 function dyw {
-	if [ "$dyDetectedDistro" == "ubuntu" ]; then
-		apt-mark showmanual
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		if [ "$dyAPTCmd" == "apt" ]; then
+			apt-mark showmanual
+		fi
+		if [ "$dyAPTCmd" == "nala" ]; then
+			nala list -i
+		fi
 		return $?
 	fi
 
@@ -1609,19 +1644,19 @@ function dyu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt full-upgrade
-		$hachreAliasesRoot apt autoremove
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot $dyAPTCmd full-upgrade
+		$hachreAliasesRoot $dyAPTCmd autoremove
 
-		if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-			which youtube-dl >/dev/null 2>&1
-			if [ "$?" == "0" ]; then
-				dyi python3-pip
-				apt remove -y youtube-dl
-				apt autoremove -y
-				sudo pip3 install --upgrade youtube-dl
-			fi
-		fi
+		# if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+		# 	which youtube-dl >/dev/null 2>&1
+		# 	if [ "$?" == "0" ]; then
+		# 		dyi python3-pip
+		# 		apt remove -y youtube-dl
+		# 		apt autoremove -y
+		# 		sudo pip3 install --upgrade youtube-dl
+		# 	fi
+		# fi
 
 		return $?
 	fi
@@ -1741,9 +1776,12 @@ function dyuu {
 		fi
 	fi
 
-	if [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt update
-		$hachreAliasesRoot unattended-upgrade -d
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot $dyAPTCmd update
+		which -p unattended-upgrade 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			$hachreAliasesRoot unattended-upgrade -d
+		fi
 		return $?
 	fi
 
@@ -1795,8 +1833,8 @@ function dyi {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt install $*
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot $dyAPTCmd install $*
 		return $?
 	fi
 
@@ -1968,7 +2006,7 @@ function dyo {
 		return 1
 	fi
 
-	if [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "debian" ]; then
 		dpkg -S $*
 		return $?
 	fi
@@ -2033,9 +2071,9 @@ function dyr {
 		return $?
 	fi
 
-   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt remove $*
-		$hachreAliasesRoot apt autoremove
+   	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot $dyAPTCmd remove $*
+		$hachreAliasesRoot $dyAPTCmd autoremove
 		return $?
 	fi
 
@@ -2088,9 +2126,9 @@ function dyrf {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
-		$hachreAliasesRoot apt-get purge $*
-		$hachreAliasesRoot apt autoremove
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot $dyAPTCmd purge $*
+		$hachreAliasesRoot $dyAPTCmd autoremove
 		return $?
 	fi
 
@@ -2150,7 +2188,7 @@ function dys {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
 		$hachreAliasesRoot apt-cache search $* | less -rEFXKn
 		return $?
 	fi
@@ -2240,9 +2278,9 @@ function dyss {
 # Gentoo openrc specific init helpers
 which systemctl >/dev/null 2>&1
 if [ "$?" != "0" ]; then
-	if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+	if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "debian" ]; then
 		initdir=""
-		if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "ubuntu" ]; then
+		if [ "$dyDetectedDistro" == "alpine" ] || [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "debian" ]; then
 			initdir="/etc/init.d"
 		fi
 		if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -2271,7 +2309,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 start
 			fi
-			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "debian" ] ; then
 				service $1 start
 			fi
 			
@@ -2296,7 +2334,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 stop
 			fi
-			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "debian" ] ; then
 				service $1 stop
 			fi
 
@@ -2321,7 +2359,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 restart
 			fi
-			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "debian" ] ; then
 				service $1 restart
 			fi
 
@@ -2346,7 +2384,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 reload
 			fi
-			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "FreeBSD" ] || [ "$dyDetectedDistro" == "debian" ] ; then
 				service $1 reload
 			fi
 
@@ -2371,7 +2409,7 @@ if [ "$?" != "0" ]; then
 			if [ "$dyDetectedDistro" == "gentoo" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 				$initdir/$1 status
 			fi
-			if [ "$dyDetectedDistro" == "ubuntu" ] ; then
+			if [ "$dyDetectedDistro" == "debian" ] ; then
 				service $1 status
 			fi
 
@@ -3769,7 +3807,7 @@ function srh {
 }
 
 # Install Apt Proxy on suitable systems
-if [ "$dyDetectDistro" == "ubuntu" ] || [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro"="windows" ]; then
+if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro"="windows" ]; then
 	if [ ! -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
 		ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
 		if [ "$?" == "0" ]; then
