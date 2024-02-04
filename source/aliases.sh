@@ -1016,6 +1016,26 @@ function dyDetectDistro {
 }
 dyDetectDistro
 
+# Install Apt Proxy on suitable systems
+function _ha_installAPTCache {
+	if [ -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
+		return
+	fi
+
+	host -4 aptcache 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		return
+	fi
+
+	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
+	if [ "$?" == "0" ]; then
+		echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
+	fi
+}
+if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
+	_ha_installAPTCache
+fi
+
 # Set up Nala
 function _ha_installNala {
 	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
@@ -3824,23 +3844,3 @@ function srh {
 	echo "srs: snapraid scrub"
 	echo "src: nano /etc/snapraid.conf"
 }
-
-# Install Apt Proxy on suitable systems
-function _ha_installAPTCache {
-	if [ -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
-		return
-	fi
-
-	host -4 aptcache 1>/dev/null 2>&1
-	if [ "$?" != "0" ]; then
-		return
-	fi
-
-	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
-	if [ "$?" == "0" ]; then
-		echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
-	fi
-}
-if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
-	_ha_installAPTCache
-fi
