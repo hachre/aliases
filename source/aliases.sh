@@ -1029,7 +1029,9 @@ function _ha_installAPTCache {
 
 	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
 	if [ "$?" == "0" ]; then
+		$hachreAliasesRoot apt update
 		echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
+		$hachreAliasesRoot apt update
 	fi
 }
 if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
