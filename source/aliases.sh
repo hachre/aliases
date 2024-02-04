@@ -1025,7 +1025,7 @@ function _ha_installNala {
 	$hachreAliasesRoot apt install -y nala
 }
 if [ "$dyDetectedDistro" == "debian" ]; then
-	which -p nala 1>/dev/null 2>&1
+	which nala 1>/dev/null 2>&1
 	if [ "$?" != "0" ] && [ ! -f "$HOME"/.nonala ]; then
 		_ha_installNala
 	fi
