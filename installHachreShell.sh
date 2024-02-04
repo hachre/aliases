@@ -105,9 +105,11 @@ fi
 
 # Install Locales
 if [ "$dyDetectedDistro" == "debian" ]; then
+	set +e
 	dyi locales
 	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
-	locale-gen --purge en_US.UTF-8 || true
+	locale-gen --purge en_US.UTF-8
+	set -e
 fi
 
 # Install hachreAliases
