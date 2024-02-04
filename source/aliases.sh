@@ -2189,7 +2189,12 @@ function dys {
 	fi
 
 	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
-		$hachreAliasesRoot apt-cache search $* | less -rEFXKn
+		if [ "$dyAPTCmd" == "apt" ]; then
+			$hachreAliasesRoot apt-cache search $* | less -rEFXKn
+		fi
+		if [ "$dyAPTCmd" == "nala" ]; then
+			$hachreAliasesRoot nala search $* | less -rEFXKn
+		fi
 		return $?
 	fi
 
