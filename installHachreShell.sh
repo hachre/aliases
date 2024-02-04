@@ -103,15 +103,6 @@ else
 fi
 fi
 
-# Install Locales
-if [ "$dyDetectedDistro" == "debian" ]; then
-	set +e
-	dyi locales
-	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
-	locale-gen --purge en_US.UTF-8
-	set -e
-fi
-
 # Install hachreAliases
 echo "Installing hachreAliases..."
 if [ "$cmd" != "--no-internet" ]; then
@@ -198,6 +189,13 @@ if [ ! -f "/etc/pamd./chsh" ]; then
 fi
 chsh -s "$(which zsh)"
 
+# Install Locales
+if [ "$dyDetectedDistro" == "debian" ]; then
+	dyi locales
+	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
+	locale-gen --purge en_US.UTF-8 1>/dev/null 2>&1 &
+fi
+
 # Finished
 echo ""
-echo "Setup complete! Relog to launch hachreShell"
+echo "Setup complete! Relog to launch hachreShell!"
