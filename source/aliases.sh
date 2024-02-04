@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240204.3
+hachreAliasesVersion=0.190.20240204.4
 
 #
 ### hachreAliases internal stuff
@@ -963,11 +963,11 @@ function dyDetectDistro {
 		fi
 	else
 		# If LSB_release isn't available try to guess based on availability of apt-get or apt
-		which -p apt-get 1>/dev/null 2>&1
+		which apt-get 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			dyDetectedDistro="debian"
 		fi
-		which -p apt 1>/dev/null 2>&1
+		which apt 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			dyDetectedDistro="debian"
 		fi
