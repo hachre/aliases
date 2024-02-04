@@ -193,7 +193,7 @@ chsh -s "$(which zsh)"
 if [ "$dyDetectedDistro" == "debian" ]; then
 	dyi locales
 	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
-	locale-gen --purge en_US.UTF-8 1>/dev/null 2>&1 &
+	sh -c "locale-gen --purge en_US.UTF-8 1>/dev/null 2>&1" &
 fi
 
 # Finished
