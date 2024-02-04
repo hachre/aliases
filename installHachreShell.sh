@@ -46,6 +46,8 @@ echo "Loading hachreAliases..."
 if [ "$cmd" != "--no-internet" ] && [ "$SHELL" != "/bin/sh" ]; then
 	c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
 	. /tmp/aliases.sh || true
+	# Loading hachreAliases twice in a row to switch to Nala in case it got installed
+	. /tmp/aliases.sh || true
 	rm /tmp/aliases.sh
 fi
 rm -R /usr/local/hachre/aliases 2>/dev/null || true
