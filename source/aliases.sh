@@ -1026,7 +1026,7 @@ function _ha_installNala {
 }
 if [ "$dyDetectedDistro" == "debian" ]; then
 	which -p nala 1>/dev/null 2>&1
-	if [ "$?" != "0" ]; then
+	if [ "$?" != "0" ] && [ ! -f "$HOME"/.nonala ]; then
 		_ha_installNala
 	fi
 fi
@@ -1587,9 +1587,14 @@ function dyu {
         fi
     fi
 
-	# CentOS and Alpine do this on its own
+	# CentOS, Alpine and Debian with Nala do this on their own
 	if [ "$dyDetectedDistro" == "CentOS" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 		skip="1"
+	fi
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		if [ "$dyAPTCmd" == "nala" ]; then
+			skip="1"
+		fi
 	fi
 
     # We want to ensure we are synced before updating
@@ -1646,7 +1651,9 @@ function dyu {
 
 	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
 		$hachreAliasesRoot $dyAPTCmd full-upgrade
-		$hachreAliasesRoot $dyAPTCmd autoremove
+		if [ "$dyAPTCmd" == "apt" ]; then
+			$hachreAliasesRoot apt autoremove
+		fi
 
 		# if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
 		# 	which youtube-dl >/dev/null 2>&1
