@@ -191,9 +191,9 @@ chsh -s "$(which zsh)"
 
 # Install Locales
 if [ "$dyDetectedDistro" == "debian" ]; then
-	dyi locales
+	apt install -y locales
 	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
-	sh -c "locale-gen --purge en_US.UTF-8" 1>/dev/null 2>&1 &
+	locale-gen --purge en_US.UTF-8
 fi
 
 # Finished
