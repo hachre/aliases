@@ -103,6 +103,13 @@ else
 fi
 fi
 
+# Install Locales
+if [ "$dyDetectedDistro" == "debian" ]; then
+	dyi locales
+	echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
+	locale-gen --purge en_US.UTF-8
+fi
+
 # Install hachreAliases
 echo "Installing hachreAliases..."
 if [ "$cmd" != "--no-internet" ]; then
