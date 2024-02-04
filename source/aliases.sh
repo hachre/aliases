@@ -1338,6 +1338,13 @@ function dyundo {
 		fi
 	fi
 
+	if [ "$1" == "--help" ]; then
+		echo "Usage: dyundo [id]"
+		echo " - run without any paramter to get a list of undoable actions"
+		echo " - then run again with the id you want to undo"
+		return 127
+	fi
+
 	if [ -z "$1" ]; then
 		if [ "$dyDetectedDistro" == "CentOS" ]; then
 			$hachreAliasesRoot $(dyYumCmd) history
