@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240204.4
+hachreAliasesVersion=0.190.20240206.1
 
 #
 ### hachreAliases internal stuff
@@ -1387,7 +1387,7 @@ function dyundo {
 		fi
 
 		if [ "$dyDetectedDistro" == "debian" ]; then
-			$hachreAliasesRoot $dyAPTCmd undo "$1"
+			$hachreAliasesRoot $dyAPTCmd history undo "$1"
 			return $?
 		fi
 	fi
