@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240206.2
+hachreAliasesVersion=0.190.20240206.3
 
 #
 ### hachreAliases internal stuff
@@ -3272,12 +3272,19 @@ function awsreset {
 export ZFS_COLOR=1
 zpool=$(which zpool 2>&1)
 zfs=$(which zfs 2>&1)
-function _ha_zl {
+function _ha_zlm {
 	r=""
 	if [ ! -z "$1" ]; then
 		r="-r"
 	fi
 	$zfs list -o name,refer,usedsnap,used,avail,compressratio,mountpoint $r $@
+}
+function _ha_zl {
+	r=""
+	if [ ! -z "$1" ]; then
+		r="-r"
+	fi
+	$zfs list -o name,refer,usedsnap,used,compressratio,mountpoint $r $@
 }
 function zlssize {
 	location="$1"
@@ -3293,7 +3300,7 @@ alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="$zpool status -D"
 alias zps="_ha_zps"
-alias zlperf="$zfs get dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
+alias zlperf="$zfs get mountpoint,canmount,dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
 alias zlapple="zlaapl"
 function zfsrecheck {
