@@ -3277,14 +3277,14 @@ function _ha_zlm {
 	if [ ! -z "$1" ]; then
 		r="-r"
 	fi
-	$zfs list -o name,refer,usedsnap,used,avail,compressratio,mountpoint $r $@
+	$zfs list -o name,refer,usedsnap,used,compressratio,mountpoint $r $@
 }
 function _ha_zl {
 	r=""
 	if [ ! -z "$1" ]; then
 		r="-r"
 	fi
-	$zfs list -o name,refer,usedsnap,used,compressratio,mountpoint $r $@
+	$zfs list -o name,refer,usedsnap,used,compressratio $r $@
 }
 function zlssize {
 	location="$1"
