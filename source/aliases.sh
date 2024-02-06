@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240206.1
+hachreAliasesVersion=0.190.20240206.2
 
 #
 ### hachreAliases internal stuff
@@ -3846,4 +3846,12 @@ function srh {
 	echo "srl: snapraid list"
 	echo "srs: snapraid scrub"
 	echo "src: nano /etc/snapraid.conf"
+}
+function forceAUnexpectedReboot {
+	if [ ! -f "/proc/sys/kernel/sysrq" ]; then
+		echo "Not supported on your platform."
+		return 1
+	fi
+	echo 1 > /proc/sys/kernel/sysrq
+	echo b > /proc/sysrq-trigger
 }
