@@ -3880,9 +3880,9 @@ function hddtemp {
 	fi
 
 	function getmodel {
-		model=$(smartctl -a "$dev" | grep --color=none -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" }')
+		model=$(smartctl -a "$dev" | grep --color=none -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
 		if [ -z "$model" ]; then
-			model=$(smartctl -a "$dev" | grep --color=none -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" }')
+			model=$(smartctl -a "$dev" | grep --color=none -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
 		fi
 		echo "$model"
 	}
