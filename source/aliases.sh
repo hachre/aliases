@@ -3880,9 +3880,9 @@ function hddtemp {
 	fi
 
 	function getmodel {
-		model=$(smartctl -a "$dev" | grep -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		model=$(smartctl -a "$dev" | grep --color=none -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" }')
 		if [ -z "$model" ]; then
-			model=$(smartctl -a "$dev" | grep -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+			model=$(smartctl -a "$dev" | grep --color=none -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9" }')
 		fi
 		echo "$model"
 	}
@@ -3898,11 +3898,11 @@ function hddtemp {
 			return 1
 		fi
 		echo -n "$dev - "
-		echo -n $(smartctl -a $@ -j | grep --color=auto "temperature" -A 3 | grep --color=auto "current" | awk '{ print $2 }')
+		echo -n $(smartctl -a $@ -j | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
 		echo -n " - "
 		echo -n $(getmodel)
 		echo -n " - "
-		echo -n $(smartctl -a "$dev" | grep -i serial | head -n 1 | sed 's|Serial Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		echo -n $(smartctl -a "$dev" | grep --color=none -i "serial" | head -n 1 | sed 's|Serial Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
 		echo ""
 	}
 
