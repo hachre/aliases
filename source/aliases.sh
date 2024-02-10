@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.192.20240210.3
+hachreAliasesVersion=0.192.20240210.4
 
 #
 ### hachreAliases internal stuff
@@ -99,9 +99,9 @@ alias hachreshellupdate="hachreShellUpdate"
 # Color Settings
 #
 
-alias egrep="egrep --color=always"
-alias grep="grep --color=always"
-alias dmesg="dmesg --color"
+alias egrep="egrep --color=auto"
+alias grep="grep --color=auto"
+alias dmesg="dmesg --color=auto"
 
 #
 # Filesystem Helpers
@@ -130,7 +130,7 @@ alias cpr="rsync -aHhP --numeric-ids --delete --partial --append-verify"
 unalias ls 2>/dev/null
 alias rls="$(which -a ls | head -n 1)"
 rls="$(which -a ls | head -n 1)"
-alias ls="ls -F --color"
+alias ls="ls -F --color=auto"
 alias lsd="ls -alh"
 alias l="ls -l"
 alias ll="ls -l"
