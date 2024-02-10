@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.191.20240210.1
+hachreAliasesVersion=0.192.20240210.3
 
 #
 ### hachreAliases internal stuff
@@ -3961,9 +3961,8 @@ function smarttest {
 	}
 
 	function readSMART {
-		echo "$1:"
-		smartctl -l selftest "$1"
-		echo ""
+		echo -n "$1: "
+		smartctl -l selftest "$1" | grep --color=none "# 1"
 	}
 
 	datestamp=$(date +%Y-%m-%d--%H-%M)
@@ -3981,20 +3980,20 @@ function smarttest {
 	touch "$outfile"
 	chmod 600 "$outfile"
 
-	echo " --- Information Section ---" >> "$outfile"
-	echo "" >> "$outfile"
-	echo "" >> "$outfile"
-	for each in $(ls /dev/sd?); do
-		isHDD "$each" || continue
-		infoSMART "$each" >> "$outfile"
-	done
-
 	echo " --- Test Result Section ---" >> "$outfile"
 	echo "" >> "$outfile"
 	echo "" >> "$outfile"
 	for each in $(ls /dev/sd?); do
 		isHDD "$each" || continue
 		readSMART "$each" >> "$outfile"
+	done
+
+	echo " --- Information Section ---" >> "$outfile"
+	echo "" >> "$outfile"
+	echo "" >> "$outfile"
+	for each in $(ls /dev/sd?); do
+		isHDD "$each" || continue
+		infoSMART "$each" >> "$outfile"
 	done
 
 	echo ""
