@@ -3930,6 +3930,12 @@ function smarttest {
 		return 127
 	fi
 
+	which smartctl 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'smartctl' to be installed. The package is usually called 'smartmontools'."
+		return 1
+	fi
+	
 	IFS=$'\n'
 
 	function cutoffend {
