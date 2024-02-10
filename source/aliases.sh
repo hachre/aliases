@@ -3982,14 +3982,14 @@ function smarttest {
 
 	echo " --- Test Result Section ---" >> "$outfile"
 	echo "" >> "$outfile"
-	echo "" >> "$outfile"
 	for each in $(ls /dev/sd?); do
 		isHDD "$each" || continue
 		readSMART "$each" >> "$outfile"
 	done
-
-	echo " --- Information Section ---" >> "$outfile"
 	echo "" >> "$outfile"
+
+	echo "" >> "$outfile"
+	echo " --- Information Section ---" >> "$outfile"
 	echo "" >> "$outfile"
 	for each in $(ls /dev/sd?); do
 		isHDD "$each" || continue
