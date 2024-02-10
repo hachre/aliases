@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.190.20240206.3
+hachreAliasesVersion=0.191.20240210.1
 
 #
 ### hachreAliases internal stuff
@@ -3862,4 +3862,57 @@ function forceAUnexpectedReboot {
 	fi
 	echo 1 > /proc/sys/kernel/sysrq
 	echo b > /proc/sysrq-trigger
+}
+function hddtemp {
+	which smartctl 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'smartctl' to be installed. The package is usually called 'smartmontools'."
+		return 1
+	fi
+
+	if [ "$1" == "--help" ] || [ -z "$1" ]; then 
+		echo "Usage: hddtemp <device>"
+		echo " Examples: hddtemp /dev/sda"
+		echo "           hddtemp /dev/sd?"
+		echo "           hddtemp /dev/nvme0"
+		echo "           hddtemp /dev/nvme?"
+		return 127
+	fi
+
+	function getmodel {
+		model=$(smartctl -a "$dev" | grep -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		if [ -z "$model" ]; then
+			model=$(smartctl -a "$dev" | grep -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		fi
+		echo "$model"
+	}
+
+	function hddtempsingle {
+		# Single parameter case
+		dev="$1"
+		if [ ! -e "$dev" ]; then
+			dev="/dev/$1"
+		fi
+		if [ ! -e "$dev" ]; then
+			echo "Error: Given device not found."
+			return 1
+		fi
+		echo -n "$dev - "
+		echo -n $(smartctl -a $@ -j | grep --color=auto "temperature" -A 3 | grep --color=auto "current" | awk '{ print $2 }')
+		echo -n " - "
+		echo -n $(getmodel)
+		echo -n " - "
+		echo -n $(smartctl -a "$dev" | grep -i serial | head -n 1 | sed 's|Serial Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		echo ""
+	}
+
+	if [ ! -z "$2" ]; then
+		IFS=" "
+		for each in $@; do
+			hddtempsingle "$each"
+		done
+		return 0
+	fi
+
+	hddtempsingle $@
 }
