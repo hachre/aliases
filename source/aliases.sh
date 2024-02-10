@@ -3969,10 +3969,16 @@ function smarttest {
 	outfile="/${datestamp}_SMART-RESULTS"
 
 	# Find out which disks are HDDs and schedule SMART tests
+	hits=0
 	for each in $(ls /dev/sd?); do
 		isHDD "$each" || continue
 		runSMART "$each"
+		let hits=hits+1
 	done
+	if [ "$hits" == "0" ]; then
+		echo "Error: No HDD devices have been found."
+		return 1
+	fi
 
 	echo "Tests have been scheduled. Waiting 10 minutes to pick up results."
 	sleep 600
