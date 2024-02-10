@@ -3935,7 +3935,7 @@ function smarttest {
 		echo "Error: We need 'smartctl' to be installed. The package is usually called 'smartmontools'."
 		return 1
 	fi
-	
+
 	IFS=$'\n'
 
 	function cutoffend {
@@ -3950,7 +3950,7 @@ function smarttest {
 	function runSMART {
 		echo "Starting 'short' SMART test on '$1'..."
 		set -e
-		echo smartctl -t short "$1" 1>/dev/null 2>&1
+		smartctl -t short "$1" 1>/dev/null 2>&1
 		set +e
 	}
 
@@ -3976,7 +3976,7 @@ function smarttest {
 	done
 
 	echo "Tests have been scheduled. Waiting 10 minutes to pick up results."
-	sleep 10
+	sleep 600
 
 	touch "$outfile"
 	chmod 600 "$outfile"
