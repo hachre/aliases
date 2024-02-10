@@ -3916,3 +3916,82 @@ function hddtemp {
 
 	hddtempsingle $@
 }
+
+function smarttest {
+	#
+	# ProjectSmart 2024
+	#
+
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+		echo "Usage: smarttest --run"
+		echo "  Autodetects all HDDs in the system, then runs 'short' SMART tests on them."
+		echo "  Will take >10 minutes to execute because we'll have to wait for the test results."
+		echo "  It is recommended not to put the disks under heavy load during these tests."
+		return 127
+	fi
+
+	IFS=$'\n'
+
+	function cutoffend {
+		sed "s/.\{$1\}$//"
+	}
+
+	function isHDD {
+		smartctl -i "$1" | grep --color=none -i "rotation rate" | grep --color=none -i "rpm" 1>/dev/null 2>&1
+		return $?
+	}
+
+	function runSMART {
+		echo "Starting 'short' SMART test on '$1'..."
+		set -e
+		echo smartctl -t short "$1" 1>/dev/null 2>&1
+		set +e
+	}
+
+	function infoSMART {
+		echo "$1:"
+		smartctl -i "$1"
+		echo ""
+	}
+
+	function readSMART {
+		echo "$1:"
+		smartctl -l selftest "$1"
+		echo ""
+	}
+
+	datestamp=$(date +%Y-%m-%d--%H-%M)
+	outfile="/${datestamp}_SMART-RESULTS"
+
+	# Find out which disks are HDDs and schedule SMART tests
+	for each in $(ls /dev/sd?); do
+		isHDD "$each" || continue
+		runSMART "$each"
+	done
+
+	echo "Tests have been scheduled. Waiting 10 minutes to pick up results."
+	sleep 10
+
+	touch "$outfile"
+	chmod 600 "$outfile"
+
+	echo " --- Information Section ---" >> "$outfile"
+	echo "" >> "$outfile"
+	echo "" >> "$outfile"
+	for each in $(ls /dev/sd?); do
+		isHDD "$each" || continue
+		infoSMART "$each" >> "$outfile"
+	done
+
+	echo " --- Test Result Section ---" >> "$outfile"
+	echo "" >> "$outfile"
+	echo "" >> "$outfile"
+	for each in $(ls /dev/sd?); do
+		isHDD "$each" || continue
+		readSMART "$each" >> "$outfile"
+	done
+
+	echo ""
+	echo "SMART results have been posted in:"
+	echo "$outfile"
+}
