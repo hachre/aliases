@@ -63,7 +63,8 @@ if [ ! -z "$ZSH_NAME" ]; then
 	# G alias to get a grep
 	alias -g G="| grep -i --color"
 	# L alias to get output line count
-	alias -G L="| wc -l"
+	alias -g L="| wc -l"
+	alias -g N="| wc -l"
 fi
 
 # hachre script maintenance
