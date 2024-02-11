@@ -3460,7 +3460,7 @@ function zpoolcreate() {
 function zfs1 {
 	while true; do 
 		clear
-		echo -n '$HOST - $(date) - '
+		echo -n "$HOST - $(date) - "
 		echo "zpool status $@"
 		echo
 		zpool status $@
@@ -3470,7 +3470,7 @@ function zfs1 {
 function zfs2 {
 	while true; do 
 		clear
-		echo -n '$HOST - $(date) - '
+		echo -n "$HOST - $(date) - "
 		echo "zpool list -v $@"
 		echo
 		zpool list -v $@
