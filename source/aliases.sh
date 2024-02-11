@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.193.20240211.4
+hachreAliasesVersion=0.193.20240211.5
 
 #
 ### hachreAliases internal stuff
@@ -62,6 +62,8 @@ if [ ! -z "$ZSH_NAME" ]; then
 	alias -g P="| less -rEFXKn"
 	# G alias to get a grep
 	alias -g G="| grep -i --color"
+	# L alias to get output line count
+	alias -G L="| wc -l"
 fi
 
 # hachre script maintenance
