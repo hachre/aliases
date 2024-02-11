@@ -3465,15 +3465,15 @@ function zfs1 {
 	while true; do 
 		clear
 		echo -n "$HOST - $(date) - "
-		echo "zpool status -s -c realloc,ata_err,health,temp $@"
+		echo "zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp tank $@"
 		echo
 		if [ "$cacheempty" == "1" ]; then
-			zpool status -s -c realloc,ata_err,health,temp $@
+			zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp tank $@
 		else
 			cat "$cache"
 		fi
 		sleep 10
-		zpool status -s -c realloc,ata_err,health,temp $@ > "$cache"
+		zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp tank $@ > "$cache"
 		cacheempty=0
 	done
 	rm "$cache"
