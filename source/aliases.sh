@@ -3461,7 +3461,7 @@ function zfs1 {
 	while true; do 
 		clear
 		echo -n "$HOST - $(date) - "
-		echo "zpool status $@"
+		echo "zpool status -s $@"
 		echo
 		zpool status $@
 		sleep 10
