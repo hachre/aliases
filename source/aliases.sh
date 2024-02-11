@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.192.20240211.2
+hachreAliasesVersion=0.192.20240211.3
 
 #
 ### hachreAliases internal stuff
@@ -3299,7 +3299,7 @@ alias _ha_zls="$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpo
 alias zls="_ha_zls"
 alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
-alias _ha_zps="export ZPOOL_SCRIPTS_AS_ROOT=1; $zpool status -s -c realloc,ata_err,health,temp"
+alias _ha_zps="$zpool status -s"
 alias zps="_ha_zps"
 alias zlperf="$zfs get mountpoint,canmount,dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
@@ -3459,14 +3459,24 @@ function zpoolcreate() {
 # using loop in zfs1 for color output
 function zfs1 {
 	export ZPOOL_SCRIPTS_AS_ROOT=1
+	cache=$(mktemp)
+	chmod 600 "$cache"
+	cacheempty=1
 	while true; do 
 		clear
 		echo -n "$HOST - $(date) - "
 		echo "zpool status -s -c realloc,ata_err,health,temp $@"
 		echo
-		zpool status -s -c realloc,ata_err,health,temp $@
+		if [ "$cacheempty" == "1" ]; then
+			zpool status -s -c realloc,ata_err,health,temp $@
+		else
+			cat "$cache"
+		fi
 		sleep 10
+		zpool status -s -c realloc,ata_err,health,temp $@ > "$cache"
+		cacheempty=0
 	done
+	rm "$cache"
 }
 function zfs2 {
 	while true; do 
