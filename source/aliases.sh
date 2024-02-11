@@ -3463,7 +3463,7 @@ function zfs1 {
 		echo -n "$HOST - $(date) - "
 		echo "zpool status -s $@"
 		echo
-		zpool status $@
+		zpool status -s $@
 		sleep 10
 	done
 }
