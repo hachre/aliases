@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.192.20240211.3
+hachreAliasesVersion=0.193.20240211.4
 
 #
 ### hachreAliases internal stuff
@@ -3455,6 +3455,9 @@ function zfshistogram() {
 function zpoolcreate() {
 	$sudo $zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
+}
+function zfscreatecrypt {
+	$sudo $zfs create -o encryption=on -o keylocation=prompt -o keyformat=passphrase "$1"
 }
 # using loop in zfs1 for color output
 function zfs1 {
