@@ -3299,7 +3299,7 @@ alias _ha_zls="$zfs list -o name,refer,used,usedsnap,avail,compressratio,mountpo
 alias zls="_ha_zls"
 alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
-alias _ha_zps="$zpool status -s -c realloc,ata_err,health,temp"
+alias _ha_zps="export ZPOOL_SCRIPTS_AS_ROOT=1; $zpool status -s -c realloc,ata_err,health,temp"
 alias zps="_ha_zps"
 alias zlperf="$zfs get mountpoint,canmount,dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
