@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.193.20240211.5
+hachreAliasesVersion=0.194.20240213.1
 
 #
 ### hachreAliases internal stuff
@@ -4042,4 +4042,12 @@ function smarttest {
 	echo ""
 	echo "SMART results have been posted in:"
 	echo "$outfile"
+}
+function installCrowdSec {
+	curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
+	sudo apt-get update
+	sudo apt-get install crowdsec
+}
+function installDocker {
+	curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 }
