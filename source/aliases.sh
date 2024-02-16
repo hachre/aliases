@@ -4052,12 +4052,6 @@ function installDocker {
 	curl -sSL https://get.docker.com/ | CHANNEL=stable sh
 }
 function installFFMPEG {
-	function warn {
-		echo "Warning: This installation will fully update your entire system."
-		echo "CTRL+C within 5 seconds to abort now..."
-		sleep 7
-	}
-
 	# Works on Debain only, not Ubuntu
 	if [ "$dyDistroName" == "Debian" ]; then
 		warn
@@ -4065,7 +4059,16 @@ function installFFMPEG {
 		$hachreAliasesRoot gpg --no-default-keyring --keyring /usr/share/keyrings/deb-multimedia.gpg --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117
 		echo "deb [signed-by=/usr/share/keyrings/deb-multimedia.gpg] https://www.deb-multimedia.org $(lsb_release -sc) main non-free" | $hachreAliasesRoot tee /etc/apt/sources.list.d/deb-multimedia.list
 		dyi -y dirmngr software-properties-common apt-transport-https curl lsb-release ca-certificates
-		dyu -y
+		dyi -y ffmpeg
+
+		return 0
+	fi
+
+	if [ "$dyDistroName" == "Ubuntu Linux" ]; then
+		warn
+
+		dyi -y software-properties-common
+		$hachreAliasesRoot add-apt-repository ppa:ubuntuhandbook1/ffmpeg6
 		dyi -y ffmpeg
 
 		return 0
