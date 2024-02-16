@@ -4067,5 +4067,10 @@ function installFFMPEG {
 		dyi -y dirmngr software-properties-common apt-transport-https curl lsb-release ca-certificates
 		dyu -y
 		dyi -y ffmpeg
+
+		return 0
 	fi
+
+	echo "Error: Your distro is not supported."
+	return 1
 }
