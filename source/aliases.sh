@@ -1683,7 +1683,7 @@ function dyu {
 	fi
 
 	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
-		$hachreAliasesRoot $dyAPTCmd full-upgrade
+		$hachreAliasesRoot $dyAPTCmd full-upgrade $@
 		if [ "$dyAPTCmd" == "apt" ]; then
 			$hachreAliasesRoot apt autoremove
 		fi
@@ -4062,6 +4062,7 @@ function installFFMPEG {
 	sleep 7
 
 	$hachreAliasesRoot gpg --no-default-keyring --keyring /usr/share/keyrings/deb-multimedia.gpg --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117
+	echo "deb [signed-by=/usr/share/keyrings/deb-multimedia.gpg] https://www.deb-multimedia.org $(lsb_release -sc) main non-free" | $hachreAliasesRoot tee /etc/apt/sources.list.d/deb-multimedia.list
 	dyi -y dirmngr software-properties-common apt-transport-https curl lsb-release ca-certificates
 	dyu -y
 	dyi -y ffmpeg
