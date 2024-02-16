@@ -4062,14 +4062,6 @@ function installFFMPEG {
 		return 0
 	fi
 
-	if [ "$dyDistroName" == "Ubuntu Linux" ]; then
-		dyi -y software-properties-common
-		$hachreAliasesRoot add-apt-repository ppa:ubuntuhandbook1/ffmpeg6
-		dyi -y ffmpeg
-
-		return 0
-	fi
-
 	echo "Error: Your distro is not supported."
 	return 1
 }
