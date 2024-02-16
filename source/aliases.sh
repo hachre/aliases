@@ -4054,8 +4054,6 @@ function installDocker {
 function installFFMPEG {
 	# Works on Debain only, not Ubuntu
 	if [ "$dyDistroName" == "Debian" ]; then
-		warn
-
 		$hachreAliasesRoot gpg --no-default-keyring --keyring /usr/share/keyrings/deb-multimedia.gpg --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117
 		echo "deb [signed-by=/usr/share/keyrings/deb-multimedia.gpg] https://www.deb-multimedia.org $(lsb_release -sc) main non-free" | $hachreAliasesRoot tee /etc/apt/sources.list.d/deb-multimedia.list
 		dyi -y dirmngr software-properties-common apt-transport-https curl lsb-release ca-certificates
@@ -4065,8 +4063,6 @@ function installFFMPEG {
 	fi
 
 	if [ "$dyDistroName" == "Ubuntu Linux" ]; then
-		warn
-
 		dyi -y software-properties-common
 		$hachreAliasesRoot add-apt-repository ppa:ubuntuhandbook1/ffmpeg6
 		dyi -y ffmpeg
