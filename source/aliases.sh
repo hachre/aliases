@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.194.20240213.1
+hachreAliasesVersion=0.195.20240216.1
 
 #
 ### hachreAliases internal stuff
@@ -4050,4 +4050,19 @@ function installCrowdSec {
 }
 function installDocker {
 	curl -sSL https://get.docker.com/ | CHANNEL=stable sh
+}
+function installFFMPEG {
+	if [ "$dyDetectedDistro" != "debian" ]; then
+		echo "Error: Your distro is not supported."
+		return 1
+	fi
+
+	echo "Warning: This installation will fully update your entire system."
+	echo "CTRL+C within 5 seconds to abort now..."
+	sleep 7
+
+	$hachreAliasesRoot gpg --no-default-keyring --keyring /usr/share/keyrings/deb-multimedia.gpg --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117
+	dyi -y dirmngr software-properties-common apt-transport-https curl lsb-release ca-certificates
+	dyu -y
+	dyi -y ffmpeg
 }
