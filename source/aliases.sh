@@ -3939,13 +3939,11 @@ function hddtemp {
 		tmp=$(mktemp)
 		touch "$tmp"
 		chmod 600 "$tmp"
-		touch "${tmp}.j"
-		chmod 600 "${tmp}.j"
 		smartctl -a $@ > "$tmp"
-		smartctl -a $@ -j > "${tmp}.j"
 
 		echo -n "$dev - "
-		echo -n $(cat "${tmp}.j" | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
+		#echo -n $(cat "${tmp}.j" | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
+		echo -n $(cat "${tmp}" | grep -i temperature_celsius | awk '{ print $10 }')
 		echo -n " - "
 		echo -n $(getmodel "$tmp")
 		echo -n " - "
@@ -3953,7 +3951,6 @@ function hddtemp {
 		echo ""
 
 		rm "$tmp"
-		rm "${tmp}.j"
 	}
 
 	if [ ! -z "$2" ]; then
