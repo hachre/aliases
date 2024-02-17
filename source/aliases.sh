@@ -3942,8 +3942,20 @@ function hddtemp {
 		smartctl -a $@ > "$tmp"
 
 		echo -n "$dev - "
+
+		# Get Temps (temp1 for HDDs, temp2 for NVMes)
 		#echo -n $(cat "${tmp}.j" | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
-		echo -n $(cat "${tmp}" | grep -i temperature | head -n 1 | awk '{ print $10 }')
+		temp1=$(cat "$tmp" | grep -i temperature_celsius | awk '{ print $10 }')
+		temp2=$(cat "$tmp" | grep "Temperature:" | awk '{ print $2 }')
+		temp="-"
+		if [ ! -z "$temp1" ]; then
+			temp="$temp1"
+		fi
+		if [ ! -z "$temp2" ]; then
+			temp="$temp2"
+		fi
+
+		echo -n "$temp"
 		echo -n " - "
 		echo -n $(getmodel "$tmp")
 		echo -n " - "
