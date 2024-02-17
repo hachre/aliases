@@ -3943,7 +3943,7 @@ function hddtemp {
 
 		echo -n "$dev - "
 		#echo -n $(cat "${tmp}.j" | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
-		echo -n $(cat "${tmp}" | grep -i temperature_celsius | awk '{ print $10 }')
+		echo -n $(cat "${tmp}" | grep -i temperature | head -n 1 | awk '{ print $10 }')
 		echo -n " - "
 		echo -n $(getmodel "$tmp")
 		echo -n " - "
