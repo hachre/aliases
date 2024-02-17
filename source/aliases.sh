@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240216.1
+hachreAliasesVersion=0.195.20240217.1
 
 #
 ### hachreAliases internal stuff
@@ -3917,9 +3917,10 @@ function hddtemp {
 	fi
 
 	function getmodel {
-		model=$(smartctl -a "$dev" | grep --color=none -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
+		tmp="$1"
+		model=$(cat "$tmp" | grep --color=none -i "device model" | head -n 1 | sed 's|Device Model:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
 		if [ -z "$model" ]; then
-			model=$(smartctl -a "$dev" | grep --color=none -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
+			model=$(cat "$tmp" | grep --color=none -i "model number" | head -n 1 | sed 's|Model Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9 }')
 		fi
 		echo "$model"
 	}
@@ -3934,13 +3935,25 @@ function hddtemp {
 			echo "Error: Given device not found."
 			return 1
 		fi
+		
+		tmp=$(mktemp)
+		touch "$tmp"
+		chmod 600 "$tmp"
+		touch "${tmp}.j"
+		chmod 600 "${tmp}.j"
+		smartctl -a $@ > "$tmp"
+		smartctl -a $@ -j > "${tmp}.j"
+
 		echo -n "$dev - "
-		echo -n $(smartctl -a $@ -j | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
+		echo -n $(cat "${tmp}.j" | grep --color=none "temperature" -A 3 | grep --color=none "current" | awk '{ print $2 }')
 		echo -n " - "
-		echo -n $(getmodel)
+		echo -n $(getmodel "$tmp")
 		echo -n " - "
-		echo -n $(smartctl -a "$dev" | grep --color=none -i "serial" | head -n 1 | sed 's|Serial Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
+		echo -n $(cat "$tmp" | grep --color=none -i "serial" | head -n 1 | sed 's|Serial Number:||' | awk '{ print $1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$9}')
 		echo ""
+
+		rm "$tmp"
+		rm "${tmp}.j"
 	}
 
 	if [ ! -z "$2" ]; then
