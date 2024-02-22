@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240217.1
+hachreAliasesVersion=0.195.20240222.1
 
 #
 ### hachreAliases internal stuff
@@ -4059,6 +4059,14 @@ function smarttest {
 	for each in $(ls /dev/sd?); do
 		isHDD "$each" || continue
 		infoSMART "$each" >> "$outfile"
+	done
+	echo "" >> "$outfile"
+
+	echo " --- Test Result Section ---" >> "$outfile"
+	echo "" >> "$outfile"
+	for each in $(ls /dev/sd?); do
+		isHDD "$each" || continue
+		readSMART "$each" >> "$outfile"
 	done
 
 	echo ""
