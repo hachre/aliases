@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240222.1
+hachreAliasesVersion=0.195.20240223.1
 
 #
 ### hachreAliases internal stuff
@@ -3307,6 +3307,7 @@ alias zps="_ha_zps"
 alias zlperf="$zfs get mountpoint,canmount,dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
 alias zlapple="zlaapl"
+alias zfslog="cat /proc/spl/kstat/zfs/dbgmsg"
 function zfsrecheck {
 	target="$1"
 	if [ -z "$target" ]; then
