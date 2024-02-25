@@ -3353,7 +3353,7 @@ function zps {
 	touch "$tmp"
 	chmod 600 "$tmp"
 
-	echo "$zpool status -s \"$location\" > \"$tmp\"" > .exec
+	echo "$zpool status -s $location > \"$tmp\"" > .exec
 	bash .exec
 	rm .exec
 	if [ "$displaymode" == "0" ]; then
