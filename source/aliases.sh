@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240225.1
+hachreAliasesVersion=0.195.20240225.2
 
 #
 ### hachreAliases internal stuff
@@ -3528,21 +3528,36 @@ function zfscreatecrypt {
 # using loop in zfs1 for color output
 function zfs1 {
 	export ZPOOL_SCRIPTS_AS_ROOT=1
+
+	location="$1"
+	if [ "$location" == "1" ] || [ "$location" == "2" ]; then
+		location=""
+	fi
+	displaymode="$2"
+	if [ "$1" == "1" ] || [ "$1" == "2" ]; then
+		echo "Error: zfs1 needs to be run with a pool name if you wanna use displaymode"
+		echo "Usage: zfs1 [pool] [displaymode]"
+		return 127
+	fi
+	if [ -z "$displaymode" ]; then
+		displaymode="0"
+	fi
+
 	cache=$(mktemp)
 	chmod 600 "$cache"
-	cacheempty=1
+	zpool status -s $location > "$cache"
 	while true; do 
 		clear
 		echo -n "$HOST - $(date) - "
-		echo "zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp $@"
+		echo "zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp $location"
 		echo
-		if [ "$cacheempty" == "1" ]; then
-			zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp $@
-		else
+		if [ "$displaymode" == "0" ]; then
 			cat "$cache"
+		else
+			_ha_zpoolstatusreader "$cache" "$displaymode"
 		fi
 		sleep 10
-		zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp $@ > "$cache"
+		zpool status -s -c ata_err,realloc,pend_sec,off_ucor,temp $location > "$cache"
 		cacheempty=0
 	done
 	rm "$cache"
