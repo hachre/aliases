@@ -3323,11 +3323,14 @@ function _ha_zpoolstatusreader {
 	if [ "$displaymode" == "2" ]; then
 		for each in $(cat "$file"); do
 			first=$(echo $each | awk '{ print $1 }')
+			if [ -z "$each" ]; then
+				continue
+			fi
 			if [ "$first" == "config:" ]; then
 				display="1"
 				continue
 			fi
-			if [ "$diplay" == "1" ]; then
+			if [ "$display" == "1" ]; then
 				echo "$each"
 			fi
 		done
