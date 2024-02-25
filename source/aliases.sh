@@ -3343,7 +3343,9 @@ function zps {
 	fi
 	displaymode="$2"
 	if [ "$1" == "1" ] || [ "$1" == "2" ]; then
-		displaymode="$1"
+		echo "Error: zps needs to be run with a pool name if you wanna use displaymode"
+		echo "Usage: zps [pool] [displaymode]"
+		return 127
 	fi
 	if [ -z "$displaymode" ]; then
 		displaymode="0"
