@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240223.1
+hachreAliasesVersion=0.195.20240225.1
 
 #
 ### hachreAliases internal stuff
@@ -3303,7 +3303,62 @@ alias zls="_ha_zls"
 alias _ha_zpl="$zpool list -o name,size,alloc,free,frag,cap,dedup,health"
 alias zpl="_ha_zpl"
 alias _ha_zps="$zpool status -s"
-alias zps="_ha_zps"
+function _ha_zpoolstatusreader {
+	file="$1"
+	displaymode="$2"
+
+	IFS=$'\n'
+
+	if [ "$displaymode" == "1" ]; then
+		for each in $(cat "$file"); do
+			first=$(echo $each | awk '{ print $1 }')
+			if [ "$first" == "config:" ]; then
+				return
+			fi
+			echo "$each"
+		done
+	fi
+
+	display="0"
+	if [ "$displaymode" == "2" ]; then
+		for each in $(cat "$file"); do
+			first=$(echo $each | awk '{ print $1 }')
+			if [ "$first" == "config:" ]; then
+				display="1"
+				continue
+			fi
+			if [ "$diplay" == "1" ]; then
+				echo "$each"
+			fi
+		done
+	fi
+}
+function zps {
+	location="$1"
+	if [ "$location" == "1" ] || [ "$location" == "2" ]; then
+		location=""
+	fi
+	displaymode="$2"
+	if [ "$1" == "1" ] || [ "$1" == "2" ]; then
+		displaymode="$1"
+	fi
+	if [ -z "$displaymode" ]; then
+		displaymode="0"
+	fi
+
+	tmp=$(mktemp)
+	touch "$tmp"
+	chmod 600 "$tmp"
+
+	$zpool status -s "$location" > "$tmp"
+	if [ "$displaymode" == "0" ]; then
+		cat "$tmp"
+		return 0
+	fi
+
+	_ha_zpoolstatusreader "$tmp" "$displaymode"
+	rm "$tmp"
+}
 alias zlperf="$zfs get mountpoint,canmount,dedup,atime,primarycache,secondarycache,logbias,special_small_blocks,recordsize,compress,sync"
 alias zlaapl="$zfs get com.apple.browse,com.apple.ignoreowner,com.apple.mimic,com.apple.devdisk"
 alias zlapple="zlaapl"
