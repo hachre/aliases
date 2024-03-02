@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240225.2
+hachreAliasesVersion=0.195.20240302.1
 
 #
 ### hachreAliases internal stuff
@@ -3958,6 +3958,7 @@ alias srs="snapraid scrub"
 alias srscrub="snapraid scrub -p 100 -o 0"
 alias src="nano /etc/snapraid.conf"
 alias srconf=src
+alias srsmart="snapraid smart"
 function srh {
 	echo "hachre's SnapRAID commands:"
 	echo ""
@@ -3968,8 +3969,50 @@ function srh {
 	echo "srf: snapraid fix"
 	echo "srl: snapraid list"
 	echo "srs: snapraid scrub"
+	echo "srsmart: snapraid smart"
 	echo "src: nano /etc/snapraid.conf"
 }
+function installSeriousRAID {
+	if [ "$dyDetectedDistro" != "debian" ]; then
+		echo "Error: Only Debbian-style distros are supported for automatic installation."
+		return 1
+	fi
+
+	ver="$1"
+	if [ -z "$ver" ]; then
+		echo "Usage: installSeriousRAID <version>"
+		echo ""
+		echo "Error: Need to give full version that you want to install as a parameter."
+		echo " You can find the available versions here: https://github.com/amadvance/snapraid.git"
+		return 127
+	fi
+
+	if [ -d "/opt/hachre/seriousraid" ]; then
+		echo "Error: Installation directory already exists: /opt/hachre/seriousraid."
+		echo "Not going to do anything there."
+		return 1
+	fi
+
+	mkdir -p /opt/hachre/seriousraid
+	cd /opt/hachre/seriousraid
+
+	VERSION="$ver"
+
+	# Need to download a .tar.gz from Github and extract it to snapraid
+	dyi -y build-essential wget tar
+	wget https://github.com/amadvance/snapraid/releases/download/v$VERSION/snapraid-$VERSION.tar.gz
+	tar xvzf snapraid-$VERSION.tar.gz && rm snapraid-$VERSION.tar.gz
+	rm latest 1>/dev/null 2>&1 || true
+	ln -s snapraid-$VERSION latest
+
+	cd latest
+	set -x
+	set -e
+	./configure
+	make check
+	make install
+}
+alias installSnapRAID=installSeriousRAID
 function forceAUnexpectedReboot {
 	if [ ! -f "/proc/sys/kernel/sysrq" ]; then
 		echo "Not supported on your platform."
