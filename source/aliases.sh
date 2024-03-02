@@ -3945,6 +3945,7 @@ function srx {
 	snapraid scrub 1>/dev/null 2>&1 || true
 }
 alias srsync=srx
+alias srd="snapraid diff"
 alias srp="snapraid pool"
 alias srpool=srp
 alias srps="snapraid status"
