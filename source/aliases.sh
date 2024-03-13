@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240302.1
+hachreAliasesVersion=0.195.20240313.1
 
 #
 ### hachreAliases internal stuff
@@ -3942,7 +3942,6 @@ function srx {
 	fi
 	snapraid touch 1>/dev/null 2>&1 || true
 	snapraid pool 1>/dev/null 2>&1 || true
-	snapraid scrub 1>/dev/null 2>&1 || true
 }
 alias srsync=srx
 alias srd="snapraid diff"
