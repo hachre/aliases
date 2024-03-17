@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240313.1
+hachreAliasesVersion=0.195.20240317.1
 
 #
 ### hachreAliases internal stuff
@@ -3883,7 +3883,8 @@ function arcset {
 		return 0
 	fi
 }
-alias dropcaches="sync; echo 3 > /proc/sys/vm/drop_caches"
+alias dropcaches="echo 3 > /proc/sys/vm/drop_caches"
+alias flushcaches=dropcaches
 function alacconv {
 	# Description: Scans a path and subfolders for FLACs and converts to ALAC
 
@@ -3895,7 +3896,7 @@ function alacconv {
 		usage
 		return 1
 	fi
-	
+
 	if [ ! -d "$1" ]; then
 		usage
 		echo ""
