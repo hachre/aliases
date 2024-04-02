@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.195.20240317.1
+hachreAliasesVersion=0.195.20240402.1
 
 #
 ### hachreAliases internal stuff
@@ -4014,7 +4014,7 @@ function installSeriousRAID {
 	make install
 }
 alias installSnapRAID=installSeriousRAID
-function forceAUnexpectedReboot {
+function forceAnUnexpectedReboot {
 	if [ ! -f "/proc/sys/kernel/sysrq" ]; then
 		echo "Not supported on your platform."
 		return 1
