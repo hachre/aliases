@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.196.20240610.1
+hachreAliasesVersion=0.196.20240610.2
 
 #
 ### hachreAliases internal stuff
@@ -1645,6 +1645,11 @@ function dyu {
 		if [ "$dyAPTCmd" == "nala" ]; then
 			skip="1"
 		fi
+	fi
+
+	# OpenSUSE does this on its own
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		skip="1"
 	fi
 
     # We want to ensure we are synced before updating
