@@ -611,11 +611,6 @@ function gitresetauthor() {
 	git filter-branch --commit-filter 'export GIT_AUTHOR_NAME="Harald Glatt"; export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" ; export GIT_AUTHOR_EMAIL=code@hach.re; export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL" ;git commit-tree "$@"' -f
 }
 
-# OpenSUSE OpenSuse Zypper Defaults
-alias zypper="zypper --color -s 7"
-alias zypunneeded="zyp -q packages --unneeded | cut -d │ -f 3 | sort | uniq | grep -v ══ | grep -vw Name"
-alias zyporphaned="zyp -q packages --orphaned | cut -d │ -f 3 | sort | uniq | grep -v ══ | grep -vw Name"
-
 #
 # Ubuntu / Debian Package Management
 #
@@ -853,6 +848,7 @@ function packageProjects() {
 #
 
 dyDetectedDistro="null"
+pkgmanager=""
 function dyDetectDistro {
 	if [ "$dyDetectedDistro" != "null" ]; then
 		return 0
@@ -969,12 +965,13 @@ function dyDetectDistro {
 		which apt-get 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			dyDetectedDistro="debian"
+			return 0
 		fi
 		which apt 1>/dev/null 2>&1
 		if [ "$?" == "0" ]; then
 			dyDetectedDistro="debian"
+			return 0
 		fi
-		return 0
 	fi
 
 	# Alpine Linux
@@ -1011,6 +1008,27 @@ function dyDetectDistro {
 		dyDetectedDistro="opensuse"
 		dyDistroName="OpenSUSE"
 		dyDistroInfo="\n * The native package manager for this distro is called 'zypper'."
+
+		# Run additional checks whether this is microOS
+		cat /etc/*release* | grep -i microos 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			dyDetectedDistro="opensuse-microos"
+			dyDistroName="OpenSUSE MicroOS"
+			dyDistroInfo="\n * The native package manager for this distro is called 'zypper' but has to be run through 'transactional-update' due to ro root."
+		fi
+
+		# set pkgmanager correctly for both opensuse variants
+	    pkgmanager="zypper"
+		if [ "$dyDetectedDistro" == "opensuse-microos" ]; then
+			pkgmanager="transactional-update --continue run zypper"
+	    fi
+
+		# OpenSUSE specific aliases
+		alias zyp="zypper"
+		alias zypper="zypper --color -s 7"
+		alias zypunneeded="zyp -q packages --unneeded | cut -d │ -f 3 | sort | uniq | grep -v ══ | grep -vw Name"
+		alias zyporphaned="zyp -q packages --orphaned | cut -d │ -f 3 | sort | uniq | grep -v ══ | grep -vw Name"
+
 		return 0
 	fi
 
@@ -1473,18 +1491,18 @@ function dyx {
 		return $?
 	fi
 
-  if [ "$dyDetectedDistro" == "opensuse" ]; then
-    $hachreAliasesRoot zypper ref -s
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+	    $hachreAliasesRoot $pkgmanager ref -s
 		return $?
 	fi
 
-  if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
-    $hachreAliasesRoot $dyAPTCmd update
+	if [ "$dyDetectedDistro" == "windows" ] || [ "$dyDetectedDistro" == "debian" ]; then
+    	$hachreAliasesRoot $dyAPTCmd update
 		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
-    $hachreAliasesRoot pkg update
+    	$hachreAliasesRoot pkg update
 		return $?
 	fi
 
@@ -1567,9 +1585,8 @@ function dyv {
 		return $?
 	fi
 
-
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper verify
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		$hachreAliasesRoot $pkgmanager verify
 		return $?
 	fi
 
@@ -1674,11 +1691,8 @@ function dyu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        echo "Info: Occasionally you should also manually run 'zypper dup' and be extra careful when you have 3rd party repos enabled."
-        #zypper patch -y -l --no-recommends --updatestack-only
-		$hachreAliasesRoot zypper up -l --no-recommends
-        #zypper patch -y -l --no-recommends
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		$hachreAliasesRoot $pkgmanager dup -l --allow-vendor-change
 		return $?
 	fi
 
@@ -1733,10 +1747,10 @@ function dyus {
         return $?
     fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
 		echo "Checking and installing security updates only..."
-		$hachreAliasesRoot zypper patch -l --no-recommends --updatestack-only -y
-	    $hachreAliasesRoot zypper patch -l --no-recommends -g security -y --replacefiles
+		$hachreAliasesRoot $pkgmanager patch -l --no-recommends --updatestack-only -y
+	    $hachreAliasesRoot $pkgmanager patch -l --no-recommends -g security -y --replacefiles
 		return $?
 	fi
 
@@ -1793,9 +1807,11 @@ function dyuu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper in -l --no-recommends $*
-		return $?
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		echo "dyuu, dyii and dyss work a bit differently on OpenSUSE than on other distros."
+		echo "Please run something simple like 'dyii nano' to install the extended package archives."
+		echo "After that all normal commands will use them, including dyu, dyi, dys etc."
+		return 0
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -1868,8 +1884,8 @@ function dyi {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper in -l --no-recommends $*
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		$hachreAliasesRoot $pkgmanager in -l $*
 		return $?
 	fi
 
@@ -1922,8 +1938,8 @@ function dyif {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper in -fl --no-recommends $*
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		$hachreAliasesRoot $pkgmanager in -fl $*
 		return $?
 	fi
 
@@ -1984,23 +2000,43 @@ function dyii {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
-        if [ "$?" != "0" ]; then
-            echo "Error: Packman repo is not installed."
-            echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
-            return 1
-        fi
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		function susenote {
+			echo ""
+			echo "Note: The behavior of dyii is somewhat different on OpenSUSE than on other platforms."
+			echo "  - dyii will install the Packman extended repos on first use"
+			echo "  - Packman will then be enabled for all commands including dyi, dys etc."
+			echo "  - dyuu is not available because dyu will automatically take care of it"
+			echo "  - this means you only need to use dyii once and then never again"
+			echo ""
+		}
 
-        # Enable the Packman repo if it is off
-        $hachreAliasesRoot zypper mr -e packman
+		susenote
+		echo "If you want to proceed, hit ENTER - otherwise hit CTRL+C..."
+		read
 
-        # Install
-		$hachreAliasesRoot zypper in -fl --no-recommends $*
+		cat /etc/*release* | grep -i tumbleweed 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+	        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
+	        if [ "$?" != "0" ]; then
+				echo "Proceeding to install additional Packman package sources..."
+				$hachreAliasesRoot zypper ar -cfp 90 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/' packman || return 1
+				$hachreAliasesRoot $pkgmanager --non-interactive --no-gpg-checks ref || return 1
+				if [ "$dyDetectedDistro" == "opensuse-microos" ]; then
+					$hachreAliasesRoot transactional-update apply || return 1
+				fi
+				$hachreAliasesRoot $pkgmanager dup -y --from packman --allow-vendor-change || return 1
+			fi
+			$hachreAliasesRoot $pkgmanager in -l $*
+		else
+			echo "Your variant of SUSE is not supported for automatic Packman handling."
+			echo "Please install and use manually."
+			echo "More info can be found here: https://en.opensuse.org/Additional_package_repositories#Packman"
+			return 1
+		fi
 
-        # Disable the Packman again
-        $hachreAliasesRoot zypper mr -d packman
-		return $?
+		susenote
+		return 0
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -2106,8 +2142,8 @@ function dyr {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-		$hachreAliasesRoot zypper rm -u $*
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+		$hachreAliasesRoot $pkgmanager rm -u $*
 		return $?
 	fi
 
@@ -2218,7 +2254,7 @@ function dys {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
+	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
 		$hachreAliasesRoot zypper search -s $* | less -rEFXKn
 		return $?
 	fi
@@ -2267,6 +2303,13 @@ function dyss {
 		return $?
 	fi
 
+    if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
+        echo "dyuu, dyii and dyss work a bit differently on OpenSUSE than on other distros."
+        echo "Please run something simple like 'dyii nano' to install the extended package archives."
+        echo "After that all normal commands will use them, including dyu, dyi, dys etc."
+        return 0
+    fi
+
 	if [ "$dyDetectedDistro" == "arch" ]; then
 		which yay 1>/dev/null 2>&1
 		if [ "$?" != "0" ]; then
@@ -2276,27 +2319,6 @@ function dyss {
 
 		$_ha_arch_pm -Ss $@ --aur | less -rEFXKn
 		return $?
-	fi
-
-	if [ "$dyDetectedDistro" == "opensuse" ]; then
-        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
-        if [ "$?" != "0" ]; then
-            echo "Error: Packman repo is not installed."
-            echo "Check the following URL for more info: https://en.opensuse.org/Additional_package_repositories#Packman"
-            return 1
-        fi
-
-        # Enable the Packman repo if it is off
-        $hachreAliasesRoot zypper mr -e packman
-
-        # Searching
-        $hachreAliasesRoot zypper search -s $*
-        val=$?
-
-        # Disable the Packman again
-        $hachreAliasesRoot zypper mr -d packman
-
-		return $val
 	fi
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
@@ -3013,9 +3035,6 @@ function reboot() {
 	hachreAliasesExecuteCommand "$location"
 }
 alias halt="poweroff"
-
-# OpenSUSE
-alias zyp="zypper"
 
 # FreeBSD
 if [ "$dyDetectedDistro" == "FreeBSD" ]; then
