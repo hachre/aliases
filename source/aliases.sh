@@ -2005,6 +2005,7 @@ function dyii {
 			echo ""
 			echo "Note: The behavior of dyii is somewhat different on OpenSUSE than on other platforms."
 			echo "  - dyii will install the Packman extended repos on first use"
+			echo "  - during setup, all your packages will be updated to the latest versions"
 			echo "  - Packman will then be enabled for all commands including dyi, dys etc."
 			echo "  - dyuu is not available because dyu will automatically take care of it"
 			echo "  - this means you only need to use dyii once and then never again"
@@ -2025,7 +2026,8 @@ function dyii {
 				if [ "$dyDetectedDistro" == "opensuse-microos" ]; then
 					$hachreAliasesRoot transactional-update apply || return 1
 				fi
-				$hachreAliasesRoot $pkgmanager dup -y --from packman --allow-vendor-change || return 1
+				$hachreAliasesRoot $pkgmanager dup -y -l --from packman --allow-vendor-change || return 1
+				$hachreAliasesRoot $pkgmanager dup -y -l --allow-vendor-change || return 1
 			fi
 			$hachreAliasesRoot $pkgmanager in -l $*
 		else
