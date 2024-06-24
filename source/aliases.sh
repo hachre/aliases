@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.196.20240610.2
+hachreAliasesVersion=0.196.20240624.1
 
 #
 ### hachreAliases internal stuff
@@ -270,7 +270,7 @@ function ytdc() {
 	echo "Changing modifications dates on all downloaded files to YouTube upload date..."
 	for file in $($rls *.mp4); do
 		time=$(echo "$file" | awk '{ print $1 }')
-		touch -t "${time}0000" "$file"
+		touch -t "${time}1300" "$file"
 	done
 	IFS="$sIFS"
 
