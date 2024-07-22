@@ -262,7 +262,7 @@ function ytdc() {
 	mkdir "$descriptionsFolderName" 2>/dev/null || true
 
 	# Let the magic happen
-	youtube-dl --remux-video mp4 -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s' -ciw -v "$channel" --download-archive "$downloadArchiveName" --write-description $@
+	$dl --remux-video mp4 -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s' -ciw -v "$channel" --download-archive "$downloadArchiveName" --write-description $@
 
 	# Move all Descriptions to $descriptionsFolderName and rename them to .txt
 	sIFS="$IFS"
