@@ -231,7 +231,7 @@ function ytdc() {
 
 	# Some parameter checking
 	function usage {
-		echo "Usage: ytdc <channel> <destPath>"
+		echo "Usage: ytdc <channel> [destPath] [additional yt-dlp parameters]"
 		echo " channel:  the YouTube channel URL enclosed in quotes"
 		echo " destPath: the path where you want the downloads for this channel to go"
 	}
