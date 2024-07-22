@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.196.20240624.1
+hachreAliasesVersion=0.196.20240722.1
 
 #
 ### hachreAliases internal stuff
@@ -204,6 +204,20 @@ EOF
 #alias ytd="youtube-dl -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4' -o '%(upload_date)s - %(title).150s - [%(uploader)s].%(ext)s'"
 alias ytd="youtube-dl --remux-video mp4 -o '%(upload_date)s - %(title).150s - [%(uploader)s].%(ext)s'"
 function ytdc() {
+	dl=""
+	which youtube-dl
+	if [ "$?" == "0" ]; then
+		dl="youtube-dl"
+	fi
+	which yt-dlp
+	if [ "$?" == "0" ]; then
+		dl="yt-dlp"
+	fi
+	if [ "$dl" == "" ]; then
+		echo "Error: No version of 'youtube-dl' or 'yt-dlp' found. Exiting..."
+		return 1
+	fi
+
 	downloadArchiveName="$_ha_ytdc_downloadArchiveName"
 	descriptionsFolderName="$_ha_ytdc_descriptionsFolderName"
 
@@ -248,7 +262,7 @@ function ytdc() {
 	mkdir "$descriptionsFolderName" 2>/dev/null || true
 
 	# Let the magic happen
-	youtube-dl --remux-video mp4 -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s' -ciw -v "$channel" --download-archive "$downloadArchiveName" --write-description
+	youtube-dl --remux-video mp4 -o '%(upload_date)s - %(title)s - [%(uploader)s].%(ext)s' -ciw -v "$channel" --download-archive "$downloadArchiveName" --write-description $@
 
 	# Move all Descriptions to $descriptionsFolderName and rename them to .txt
 	sIFS="$IFS"
