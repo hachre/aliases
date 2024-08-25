@@ -1078,7 +1078,7 @@ fi
 function _ha_installNala {
 	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
 	curl -fSsL https://deb.volian.org/volian/scar.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
-	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ scar main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive-scar-unstable.list
+	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ nala main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive-scar-unstable.list
 	$hachreAliasesRoot apt update
 	$hachreAliasesRoot apt install -y nala
 }
