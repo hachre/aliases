@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.198.20240829.6
+hachreAliasesVersion=0.198.20240829.7
 
 #
 ### hachreAliases internal stuff
@@ -3696,6 +3696,39 @@ if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 fi
 
 # Various
+function preserve {
+	if [ -z "$1" ]; then
+		echo "Usage: preserve <source> <dest>"
+		echo ""
+		echo "Will preserve / transfer <source> timestamp and permissions to <dest>"
+		echo "Both <source> and <dest> have to be files."
+		echo "The file contents of <dest> will not be changed."
+		return 127
+	fi
+
+	source="$1"
+	dest="$2"
+
+	function fnf {
+		echo "Error: Given <$1> file '$2' not found."
+		return 1
+	}
+
+	if [ ! -f "$source" ]; then
+		fnf source "$source"
+	fi
+	if [ ! -f "$dest" ]; then
+		fnf dest "$dest"
+	fi
+
+	# Preserve timestamp
+	touch -r "$source" "$dest"
+
+	# Preserve owner/group and permissions
+	chown --reference="$source" "$dest"
+	chmod --reference="$source" "$dest"
+}
+
 alias exifthis="exiftool -R '-FileModifyDate<DateTimeOriginal' ."
 function vc {
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
@@ -3720,7 +3753,8 @@ function vc {
 	fi
 
 	# VideoCompress
-	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm" -ar 48000 $out
+	ffmpeg -i "$in" -vcodec h264 -acodec aac -preset veryfast -vf "scale='min(1920,iw)':'min(1920,ih)':force_original_aspect_ratio=decrease,fps=fps=30" -af "loudnorm" -ar 48000 "$out"
+	preserve "$in" "$out"
 }
 
 function finddupes {
@@ -4256,39 +4290,6 @@ function installFFMPEG {
 
 	echo "Error: Your distro is not supported."
 	return 1
-}
-
-function preserve {
-	if [ -z "$1" ]; then
-		echo "Usage: preserve <source> <dest>"
-		echo ""
-		echo "Will preserve / transfer <source> timestamp and permissions to <dest>"
-		echo "Both <source> and <dest> have to be files."
-		echo "The file contents of <dest> will not be changed."
-		return 127
-	fi
-
-	source="$1"
-	dest="$2"
-
-	function fnf {
-		echo "Error: Given <$1> file '$2' not found."
-		return 1
-	}
-
-	if [ ! -f "$source" ]; then
-		fnf source "$source"
-	fi
-	if [ ! -f "$dest" ]; then
-		fnf dest "$dest"
-	fi
-
-	# Preserve timestamp
-	touch -r "$source" "$dest"
-	
-	# Preserve owner/group and permissions
-	chown --reference="$source" "$dest"
-	chmod --reference="$source" "$dest"
 }
 
 function jxlconv {
