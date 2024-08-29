@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.197.20240829.2
+hachreAliasesVersion=0.197.20240829.3
 
 #
 ### hachreAliases internal stuff
@@ -4479,11 +4479,10 @@ function jxlconv {
 	rm jxlconv.tmp 1>/dev/null 2>&1
 
 	echo ""
-	echo "All done :)"
-
 	if [ -f "jxlerrors.txt" ]; then
-		echo "There were errors: You can find more info about them in 'jxlerrors.txt'."
+		echo "WARNING!!! There were errors: You can find more info about them in 'jxlerrors.txt'."
 		return 2
+	else
+		echo "All done :)"
 	fi
-
 }
