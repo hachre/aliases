@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.198.20240829.5
+hachreAliasesVersion=0.198.20240829.6
 
 #
 ### hachreAliases internal stuff
@@ -4394,7 +4394,7 @@ function jxlconv {
 			fi
 			dwebppath="$fullpath".png
 			# Transfer Date and Time
-			touch -r "$fullpath" "$dwebppath"
+			preserve "$fullpath" "$dwebppath"
 			rm "$fullpath"
 			fullpath="$dwebppath"
 			each="./$fullpath"
@@ -4445,8 +4445,8 @@ function jxlconv {
 			fi
 			mogrifiedpath=$(echo "$fullpath" | sed 's|.bmp|.png|I')
 			newdestpath=$(echo "$fullpath" | sed 's|.bmp|.bmp.png|I')
-			# Transfer Date and Time
-			touch -r "$fullpath" "$mogrifiedpath"
+			# Transfer Date and Time and Permissions
+			preserve "$fullpath" "$mogrifiedpath"
 			rm "$fullpath"
 			mv "$mogrifiedpath" "$newdestpath"
 			fullpath="$newdestpath"
@@ -4502,7 +4502,7 @@ function jxlconv {
 
 		if [ "$retval" == "0" ]; then
 			# Transfer Time and Date from Source to Dest
-			touch -r "$fullpath" "$path"/"$name"${fileappend}.jxl
+			preserve "$fullpath" "$path"/"$name"${fileappend}.jxl
 
 			# Original no longer needed
 			rm "$fullpath"
