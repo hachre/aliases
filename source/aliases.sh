@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.197.20240829.3
+hachreAliasesVersion=0.197.20240829.4
 
 #
 ### hachreAliases internal stuff
@@ -4453,12 +4453,18 @@ function jxlconv {
 
 		echo cjxl $mode \"$fullpath\" \"$path\"/\"$name\"${fileappend}.jxl > exec
 		cat exec
-		bash exec 2>&1 > jxlconv.tmp
+		bash exec 1>jxlconv.tmp 2>&1
 		retval="$?"
 		cat jxlconv.tmp
 		rm exec
+
+		# If a 0 byte JXL was created, something went wrong
 		if [ ! -s "$path"/"$name"${fileappend}.jxl ]; then
 			rm "$path"/"$name"${fileappend}.jxl 1>/dev/null 2>&1
+			if [ "$retval" == "0" ]; then
+				# We don't know what went wrong, but something went wrong.
+				retval=1
+			fi
 		fi
 
 		if [ "$retval" == "0" ]; then
