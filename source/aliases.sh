@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.196.20240825.2
+hachreAliasesVersion=0.197.20240829.1
 
 #
 ### hachreAliases internal stuff
@@ -4256,4 +4256,234 @@ function installFFMPEG {
 
 	echo "Error: Your distro is not supported."
 	return 1
+}
+
+function jxlconv {
+	# 1.3.20240827.3
+
+	# in 1.1.20240827.1: add BMP support (via mogrify -format png)
+	# in 1.2.20240827.2: add WebP support (via dwebp below)
+	# in 1.2.20240827.3: add TIFF support (cjxl can handle it)
+
+	# Check if needed tools are here.
+	which cjxl 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "We require 'cjxl' to be installed. The package is likely called 'jpeg-xl' or similar."
+		exit 1
+	fi
+
+	which mogrify 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "We require 'mogrify' to be installed. The package is likely called 'imagemagick' or similar."
+		exit 1
+	fi
+
+	which dwebp 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "We require 'dwebp' to be installed. The package is likely called 'webp' or similar."
+		exit 1
+	fi
+
+	if [ -z "$1" ]; then
+		echo "Usage: jxlconv <file|path>"
+		echo ""
+		echo "This will convert any image file found within <path> (and deeper) to JXL."
+		return 127
+	fi
+
+	target=""
+	if [ -f "$1" ]; then
+		target="$1"
+	fi
+	if [ -d "$1" ]; then
+		target="$1"
+	fi
+
+	tmp="$2"
+	if [ -z "$tmp" ]; then
+		tmp=$(mktemp)
+	fi
+	echo -n >> "$tmp" 2>&1
+	if [ ! -f "$tmp" ]; then
+		echo "Error: Given temp file '$tmp' cannot be written."
+		exit 1
+	fi
+
+	if [ -z "$2" ] || [ ! -s "$tmp" ]; then
+		echo " -> Creating a list of files to work on in '$tmp'..."
+		sleep 1
+		set -x
+		find "$target" -iname "*.tif" -o -iname "*.tiff" -o -iname "*webp" -o -iname "*bmp" -o -iname "*jpg" -o -iname "*png" -o -iname "*jpeg" -o -iname "*jpc" -o -iname "*jpx" -o -iname "*j2k" -o -iname "*gif" | tee "$tmp"
+		set +x
+	else
+		echo " -> Reusing given list of files from '$tmp'..."
+		sleep 1
+	fi
+
+	function convertwebp {
+			echo " -> WebP detected..."
+			dwebp -o "$fullpath".png "$fullpath"
+			if [ "$?" != "0" ]; then
+				# Is this even a WebP file?
+
+				# ... or a JPEG?
+				file "$fullpath" | grep -i jpeg 1>/dev/null 2>&1
+				if [ "$?" == "0" ]; then
+					# This seems to be a jpg. Rename and try to continue
+					newname=$(echo "$fullpath" | sed 's|.webp|.jpg|I')
+					mv "$fullpath" "$newname"
+					originalfiletype=""
+					filetype="jpg"
+					fullpath="$newname"
+					each="./$fullpath"
+					path=$(dirname -- "$fullpath")
+					name=$(basename -- "$fullpath")
+					return
+				fi
+
+				# ... or a PNG?
+				file "$fullpath" | grep -i png 1>/dev/null 2>&1
+				if [ "$?" == "0" ]; then
+					# This seems to be a png. Rename and try to continue
+					newname=$(echo "$fullpath" | sed 's|.webp|.png|I')
+					mv "$fullpath" "$newname"
+					originalfiletype=""
+					filetype="png"
+					fullpath="$newname"
+					each="./$fullpath"
+					path=$(dirname -- "$fullpath")
+					name=$(basename -- "$fullpath")
+					return
+				fi
+
+				echo "Error: DWebP failed to convert a WebP and there is no error handling for this. Bailing out..."
+				exit 5
+			fi
+			dwebppath="$fullpath".png
+			# Transfer Date and Time
+			touch -r "$fullpath" "$dwebppath"
+			rm "$fullpath"
+			fullpath="$dwebppath"
+			each="./$fullpath"
+
+			path=$(dirname -- "$fullpath")
+			name=$(basename -- "$fullpath")
+	}
+
+	IFS=$'\n'
+	echo " -> Scanning and converting files..."
+	sleep 1
+	for each in $(cat "$tmp"); do
+		if [ ! -f "$each" ]; then
+			# Outdated entry from previous scans, immediately skip.
+			continue
+		fi
+
+		ls "$each"*.jxl 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			# can be skipped, jxl already exists
+			rm "$each"
+			continue
+		fi
+
+		filetype="jpg"
+		origfiletype=""
+		fullpath=$(echo "$each" | sed 's|./||')
+		path=$(dirname -- "$fullpath")
+		name=$(basename -- "$fullpath")
+		echo "$path >> $name"
+
+		# If we're dealing with WebP, convert to PNG
+		echo "$fullpath" | grep -i ".webp" 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			origfiletype="webp"
+			convertwebp
+		fi
+
+		# If we're dealing with BMP, convert to PNG
+		echo "$fullpath" | grep -i ".bmp" 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			origfiletype="bmp"
+			echo " -> BMP detected..."
+			mogrify -format png "$fullpath"
+			if [ "$?" != "0" ]; then
+				echo "Error: Mogrify failed to convert a BMP and there is no error handling for this. Bailing out..."
+				exit 5
+			fi
+			mogrifiedpath=$(echo "$fullpath" | sed 's|.bmp|.png|I')
+			newdestpath=$(echo "$fullpath" | sed 's|.bmp|.bmp.png|I')
+			# Transfer Date and Time
+			touch -r "$fullpath" "$mogrifiedpath"
+			rm "$fullpath"
+			mv "$mogrifiedpath" "$newdestpath"
+			fullpath="$newdestpath"
+			each="./$fullpath"
+
+			path=$(dirname -- "$fullpath")
+			name=$(basename -- "$fullpath")    
+		fi
+
+		# If we're dealing with a PNG, force lossless compression
+		echo "$fullpath" | grep -i ".png" 1>/dev/null 2>&1
+		if [ "$?" == "0" ]; then
+			filetype="png"
+			echo " -> PNG detected..."
+		fi
+
+		mode=""
+		fileappend=""
+		if [ "$filetype" == "png" ]; then
+			mode="-d 0"
+			fileappend=".lossless"
+			if [ "$origfiletype" == "webp" ]; then
+				# WebP is not lossless, remove the .lossless designation
+				fileappend=""
+
+				# We run in "visually lossless" mode for this conversion
+				mode="-d 1"
+
+				# We also remove the .png suffix because this conversion step is immaterial
+				name=$(echo "$name" | sed 's|.png||')
+			fi
+		fi
+
+		# not needed with proper "" handling:
+		#path=$(echo "$path" | sed 's|(|\\(|g' | sed 's|)|\\)|g')
+		#name=$(echo "$name" | sed 's|(|\\(|g' | sed 's|)|\\)|g')
+
+		echo cjxl $mode \"$fullpath\" \"$path\"/\"$name\"${fileappend}.jxl > exec
+		cat exec
+		bash exec 2>&1 > jxlconv.tmp
+		retval="$?"
+		cat jxlconv.tmp
+		rm exec
+		if [ ! -s "$path"/"$name"${fileappend}.jxl ]; then
+			rm "$path"/"$name"${fileappend}.jxl 1>/dev/null 2>&1
+		fi
+
+		if [ "$retval" == "0" ]; then
+			# Transfer Time and Date from Source to Dest
+			touch -r "$fullpath" "$path"/"$name"${fileappend}.jxl
+
+			# Original no longer needed
+			rm "$fullpath"
+		else
+			echo "$(date): $(pwd) >> $fullpath" >> jxlerrors.txt
+			cat jxlconv.tmp >> jxlerrors.txt
+		fi
+	done
+
+	if [ -z "$2" ]; then
+		rm "$tmp" 1>/dev/null 2>&1
+	fi
+	rm jxlconv.tmp 1>/dev/null 2>&1
+
+	echo ""
+	echo "All done :)"
+
+	if [ -f "jxlerrors.txt" ]; then
+		echo "There were errors: You can find more info about them in 'jxlerrors.txt'."
+		exit 2
+	fi
+
 }
