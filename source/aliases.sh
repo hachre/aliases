@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.197.20240829.1
+hachreAliasesVersion=0.197.20240829.2
 
 #
 ### hachreAliases internal stuff
@@ -4269,19 +4269,19 @@ function jxlconv {
 	which cjxl 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		echo "We require 'cjxl' to be installed. The package is likely called 'jpeg-xl' or similar."
-		exit 1
+		return 1
 	fi
 
 	which mogrify 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		echo "We require 'mogrify' to be installed. The package is likely called 'imagemagick' or similar."
-		exit 1
+		return 1
 	fi
 
 	which dwebp 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		echo "We require 'dwebp' to be installed. The package is likely called 'webp' or similar."
-		exit 1
+		return 1
 	fi
 
 	if [ -z "$1" ]; then
@@ -4306,7 +4306,7 @@ function jxlconv {
 	echo -n >> "$tmp" 2>&1
 	if [ ! -f "$tmp" ]; then
 		echo "Error: Given temp file '$tmp' cannot be written."
-		exit 1
+		return 1
 	fi
 
 	if [ -z "$2" ] || [ ! -s "$tmp" ]; then
@@ -4357,7 +4357,7 @@ function jxlconv {
 				fi
 
 				echo "Error: DWebP failed to convert a WebP and there is no error handling for this. Bailing out..."
-				exit 5
+				return 5
 			fi
 			dwebppath="$fullpath".png
 			# Transfer Date and Time
@@ -4408,7 +4408,7 @@ function jxlconv {
 			mogrify -format png "$fullpath"
 			if [ "$?" != "0" ]; then
 				echo "Error: Mogrify failed to convert a BMP and there is no error handling for this. Bailing out..."
-				exit 5
+				return 5
 			fi
 			mogrifiedpath=$(echo "$fullpath" | sed 's|.bmp|.png|I')
 			newdestpath=$(echo "$fullpath" | sed 's|.bmp|.bmp.png|I')
@@ -4483,7 +4483,7 @@ function jxlconv {
 
 	if [ -f "jxlerrors.txt" ]; then
 		echo "There were errors: You can find more info about them in 'jxlerrors.txt'."
-		exit 2
+		return 2
 	fi
 
 }
