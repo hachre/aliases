@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.197.20240829.4
+hachreAliasesVersion=0.198.20240829.5
 
 #
 ### hachreAliases internal stuff
@@ -4256,6 +4256,39 @@ function installFFMPEG {
 
 	echo "Error: Your distro is not supported."
 	return 1
+}
+
+function preserve {
+	if [ -z "$1" ]; then
+		echo "Usage: preserve <source> <dest>"
+		echo ""
+		echo "Will preserve / transfer <source> timestamp and permissions to <dest>"
+		echo "Both <source> and <dest> have to be files."
+		echo "The file contents of <dest> will not be changed."
+		return 127
+	fi
+
+	source="$1"
+	dest="$2"
+
+	function fnf {
+		echo "Error: Given <$1> file '$2' not found."
+		return 1
+	}
+
+	if [ ! -f "$source" ]; then
+		fnf source "$source"
+	fi
+	if [ ! -f "$dest" ]; then
+		fnf dest "$dest"
+	fi
+
+	# Preserve timestamp
+	touch -r "$source" "$dest"
+	
+	# Preserve owner/group and permissions
+	chown --reference="$source" "$dest"
+	chmod --reference="$source" "$dest"
 }
 
 function jxlconv {
