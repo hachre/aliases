@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.198.20240829.7
+hachreAliasesVersion=0.199.20241001.1
 
 #
 ### hachreAliases internal stuff
@@ -4525,4 +4525,30 @@ function jxlconv {
 	else
 		echo "All done :)"
 	fi
+}
+
+function tmutilcreatelocalsnapshot {
+    if [ -z "$1" ]; then
+        echo "Usage: tmutilcreatelocalsnapshot <Volume Name>"
+        echo "Example: tmutil[...] /Volumes/Bilder"
+        return 127
+    fi
+
+    volname=$(echo "$1" | sed 's|/Volumes/||')
+
+    if [ "$volname" = "/" ]; then
+        sudo tmutil localsnapshot
+        return $?
+    fi
+
+    volpath="/Volumes/$volname"
+    if [ ! -d "$volpath" ]; then
+        echo "Error: The given volume '$volname' does not resolve to a path '$volpath' in /Volumes."
+        echo "       Check if the volume got mismounted and give the full path in that case."
+        return 1
+    fi
+
+    sudo tmutil removeexclusion -v "$volpath"
+    sudo tmutil localsnapshot
+    sudo tmutil addexclusion -v "$volpath"
 }
