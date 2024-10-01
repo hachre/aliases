@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.199.20241001.1
+hachreAliasesVersion=0.199.20241001.2
 
 #
 ### hachreAliases internal stuff
@@ -4548,7 +4548,16 @@ function tmutilcreatelocalsnapshot {
         return 1
     fi
 
-    sudo tmutil removeexclusion -v "$volpath"
+	tmutil isexcluded "$volpath" | grep "[Excluded]" 1>/dev/null 2>&1
+	isexcluded="$?"
+	# == 0 means yes here, anything else means no
+	if [ "$isexcluded" == "0" ]; then
+	    sudo tmutil removeexclusion -v "$volpath"
+	fi
+
     sudo tmutil localsnapshot
-    sudo tmutil addexclusion -v "$volpath"
+
+	if [ "$isexcluded" == "0" ]; then
+	    sudo tmutil addexclusion -v "$volpath"
+	fi
 }
