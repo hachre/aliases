@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.200.20241007.4
+hachreAliasesVersion=0.200.20241007.5
 
 #
 ### hachreAliases internal stuff
@@ -1078,6 +1078,8 @@ fi
 function _ha_installNala {
 	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
 #	curl -fSsL https://deb.volian.org/volian/nala.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
+	$hachreAliasesRoot apt remove -y nala
+	$hachreAliasesRoot apt remove -y volian-archive-nala
 	rm /usr/share/keyrings/*volian* 1>/dev/null 2>&1
 	rm /etc/apt/sources.list.d/*volian* 1>/dev/null 2>&1
 	curl https://gitlab.com/volian/volian-archive/-/raw/main/install-nala.sh | bash
