@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.199.20241007.2
+hachreAliasesVersion=0.200.20241007.3
 
 #
 ### hachreAliases internal stuff
@@ -2093,6 +2093,11 @@ function dyl {
 
 	if [ "$dyDetectedDistro" == "FreeBSD" ]; then
 		$hachreAliasesRoot pkg info --list-file $@
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		$hachreAliasesRoot dpkg -L "$@"
 		return $?
 	fi
 
