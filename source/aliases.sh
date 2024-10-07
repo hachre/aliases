@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.200.20241007.6
+hachreAliasesVersion=0.200.20241008.1
 
 #
 ### hachreAliases internal stuff
@@ -1078,15 +1078,21 @@ fi
 function _ha_installNala {
 	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
 #	curl -fSsL https://deb.volian.org/volian/nala.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
+#	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ nala main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive.list
+#	$hachreAliasesRoot apt update
+#	$hachreAliasesRoot apt install -y nala
+
+	# Remove all old installation methods
 	$hachreAliasesRoot apt remove -y nala
 	$hachreAliasesRoot apt purge -y volian-archive-nala
 	$hachreAliasesRoot apt purge -y volian-archive-keyring
 	rm /usr/share/keyrings/*volian* 1>/dev/null 2>&1
 	rm /etc/apt/sources.list.d/*volian* 1>/dev/null 2>&1
+
+	# Reinstall Nala with the latest installation method
 	curl https://gitlab.com/volian/volian-archive/-/raw/main/install-nala.sh | bash
-#	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ nala main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive.list
-#	$hachreAliasesRoot apt update
-#	$hachreAliasesRoot apt install -y nala
+	rm /tmp/*volian* 2>/dev/null
+	rm /tmp/*nala* 2>/dev/null
 }
 if [ "$dyDetectedDistro" == "debian" ]; then
 	which nala 1>/dev/null 2>&1
