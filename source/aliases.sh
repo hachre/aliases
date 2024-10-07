@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.199.20241001.3
+hachreAliasesVersion=0.199.20241007.1
 
 #
 ### hachreAliases internal stuff
@@ -1077,10 +1077,12 @@ fi
 # Set up Nala
 function _ha_installNala {
 	$hachreAliasesRoot apt install -y curl software-properties-common apt-transport-https ca-certificates
-	curl -fSsL https://deb.volian.org/volian/nala.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
-	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ nala main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive-scar-unstable.list
-	$hachreAliasesRoot apt update
-	$hachreAliasesRoot apt install -y nala
+#	curl -fSsL https://deb.volian.org/volian/nala.key | gpg --dearmor | $hachreAliasesRoot tee /usr/share/keyrings/volian.gpg > /dev/null
+#	echo "deb [signed-by=/usr/share/keyrings/volian.gpg] https://deb.volian.org/volian/ nala main" | $hachreAliasesRoot tee /etc/apt/sources.list.d/volian-archive-scar-unstable.list
+	rm /etc/apt/sources.list.d/*volian* 1>/dev/null 2>&1
+	curl https://gitlab.com/volian/volian-archive/-/raw/main/install-nala.sh | bash
+	#$hachreAliasesRoot apt update
+	#$hachreAliasesRoot apt install -y nala
 }
 if [ "$dyDetectedDistro" == "debian" ]; then
 	which nala 1>/dev/null 2>&1
