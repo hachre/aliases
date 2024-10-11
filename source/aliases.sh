@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.200.20241008.1
+hachreAliasesVersion=0.200.20241011.1
 
 #
 ### hachreAliases internal stuff
@@ -4149,6 +4149,13 @@ function hddtemp {
 			return 1
 		fi
 		
+		# Check if drive is asleep
+		smartctl --nocheck standby -i "$dev" 1>/dev/null 2>&1
+		if [ "$?" != "0" ]; then
+			echo "$dev - device is asleep, not waking it up"
+			return
+		fi
+
 		tmp=$(mktemp)
 		touch "$tmp"
 		chmod 600 "$tmp"
