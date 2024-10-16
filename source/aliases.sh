@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.200.20241011.1
+hachreAliasesVersion=0.201.20241016.1
 
 #
 ### hachreAliases internal stuff
@@ -4585,3 +4585,5 @@ function tmutilcreatelocalsnapshot {
 	    sudo tmutil addexclusion -v "$volpath"
 	fi
 }
+alias viewaspm="lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM |Disabled;|Enabled;)'"
+alias viewpci="lspci -t"
