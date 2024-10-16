@@ -4585,5 +4585,7 @@ function tmutilcreatelocalsnapshot {
 	    sudo tmutil addexclusion -v "$volpath"
 	fi
 }
-alias viewaspm="lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM |Disabled;|Enabled;)'"
+function viewaspm {
+	lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM |Disabled;|Enabled;)'
+}
 alias viewpci="lspci -t"
