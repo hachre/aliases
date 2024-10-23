@@ -3578,6 +3578,8 @@ function zfshistogram() {
 function zpoolcreate() {
 	$sudo $zpool create -o ashift=12 -O acltype=posixacl -O compression=lz4 -O dnodesize=auto -O normalization=formD -O relatime=on -O xattr=sa $@
 	echo "Using lz4 compression and the default recordsize of 128K..."
+	echo "Also using ashift=12 - if you're on SSDs, you should probably use ashift=13!"
+	echo "Consider this now because it cannot be changed after pool create!"
 }
 function zfscreatecrypt {
 	$sudo $zfs create -o encryption=on -o keylocation=prompt -o keyformat=passphrase "$1"
