@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.201.20241024.1
+hachreAliasesVersion=0.201.20241025.1
 
 #
 ### hachreAliases internal stuff
@@ -117,7 +117,9 @@ function duhs {
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete"
+alias cpsnH="rsync -ahP --numeric-ids --delete"
 alias cpsnd="rsync -aHhP --numeric-ids"
+alias cpsndH="rsync -ahP --numeric-ids"
 function cpss {
 	if [ -z "$1" ]; then
 		echo "Usage: cpss <sourcedir> <targetdir>"
