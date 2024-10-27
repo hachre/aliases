@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.201.20241025.1
+hachreAliasesVersion=0.201.20241027.1
 
 #
 ### hachreAliases internal stuff
@@ -1096,6 +1096,7 @@ function _ha_installNala {
 	curl https://gitlab.com/volian/volian-archive/-/raw/main/install-nala.sh | bash
 	rm /tmp/*volian* 2>/dev/null
 	rm /tmp/*nala* 2>/dev/null
+	return 0
 }
 if [ "$dyDetectedDistro" == "debian" ]; then
 	which nala 1>/dev/null 2>&1
