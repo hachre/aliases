@@ -4605,9 +4605,12 @@ function wgetpage {
 		return 0
 	fi
 
+	cookiesneeddelete=0
 	if [ ! -f ~/.cookies.txt ]; then
 		echo "Warning: No cookies found in '~/.cookies.txt'"
 		echo "         Will continue to run but cookies are advisable."
+		touch ~/.cookies.txt
+		cookiesneeddelete=1
 	fi
 
 	url="$1"
@@ -4628,5 +4631,8 @@ function wgetpage {
 	done
 	cd ..
 	rmdir ha_wgetpage_temp
+	if [ "$cookiesneeddelete" == "1" ]; then
+		rm ~/.cookies.txt
+	fi
 }
 
