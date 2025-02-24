@@ -4595,3 +4595,38 @@ function viewaspm {
 	lspci -vv | awk '/ASPM/{print $0}' RS= | grep --color -P '(^[a-z0-9:.]+|ASPM |Disabled;|Enabled;)'
 }
 alias viewpci="lspci -t"
+
+# single-file-cli wrapper
+function wgetpage {
+	which single-file 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'single-file' to be installed."
+		echo "       You can find it here: https://github.com/gildas-lormeau/single-file-cli/releases"
+		return 0
+	fi
+
+	if [ ! -f ~/.cookies.txt ]; then
+		echo "Warning: No cookies found in '~/.cookies.txt'"
+		echo "         Will continue to run but cookies are advisable."
+	fi
+
+	url="$1"
+
+	if [ -d "ha_wgetpage_temp" ]; then
+		rm -R ha_wgetpage_temp
+	fi
+	mkdir ha_wgetpage_temp
+	single-file --browser-cookies-file ~/.cookies.txt --output-directory ha_wgetpage_temp --filename-template "%if-empty<{page-title}|No title>.{filename-extension}" "$url"
+
+	# Get hachre date string (full variant)
+	datestr=$(date "+%Y-%m-%d %H-%M")
+
+	IFS=$'\n'
+	cd ha_wgetpage_temp
+	for each in $(ls .); do
+		mv "$each" "../$datestr - $each"
+	done
+	cd ..
+	rmdir ha_wgetpage_temp
+}
+
