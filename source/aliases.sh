@@ -3752,7 +3752,6 @@ function preserve {
 	chmod --reference="$source" "$dest"
 }
 
-alias exifthis="exiftool -R '-FileModifyDate<DateTimeOriginal' ."
 function vc {
 	if [ -z "$1" ] || [ "$1" == "--help" ]; then
 		echo "Usage: vc <inputvideo.mov>"
@@ -4635,4 +4634,4 @@ function wgetpage {
 		rm ~/.cookies.txt
 	fi
 }
-
+alias exifmoddates="exiftool -v -r '-FileModifyDate<DateTimeOriginal' ."
