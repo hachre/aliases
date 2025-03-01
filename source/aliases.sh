@@ -4650,8 +4650,10 @@ function sortintodates {
 		mode="$1"
 	fi
 
+	IFS=$'\n'
+
 	# Takes all files on local level and sorts them into subfolders by year (based on modified date)
-	for each in $(find . -type f -maxdepth 1); do
+	for each in $(find . -maxdepth 1 -type f); do
 		if [ "$mode" == "year" ]; then
 			year=$(date -r "$1" "+%Y")
 			mkdir "$year" 1>/dev/null 2>&1
