@@ -4655,12 +4655,12 @@ function sortintodates {
 	# Takes all files on local level and sorts them into subfolders by year (based on modified date)
 	for each in $(find . -maxdepth 1 -type f); do
 		if [ "$mode" == "year" ]; then
-			year=$(date -r "$1" "+%Y")
+			year=$(date -r "$each" "+%Y")
 			mkdir "$year" 1>/dev/null 2>&1
 			mv -v "$each" "$year"
 		fi
 		if [ "$mode" == "month" ]; then
-			month=$(date -r "$1" "+%Y-%m")
+			month=$(date -r "$each" "+%Y-%m")
 			mkdir "$month" 1>/dev/null 2>&1
 			mv -v "$each" "$month"
 		fi		
