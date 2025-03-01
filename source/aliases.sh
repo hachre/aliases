@@ -4635,3 +4635,32 @@ function wgetpage {
 	fi
 }
 alias exifmoddates="exiftool -v -r '-FileModifyDate<DateTimeOriginal' ."
+function moddate {
+	# Gets the last modified date for a file
+	if [ ! -f "$1" ]; then
+		echo "Error: Given file '$1' doesn't exist."
+		echo "Usage: moddate <file>"
+		return 127
+	fi
+	date -r "$1" "+%Y-%m-%d %H-%M"
+}
+function sortintoyears {
+	mode="year"
+	if [ "$1" == "month" ]; then
+		mode="$1"
+	fi
+
+	# Takes all files on local level and sorts them into subfolders by year (based on modified date)
+	for each in $(find . -type f -maxdepth 1); do
+		if [ "$mode" == "year" ]; then
+			year=$(date -r "$1" "+%Y")
+			mkdir "$year" 1>/dev/null 2>&1
+			mv -v "$each" "$year"
+		fi
+		if [ "$mode" == "month" ]; then
+			month=$(date -r "$1" "+%Y-%m")
+			mkdir "$month" 1>/dev/null 2>&1
+			mv -v "$each" "$month"
+		fi		
+	done
+}
