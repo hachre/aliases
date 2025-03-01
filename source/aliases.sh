@@ -4644,7 +4644,7 @@ function moddate {
 	fi
 	date -r "$1" "+%Y-%m-%d %H-%M"
 }
-function sortintoyears {
+function sortintodates {
 	mode="year"
 	if [ "$1" == "month" ]; then
 		mode="$1"
