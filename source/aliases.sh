@@ -4678,13 +4678,13 @@ function sortdir {
 		numfiles=0
 		index=1
 		for file in $(find . -maxdepth 1 -type f); do
-			echo "$(pwd): index: $index"
 			mkdir "$index" 1>/dev/null 2>&1
 			mv "$file" "$index"
 			let numfiles=numfiles+1
 			if [ "$numfiles" -ge "$maxnum" ]; then
 				let index=index+1
 				numfiles=0
+				echo "$(pwd): index: $index"
 			fi
 		done
 		result=$(find . -maxdepth 1 -type d -name "2" | wc -l)
