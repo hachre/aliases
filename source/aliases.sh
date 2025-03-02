@@ -4710,8 +4710,7 @@ function sortdir {
 	done
 
 	# This mode adds files into subdirs by filecount $maxnum
-		if [ "$mode" == "num" ]; then
-			numtraverse "."
-		fi
-	done
+	if [ "$mode" == "num" ]; then
+		numtraverse "."
+	fi
 }
