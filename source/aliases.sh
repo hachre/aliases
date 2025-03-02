@@ -4734,9 +4734,10 @@ function findoverloadeddir {
 				continue
 			fi
 			cd "$dir"
+			dirwalker
 			loadchecker
 			cd ..
 		done
 	}
-	dirwalker .
+	dirwalker
 }
