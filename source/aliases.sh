@@ -4717,3 +4717,26 @@ function sortdir {
 		numtraverse "."
 	fi
 }
+function findoverloadeddir {
+	maxnum=500
+	if [ ! -z "$1" ]; then
+		maxnum="$1"
+	fi
+	function loadchecker {
+		num=$(find . -maxdepth 1 -type f | wc -l)
+		if [ "$num" -gt "$maxnum" ]; then
+			pwd
+		fi
+	}
+	function dirwalker {
+		for dir in $(find . -maxdepth 1 -type d); do
+			if [ "$dir" == "." ]; then
+				continue
+			fi
+			cd "$dir"
+			loadchecker
+			cd ..
+		done
+	}
+	dirwalker .
+}
