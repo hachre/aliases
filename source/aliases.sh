@@ -4678,8 +4678,9 @@ function sortdir {
 		numfiles=0
 		index=1
 		for file in $(find . -maxdepth 1 -type f); do
+			echo "$(pwd): index: $index"
 			mkdir "$index" 1>/dev/null 2>&1
-			mv -v "$file" "$index"
+			mv "$file" "$index"
 			let numfiles=numfiles+1
 			if [ "$numfiles" -ge "$maxnum" ]; then
 				let index=index+1
@@ -4701,14 +4702,14 @@ function sortdir {
 		if [ "$mode" == "year" ]; then
 			year=$(date -r "$each" "+%Y")
 			mkdir "$year" 1>/dev/null 2>&1
-			mv -v "$each" "$year"
+			mv "$each" "$year"
 		fi
 
 		# Same as above but with folders that are formatted like YYYY-MM
 		if [ "$mode" == "month" ]; then
 			month=$(date -r "$each" "+%Y-%m")
 			mkdir "$month" 1>/dev/null 2>&1
-			mv -v "$each" "$month"
+			mv "$each" "$month"
 		fi
 	done
 
