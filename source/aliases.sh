@@ -4707,15 +4707,11 @@ function sortdir {
 			mkdir "$month" 1>/dev/null 2>&1
 			mv -v "$each" "$month"
 		fi
+	done
 
-		# This mode adds files into subdirs by filecount $maxnum
+	# This mode adds files into subdirs by filecount $maxnum
 		if [ "$mode" == "num" ]; then
-			for dir in $(find . -maxdepth 1 -type d); do
-				if [ "$dir" == "." ]; then
-					continue
-				fi
-				numtraverse "$dir"
-			done
+			numtraverse "."
 		fi
 	done
 }
