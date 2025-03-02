@@ -4646,23 +4646,64 @@ function moddate {
 }
 function sortintodates {
 	mode="year"
-	if [ "$1" == "month" ]; then
-		mode="$1"
+	if [ "$1" == "month" ] || [ "$1" == "months" ]; then
+		mode="month"
+	fi
+	if [ "$1" == "num" ]; then
+		mode="num"
+		maxnum="500"
+		if [ ! -z "$2" ]; then
+			maxnum="$2"
+		fi
 	fi
 
 	IFS=$'\n'
 
-	# Takes all files on local level and sorts them into subfolders by year (based on modified date)
+	function numtraverse {
+		# We're traversing dirs until we find files.
+		cd "$1"
+		for dir in $(find . -maxdepth 1 -type d); do
+			numtraverse "$dir"
+		done
+		numfiles=0
+		index=1
+		for file in $(find . -maxdepth 1 -type f); do
+			mkdir "$index"
+			mv -v "$file" "$index"
+			let numfiles=numfiles+1
+			if [ "$numfiles" -gt "$maxnum" ]; then
+				let index=index+1
+				numfiles=0
+			fi
+		done
+		result=$(find . -maxdepth 1 -type d -name "2" | wc -l)
+		if [ "$result" == "0" ]; then
+			# We didn't require any subfolders. Undo this action.
+			mv 0/* . && rmdir 0
+		fi
+		cd ..
+	}
+
 	for each in $(find . -maxdepth 1 -type f); do
+		# Takes all files on local level and sorts them into subfolders by year (based on modified date)
 		if [ "$mode" == "year" ]; then
 			year=$(date -r "$each" "+%Y")
 			mkdir "$year" 1>/dev/null 2>&1
 			mv -v "$each" "$year"
 		fi
+
+		# Same as above but with folders that are formatted like YYYY-MM
 		if [ "$mode" == "month" ]; then
 			month=$(date -r "$each" "+%Y-%m")
 			mkdir "$month" 1>/dev/null 2>&1
 			mv -v "$each" "$month"
-		fi		
+		fi
+
+		# This mode adds files into subdirs by filecount $maxnum
+		if [ "$mode" == "num" ]; then
+			for dir in $(find . -maxdepth 1 -type d); do
+				numtraverse "$dir"
+			done
+		fi
 	done
 }
