@@ -4677,7 +4677,7 @@ function sortdir {
 		numfiles=0
 		index=1
 		for file in $(find . -maxdepth 1 -type f); do
-			mkdir "$index"
+			mkdir "$index" 1>/dev/null 2>&1
 			mv -v "$file" "$index"
 			let numfiles=numfiles+1
 			if [ "$numfiles" -gt "$maxnum" ]; then
