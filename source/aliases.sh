@@ -4644,8 +4644,14 @@ function moddate {
 	fi
 	date -r "$1" "+%Y-%m-%d %H-%M"
 }
-function sortintodates {
-	mode="year"
+function sortdir {
+	if [ -z "$1" ]; then
+		echo "Usage: sortdir <year|month|num> [maxnum]"
+		return 127
+	fi
+	if [ "$1" == "year" ] || [ "$1" == "years" ]; then
+		mode="year"
+	fi
 	if [ "$1" == "month" ] || [ "$1" == "months" ]; then
 		mode="month"
 	fi
@@ -4663,6 +4669,9 @@ function sortintodates {
 		# We're traversing dirs until we find files.
 		cd "$1"
 		for dir in $(find . -maxdepth 1 -type d); do
+			if [ "$dir" == "." ]; then
+				continue
+			fi
 			numtraverse "$dir"
 		done
 		numfiles=0
@@ -4702,6 +4711,9 @@ function sortintodates {
 		# This mode adds files into subdirs by filecount $maxnum
 		if [ "$mode" == "num" ]; then
 			for dir in $(find . -maxdepth 1 -type d); do
+				if [ "$dir" == "." ]; then
+					continue
+				fi
 				numtraverse "$dir"
 			done
 		fi
