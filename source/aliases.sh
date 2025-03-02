@@ -4730,6 +4730,7 @@ function findoverloadeddir {
 		fi
 	}
 	function dirwalker {
+		IFS=$'\n'
 		for dir in $(find . -maxdepth 1 -type d); do
 			if [ "$dir" == "." ]; then
 				continue
