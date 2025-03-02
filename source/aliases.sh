@@ -4681,7 +4681,7 @@ function sortdir {
 			mkdir "$index" 1>/dev/null 2>&1
 			mv -v "$file" "$index"
 			let numfiles=numfiles+1
-			if [ "$numfiles" -gt "$maxnum" ]; then
+			if [ "$numfiles" -ge "$maxnum" ]; then
 				let index=index+1
 				numfiles=0
 			fi
