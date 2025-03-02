@@ -4667,7 +4667,8 @@ function sortdir {
 
 	function numtraverse {
 		# We're traversing dirs until we find files.
-		cd "$1"
+		indir="$1"
+		cd "$indir"
 		for dir in $(find . -maxdepth 1 -type d); do
 			if [ "$dir" == "." ]; then
 				continue
@@ -4690,7 +4691,9 @@ function sortdir {
 			# We didn't require any subfolders. Undo this action.
 			mv 0/* . && rmdir 0
 		fi
-		cd ..
+		if [ "$indir" != "." ]; then
+			cd ..
+		fi
 	}
 
 	for each in $(find . -maxdepth 1 -type f); do
