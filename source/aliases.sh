@@ -4743,3 +4743,133 @@ function findoverloadeddir {
 	}
 	dirwalker
 }
+function guessmoddates {
+# This script tries to guess dates from filenames if there is no exif date present.
+
+IFS=$'\n'
+
+function guess {
+	y=""
+	m=""
+	d=""
+	file="$1"
+
+	[[ $file =~ [0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2} ]]
+	x="${BASH_REMATCH[0]//-/}"
+	y="${x:0:4}"
+	m="${x:4:2}"
+	d="${x:6:2}"
+
+	firsttwoy=${y:0:2}
+#	echo "$firsttwoy"
+
+	function implausible {
+		y=""
+		m=""
+		d=""
+	}
+
+	# Implausible results
+	if [ "$firsttwoy" != "19" ] && [ "$firsttwoy" != "20" ]; then
+		implausible
+		return
+	fi
+
+	if [ "$m" -gt "12" ] || [ "$m" -lt "1" ]; then
+		implausible
+		return
+	fi
+
+	if [ "$d" -gt "31" ] || [ "$d" -lt "1" ]; then
+		implausible
+		return
+	fi
+
+	# If we got here it's a good date
+	return
+}
+
+function updatefile {
+#	echo "not updating for DEBUG"
+#	return
+
+	y="$2"
+	m="$3"
+	d="$4"
+	file="$1"
+
+	# We have a file and an updated date.
+	# Set exif and mod dates and return.
+	echo "Updating: '$file' with $y-$m-$d"
+	exiftool '-DateTimeOriginal'="$y:$m:$d 00:00:00" "$file"
+	exiftool '-FileModifyDate<DateTimeOriginal' "$file"
+	rm "${file}_original" 1>/dev/null 2>&1
+}
+
+correctedfile=""
+function correctsuffix {
+	correctedfile=""
+	fullfile="$1"
+	filename=$(basename -- "$fullfile")
+	extension="${filename##*.}"
+	filename="${filename%.*}"
+
+	detected=$(file -I "$file")
+
+	# Is it a JPEG?
+	echo "$detected" | grep 'image/jpeg' 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		# it's a jpeg
+		if [ "$extension" == "jpeg" ] || [ "$extension" == "jpg" ] || [ "$extension" == "JPEG" ] || [ "$extension" == "JPG" ]; then
+			# Nothing to do
+			return
+		else
+			correctedfile="$fullfile.jpg"
+			mv -v "$fullfile" "$correctedfile"
+		fi
+	fi
+
+	# Is it a PNG?
+	echo "$detected" | grep 'image/png' 1>/dev/null 2>&1
+	if [ "$?" == "0" ]; then
+		# it's a png
+		if [ "$extension" == "png" ] || [ "$extension" == "PNG" ]; then
+			# Nothing to do
+			return
+		else
+			correctedfile="$fullfile.png"
+			mv -v "$fullfile" "$correctedfile"
+		fi
+	fi
+}
+
+num=1
+total=$(find . -type f | wc -l)
+
+for file in $(find . -type f); do
+	echo "[$num/$total]"
+	let num=num+1
+
+	# Check whether the file has the correct suffix.
+	correctsuffix "$file"
+	if [ ! -z "$correctedfile" ]; then
+		file="$correctedfile"
+	fi
+
+	# Check if this has an exif date.
+	exif=$(exiftool '-DateTimeOriginal' "$file")
+	if [ ! -z "$exif" ]; then
+		# This file has EXIF, we don't have to guess
+		exiftool '-FileModifyDate<DateTimeOriginal' "$file"
+		continue
+	fi
+
+	# We don't have EXIF, so we have to guess
+	guess "$file"
+	if [ -z "$y" ] || [ -z "$m" ] || [ -z "$d" ]; then
+		# Unable to guess, continue with next file
+		continue
+	fi
+	updatefile "$file" "$y" "$m" "$d"
+done
+}
