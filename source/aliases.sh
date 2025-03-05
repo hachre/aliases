@@ -4754,11 +4754,30 @@ function guess {
 	d=""
 	file="$1"
 
-	[[ $file =~ [0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2} ]]
-	x="${BASH_REMATCH[0]//-/}"
-	y="${x:0:4}"
-	m="${x:4:2}"
-	d="${x:6:2}"
+# bashisms
+#	[[ $file =~ [0-9]{8}|[0-9]{4}-[0-9]{2}-[0-9]{2} ]]
+#	x="${BASH_REMATCH[0]//-/}"
+#	y="${x:0:4}"
+#	m="${x:4:2}"
+#	d="${x:6:2}"
+
+case "$file" in
+  *[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]* | *[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*)
+    # Extract the matched pattern using grep
+    matched=$(echo "$file" | grep -o '[0-9]\{8\}\|[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}')
+    
+    # Remove dashes if they exist
+    x=$(echo "$matched" | sed 's|-||g')
+    
+    # Extract year, month, day using POSIX-compatible substring extraction
+    y=$(echo "$x" | cut -c1-4)
+    m=$(echo "$x" | cut -c5-6)
+    d=$(echo "$x" | cut -c7-8)
+    ;;
+  *)
+	return
+esac
+
 
 	firsttwoy=${y:0:2}
 #	echo "$firsttwoy"
