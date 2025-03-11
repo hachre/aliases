@@ -4892,3 +4892,4 @@ for file in $(find . -type f); do
 	updatefile "$file" "$y" "$m" "$d"
 done
 }
+alias scummit="scummvm --auto-detect --scale-factor=2 -f"
