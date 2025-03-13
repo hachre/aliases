@@ -4893,3 +4893,25 @@ for file in $(find . -type f); do
 done
 }
 alias scummit="scummvm --auto-detect --scale-factor=2 -f"
+function convutf {
+	# This converts files to the Linux UTF8 format
+
+	which convmv 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'convmv' to be installed"
+		return 1
+	fi
+
+	convmv -r -f utf8 -t utf8 --nfc --replace .
+}
+function convmac {
+	# This converts files to the Mac UTF8 format
+
+	which convmv 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		echo "Error: We need 'convmv' to be installed"
+		return 1
+	fi
+
+	convmv -r -f utf8 -t utf8 --nfd --replace .
+}
