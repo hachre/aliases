@@ -4634,7 +4634,7 @@ function wgetpage {
 		rm ~/.cookies.txt
 	fi
 }
-alias exifmoddates="exiftool -v -r '-FileModifyDate<DateTimeOriginal' ."
+alias exifmoddates="exiftool -v -r -m '-FileModifyDate<DateTimeOriginal' ."
 function moddate {
 	# Gets the last modified date for a file
 	if [ ! -f "$1" ]; then
@@ -4820,8 +4820,8 @@ function updatefile {
 	# We have a file and an updated date.
 	# Set exif and mod dates and return.
 	echo "Updating: '$file' with $y-$m-$d"
-	exiftool '-DateTimeOriginal'="$y:$m:$d 00:00:00" "$file"
-	exiftool '-FileModifyDate<DateTimeOriginal' "$file"
+	exiftool -m '-DateTimeOriginal'="$y:$m:$d 00:00:00" "$file"
+	exiftool -m '-FileModifyDate<DateTimeOriginal' "$file"
 	rm "${file}_original" 1>/dev/null 2>&1
 }
 
