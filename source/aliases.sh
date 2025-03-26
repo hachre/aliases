@@ -4726,7 +4726,7 @@ function findoverloadeddir {
 	function loadchecker {
 		num=$(find . -maxdepth 1 -type f | wc -l)
 		if [ "$num" -gt "$maxnum" ]; then
-			echo "$num:\t$(pwd)"
+			echo -e "$num:\t$(pwd)"
 		fi
 	}
 	function dirwalker {
