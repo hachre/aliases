@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.205.20250317.1
+hachreAliasesVersion=0.205.20250326.1
 
 #
 ### hachreAliases internal stuff
@@ -4726,7 +4726,7 @@ function findoverloadeddir {
 	function loadchecker {
 		num=$(find . -maxdepth 1 -type f | wc -l)
 		if [ "$num" -gt "$maxnum" ]; then
-			pwd
+			echo "$num:\t$(pwd)"
 		fi
 	}
 	function dirwalker {
