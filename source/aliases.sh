@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.205.20250426.1
+hachreAliasesVersion=0.206.20250429.1
 
 #
 ### hachreAliases internal stuff
@@ -116,10 +116,11 @@ function duhs {
 
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
-alias cps="rsync -aHhP --numeric-ids --delete"
-alias cpsnH="rsync -ahP --numeric-ids --delete"
-alias cpsnd="rsync -aHhP --numeric-ids"
-alias cpsndH="rsync -ahP --numeric-ids"
+alias cps="rsync -aHhP --numeric-ids --delete --partial"
+alias cpsa="rsync -aHhP --numeric-ids --delete --partial --append"
+alias cpsnH="rsync -ahP --numeric-ids --delete --partial"
+alias cpsnd="rsync -aHhP --numeric-ids --partial"
+alias cpsndH="rsync -ahP --numeric-ids --partial"
 function cpss {
 	if [ -z "$1" ]; then
 		echo "Usage: cpss <sourcedir> <targetdir>"
