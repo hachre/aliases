@@ -4027,7 +4027,7 @@ function alacconv {
 	fi
 	echo "All done!"
 }
-alias iotop="iotop -o"
+alias iotop="iotop -o; echo 'Consider activating delay accounting to debug high IO wait times via: echo 1 > /proc/sys/kernel/task_delayacct'"
 
 alias sr="snapraid"
 function srx {
