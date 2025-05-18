@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.206.20250430.1
+hachreAliasesVersion=0.206.20250518.1
 
 #
 ### hachreAliases internal stuff
@@ -4914,3 +4914,5 @@ function convmac {
 
 	convmv -r -f utf8 -t utf8 --nfd --replace .
 }
+alias viewdate="exiftool -time:all"
+alias getdate=viewdate
