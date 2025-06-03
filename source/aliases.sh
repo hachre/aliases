@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.206.20250518.1
+hachreAliasesVersion=0.206.20250604.1
 
 #
 ### hachreAliases internal stuff
@@ -960,6 +960,12 @@ function dyDetectDistro {
 	which lsb_release 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		release=$(lsb_release -is)
+		if [ "$release" == "Linuxmint" ]; then
+			dyDetectedDistro="debian"
+			dyDistroName="Linux Mint"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			return 0
+		fi
 		if [ "$release" == "Ubuntu" ]; then
 			dyDetectedDistro="debian"
 			dyDistroName="Ubuntu Linux"
