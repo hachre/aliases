@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.206.20250604.1
+hachreAliasesVersion=0.206.20250730.1
 
 #
 ### hachreAliases internal stuff
@@ -4922,3 +4922,4 @@ function convmac {
 }
 alias viewdate="exiftool -time:all"
 alias getdate=viewdate
+alias tmfast="sudo sysctl debug.lowpri_throttle_enabled=0"
