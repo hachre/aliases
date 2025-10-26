@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.206.20250730.1
+hachreAliasesVersion=0.207.20251026.1
 
 #
 ### hachreAliases internal stuff
@@ -117,6 +117,14 @@ function duhs {
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete --partial"
+function cpc {
+	source=$1 
+	dest=$2 
+	rclone copy --progress --transfers=16 --checkers=32 "$source" "$dest"
+	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
+	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
+}
+alias cdc=cpc
 alias cpsa="rsync -aHhP --numeric-ids --delete --partial --append"
 alias cpsnH="rsync -ahP --numeric-ids --delete --partial"
 alias cpsnd="rsync -aHhP --numeric-ids --partial"
