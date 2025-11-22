@@ -326,18 +326,19 @@ function echoerr() {
 	awk " BEGIN { print \"$*\" > \"/dev/stderr\" }"
 }
 alias flushdns="sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches;dscacheutil -flushcache"
-function psallold() {
-	if [ -z "$1" ]; then
-		ps aux | grep -v '\[' | grep -v '\]'
-	else
-		ps aux | grep -v '\[' | grep -v '\]' | grep -i "$1" | grep -v "grep"
-	fi
-}
 function psall() {
 	if [ -z "$1" ]; then
-		ps aux
+		if [ "$dyDetectedDistro" != "macOS-brew" ]; then
+			ps au --pid=2 --ppid=2 --deselect
+		else
+			ps aux
+		fi
 	else
-		ps aux | grep -i "$1" | grep -v "grep"
+		if [ "$dyDetectedDistro" != "macOS-brew" ]; then
+			ps au --pid=2 --ppid=2 --deselect | grep -i "$1" | grep -v "grep"
+		else 
+			ps aux | grep -i "$1" | grep -v "grep"
+		fi
 	fi
 }
 alias lsnet="ls /sys/class/net"
