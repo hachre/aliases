@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.207.20251211.1
+hachreAliasesVersion=0.207.20251213.1
 
 #
 ### hachreAliases internal stuff
@@ -978,6 +978,12 @@ function dyDetectDistro {
 		if [ "$release" == "Ubuntu" ]; then
 			dyDetectedDistro="debian"
 			dyDistroName="Ubuntu Linux"
+			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
+			return 0
+		fi
+		if [ "$release" == "Pop" ]; then
+			dyDetectedDistro="debian"
+			dyDistroName="Pop!_OS"
 			dyDistroInfo="\n * The native package manager for this distro is called 'apt' and 'apt-get'. You might also want to look at 'apt-cache', 'dpkg' and 'aptitude'"
 			return 0
 		fi
