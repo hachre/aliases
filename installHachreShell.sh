@@ -44,8 +44,9 @@ cmd="$1"
 # Load hachreAliases
 echo "Loading hachreAliases..."
 if [ "$cmd" != "--no-internet" ] && [ "$SHELL" != "/bin/sh" ]; then
-	# Nala has been AWOL for months, disabling for now
-	touch /root/.nonala
+	# 2025-12-01: Nala has been AWOL for months, disabling for now
+	# 2025-12-22: Nala is back!
+	# touch /root/.nonala
 	c https://raw.githubusercontent.com/hachre/aliases/master/source/aliases.sh > /tmp/aliases.sh
 	. /tmp/aliases.sh || true
 	# Loading hachreAliases twice in a row to switch to Nala in case it got installed
