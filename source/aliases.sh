@@ -2058,43 +2058,44 @@ function dyii {
 	fi
 
 	if [[ "$dyDetectedDistro" == *"opensuse"* ]]; then
-		function susenote {
-			echo ""
-			echo "Note: The behavior of dyii is somewhat different on OpenSUSE than on other platforms."
-			echo "  - dyii will install the Packman extended repos on first use"
-			echo "  - during setup, all your packages will be updated to the latest versions"
-			echo "  - Packman will then be enabled for all commands including dyi, dys etc."
-			echo "  - dyuu is not available because dyu will automatically take care of it"
-			echo "  - this means you only need to use dyii once and then never again"
-			echo ""
-		}
+		# function susenote {
+		# 	echo ""
+		# 	echo "Note: The behavior of dyii is somewhat different on OpenSUSE than on other platforms."
+		# 	echo "  - dyii will install the Packman extended repos on first use"
+		# 	echo "  - during setup, all your packages will be updated to the latest versions"
+		# 	echo "  - Packman will then be enabled for all commands including dyi, dys etc."
+		# 	echo "  - dyuu is not available because dyu will automatically take care of it"
+		# 	echo "  - this means you only need to use dyii once and then never again"
+		# 	echo ""
+		# }
 
-		susenote
-		echo "If you want to proceed, hit ENTER - otherwise hit CTRL+C..."
-		read
+		# susenote
+		# echo "If you want to proceed, hit ENTER - otherwise hit CTRL+C..."
+		# read
 
-		cat /etc/*release* | grep -i tumbleweed 1>/dev/null 2>&1
-		if [ "$?" == "0" ]; then
-	        $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
-	        if [ "$?" != "0" ]; then
-				echo "Proceeding to install additional Packman package sources..."
-				$hachreAliasesRoot zypper ar -cfp 90 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/' packman || return 1
-				$hachreAliasesRoot $pkgmanager --non-interactive --no-gpg-checks ref || return 1
-				if [ "$dyDetectedDistro" == "opensuse-microos" ]; then
-					$hachreAliasesRoot transactional-update apply || return 1
-				fi
-				$hachreAliasesRoot $pkgmanager dup -y -l --from packman --allow-vendor-change || return 1
-				$hachreAliasesRoot $pkgmanager dup -y -l --allow-vendor-change || return 1
-			fi
-			$hachreAliasesRoot $pkgmanager in -l $*
-		else
-			echo "Your variant of SUSE is not supported for automatic Packman handling."
-			echo "Please install and use manually."
-			echo "More info can be found here: https://en.opensuse.org/Additional_package_repositories#Packman"
-			return 1
-		fi
+		# cat /etc/*release* | grep -i tumbleweed 1>/dev/null 2>&1
+		# if [ "$?" == "0" ]; then
+	    #     $hachreAliasesRoot zypper lr packman 1>/dev/null 2>&1
+	    #     if [ "$?" != "0" ]; then
+		# 		echo "Proceeding to install additional Packman package sources..."
+		# 		$hachreAliasesRoot zypper ar -cfp 90 'https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/' packman || return 1
+		# 		$hachreAliasesRoot $pkgmanager --non-interactive --no-gpg-checks ref || return 1
+		# 		if [ "$dyDetectedDistro" == "opensuse-microos" ]; then
+		# 			$hachreAliasesRoot transactional-update apply || return 1
+		# 		fi
+		# 		$hachreAliasesRoot $pkgmanager dup -y -l --from packman --allow-vendor-change || return 1
+		# 		$hachreAliasesRoot $pkgmanager dup -y -l --allow-vendor-change || return 1
+		# 	fi
+		# 	$hachreAliasesRoot $pkgmanager in -l $*
+		# else
+		# 	echo "Your variant of SUSE is not supported for automatic Packman handling."
+		# 	echo "Please install and use manually."
+		# 	echo "More info can be found here: https://en.opensuse.org/Additional_package_repositories#Packman"
+		# 	return 1
+		# fi
 
-		susenote
+		# susenote
+		opi $@
 		return 0
 	fi
 
