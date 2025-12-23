@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.207.20251223.1
+hachreAliasesVersion=0.207.20251223.2
 
 #
 ### hachreAliases internal stuff
@@ -1025,11 +1025,11 @@ function dyDetectDistro {
 		fi
 	fi
 
-	# CentOS, OracleLinux
+	# redhat, OracleLinux, Fedora, RedHat
 	# TODO: switch all uses of which to command -v
 	command -v yum 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
-		dyDetectedDistro="CentOS"
+		dyDetectedDistro="redhat"
 		dyDistroName="$dyDetectedDistro"
 		dyDistroInfo="\n * Using command aliases for distro '$dyDetectedDistro'.\n * The native package manager for this distro is called 'yum'."
 		if [ -f "/etc/os-release" ]; then
@@ -1317,8 +1317,8 @@ function dyh {
         echo "If you need more commands, use 'dyh -v'"
     fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
-		echo -e "\nAs a user of CentOS features, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
+	if [ "$dyDetectedDistro" == "redhat" ]; then
+		echo -e "\nAs a user of redhat features, you also have access to 'dyundo' which allows\nto rollback previous package manager actions. Check 'dyundo --help'."
 	fi
 
 	if [ "$dyDetectedDistro" == "debian" ] && [ $dyAPTCmd == "nala" ]; then
@@ -1425,7 +1425,7 @@ function dyk {
 }
 
 function dyundo {
-	if [ "$dyDetectedDistro" != "CentOS" ] && [ "$dyDetectedDistro" != "debian" ]; then
+	if [ "$dyDetectedDistro" != "redhat" ] && [ "$dyDetectedDistro" != "debian" ]; then
 		return 1
 	fi
 	if [ "$dyDetectedDistro" == "debian" ]; then
@@ -1442,7 +1442,7 @@ function dyundo {
 	fi
 
 	if [ -z "$1" ]; then
-		if [ "$dyDetectedDistro" == "CentOS" ]; then
+		if [ "$dyDetectedDistro" == "redhat" ]; then
 			$hachreAliasesRoot $(dyYumCmd) history
 		fi
 
@@ -1454,7 +1454,7 @@ function dyundo {
 	fi
 
 	if [ ! -z "$1" ]; then
-		if [ "$dyDetectedDistro" == "CentOS" ]; then
+		if [ "$dyDetectedDistro" == "redhat" ]; then
 			$hachreAliasesRoot $(dyYumCmd) history undo "$1"
 			return $?
 		fi
@@ -1474,7 +1474,7 @@ function dyq {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
 		$hachreAliasesRoot $(dyYumCmd) info $@ | tee
 		return $?
 	fi
@@ -1689,8 +1689,8 @@ function dyu {
         fi
     fi
 
-	# CentOS, Alpine and Debian with Nala do this on their own
-	if [ "$dyDetectedDistro" == "CentOS" ] || [ "$dyDetectedDistro" == "alpine" ]; then
+	# redhat, Alpine and Debian with Nala do this on their own
+	if [ "$dyDetectedDistro" == "redhat" ] || [ "$dyDetectedDistro" == "alpine" ]; then
 		skip="1"
 	fi
 	if [ "$dyDetectedDistro" == "debian" ]; then
@@ -1778,7 +1778,7 @@ function dyu {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
     	$hachreAliasesRoot $(dyYumCmd) update | tee
 		ret="$?"
 		if [ "$?" == "0" ]; then
@@ -1816,7 +1816,7 @@ function dyus {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
 		$hachreAliasesRoot $(dyYumCmd) update --security | tee
 		return $?
 	fi
@@ -1956,7 +1956,7 @@ function dyi {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
         $hachreAliasesRoot $(dyYumCmd) install $* | tee
 		return $?
 	fi
@@ -2224,7 +2224,7 @@ function dyr {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
 	    $hachreAliasesRoot $(dyYumCmd) remove $* | tee
 	    $hachreAliasesRoot $(dyYumCmd) autoremove -y | tee
 		return $?
@@ -2344,7 +2344,7 @@ function dys {
 		return $?
 	fi
 
-	if [ "$dyDetectedDistro" == "CentOS" ]; then
+	if [ "$dyDetectedDistro" == "redhat" ]; then
         $hachreAliasesRoot $(dyYumCmd) search $* | less -rEFXKn
 		return $?
 	fi
