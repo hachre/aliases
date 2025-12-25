@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.207.20251223.2
+hachreAliasesVersion=0.208.20251226.1
 
 #
 ### hachreAliases internal stuff
@@ -2006,6 +2006,29 @@ function dyii {
 	if [ -z "$1" ]; then
 		echo "Usage: dyii <package name>"
 		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "redhat" ]; then
+		function _ha_rhInstallNonFree {
+			echo "You're about to unlock the full potential of $dyDistroName."
+			echo "Your distro will be unlocked for non-free software and upgraded to proper media codecs."
+			echo "In the future you can simply use dyi to install software. It'll automatically pull additional sources in."
+			echo "Do you want to proceed?"
+			echo " -> ENTER to confirm; CTRL+C to cancel"
+			read
+
+			$_ha_root dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+			$_ha_root dnf upgrade -y @core
+			$_ha_root dnf swap -y ffmpeg-free ffmpeg --allowerasing
+			$_ha_root dnf upgrade -y @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
+			$_ha_root dnf install -y gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-libav --allowerasing
+			$_ha_root flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+			echo "Operations finished. Use dyi from now on."
+		}
+		if [ "$dyDistroName" == "Fedora Linux" ]; then
+			_ha_rhInstallNonFree
+		fi
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
