@@ -2029,6 +2029,8 @@ function dyii {
 		if [ "$dyDistroName" == "Fedora Linux" ]; then
 			_ha_rhInstallNonFree
 		fi
+
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
