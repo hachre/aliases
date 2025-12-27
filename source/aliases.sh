@@ -1101,7 +1101,7 @@ fi
 
 # Install RPM Cache on suitable systems
 function _ha_installRPMCache {
-	cat /etc/dnf/dnf.conf | grep proxy 1>/dev/null 2&1
+	cat /etc/dnf/dnf.conf | grep proxy 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		return
 	fi
