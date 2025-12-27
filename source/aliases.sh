@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20251227.5
+hachreAliasesVersion=0.209.20251227.6
 
 #
 ### hachreAliases internal stuff
@@ -1116,7 +1116,7 @@ function _ha_installRPMCache {
 		return
 	fi
 
-	echo "proxy=http://$ip:3142" >> /etc/dnf/dnf.conf
+	echo "proxy=http://$ip:3128" >> /etc/dnf/dnf.conf
 }
 if [ "$dyDetectedDistro" == "redhat" ]; then
 	_ha_installRPMCache &
