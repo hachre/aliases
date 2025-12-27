@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.208.20251226.1
+hachreAliasesVersion=0.208.20251227.1
 
 #
 ### hachreAliases internal stuff
@@ -1673,6 +1673,11 @@ function dyw {
 
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		brew list
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "redhat" ]; then
+		rpm -qa
 		return $?
 	fi
 
