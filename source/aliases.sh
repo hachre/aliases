@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20251227.6
+hachreAliasesVersion=0.209.20251228.1
 
 #
 ### hachreAliases internal stuff
@@ -2048,6 +2048,8 @@ function dyii {
 			$_ha_root dnf install -y gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-libav --allowerasing
 			$_ha_root flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 			$_ha_root dnf install -y plasma-discover-packagekit plasma-discover-rpm-ostree
+			$_ha_root dnf install -y fedora-workstation-repositories
+			$_ha_root dnf config-manager setopt google-chrome.enabled=1 || true
 
 			echo "Operations finished. Use dyi from now on."
 		}
