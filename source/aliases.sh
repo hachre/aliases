@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.208.20251227.1
+hachreAliasesVersion=0.209.20251227.2
 
 #
 ### hachreAliases internal stuff
@@ -1098,6 +1098,30 @@ function _ha_installAPTCache {
 if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
 	_ha_installAPTCache
 fi
+
+# Install RPM Cache on suitable systems
+function _ha_installRPMCache {
+	cat /etc/dnf/dnf.conf | grep proxy 1>/dev/null 2&1
+	if [ "$?" == "0" ]; then
+		return
+	fi
+
+	host -4 aptcache 1>/dev/null 2>&1
+	if [ "$?" != "0" ]; then
+		return
+	fi
+
+	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
+	if [ "$?" != "0" ]; then
+		return
+	fi
+
+	echo "proxy=http://$ip:3142" >> /etc/dnf/dnf.conf
+}
+if [ "$dyDetectedDistro" == "redhat" ]; then
+	_ha_installRPMCache
+fi
+
 
 # Set up Nala
 function _ha_installNala {
