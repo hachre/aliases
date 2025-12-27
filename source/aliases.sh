@@ -2032,11 +2032,6 @@ function dyif {
 	echo "This command is not supported on your platform."
 }
 function dyii {
-	if [ -z "$1" ]; then
-		echo "Usage: dyii <package name>"
-		return 1
-	fi
-
 	if [ "$dyDetectedDistro" == "redhat" ]; then
 		function _ha_rhInstallNonFree {
 			echo "You're about to unlock the full potential of $dyDistroName."
@@ -2052,6 +2047,7 @@ function dyii {
 			$_ha_root dnf upgrade -y @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
 			$_ha_root dnf install -y gstreamer1-plugins-bad-freeworld gstreamer1-plugins-ugly gstreamer1-libav --allowerasing
 			$_ha_root flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+			$_ha_root dnf install -y plasma-discover-packagekit plasma-discover-rpm-ostree
 
 			echo "Operations finished. Use dyi from now on."
 		}
@@ -2060,6 +2056,11 @@ function dyii {
 		fi
 
 		return $?
+	fi
+
+	if [ -z "$1" ]; then
+		echo "Usage: dyii <package name>"
+		return 1
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
