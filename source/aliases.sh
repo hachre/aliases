@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20251227.2
+hachreAliasesVersion=0.209.20251227.3
 
 #
 ### hachreAliases internal stuff
@@ -1088,7 +1088,7 @@ function _ha_installAPTCache {
 		return
 	fi
 
-	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
+	ip=$(host -4 aptcache 2>/dev/null | tail -n 1 | cut -d " " -f 4)
 	if [ "$?" == "0" ]; then
 		$hachreAliasesRoot apt update
 		echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
@@ -1111,7 +1111,7 @@ function _ha_installRPMCache {
 		return
 	fi
 
-	ip=$(host -4 aptcache 2>/dev/null | cut -d " " -f 4)
+	ip=$(host -4 aptcache 2>/dev/null | tail -n 1 | cut -d " " -f 4)
 	if [ "$?" != "0" ]; then
 		return
 	fi
