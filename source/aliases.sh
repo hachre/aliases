@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20251227.3
+hachreAliasesVersion=0.209.20251227.4
 
 #
 ### hachreAliases internal stuff
@@ -1106,12 +1106,12 @@ function _ha_installRPMCache {
 		return
 	fi
 
-	host -4 aptcache 1>/dev/null 2>&1
+	host -4 rpmcache 1>/dev/null 2>&1
 	if [ "$?" != "0" ]; then
 		return
 	fi
 
-	ip=$(host -4 aptcache 2>/dev/null | tail -n 1 | cut -d " " -f 4)
+	ip=$(host -4 rpmcache 2>/dev/null | tail -n 1 | cut -d " " -f 4)
 	if [ "$?" != "0" ]; then
 		return
 	fi
