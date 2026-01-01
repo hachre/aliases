@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20260101.1
+hachreAliasesVersion=0.210.20260101.2
 
 #
 ### hachreAliases internal stuff
@@ -4344,8 +4344,31 @@ function smarttest {
 		return 1
 	fi
 
-	echo "Tests have been scheduled. Waiting 10 minutes to pick up results."
-	sleep 600
+	function isFinished {
+		returncode=$(smartctl -a "$1" | grep "Self-test execution status" | awk -F'[()]' '{print $2}' | tr -d ' ')
+		if [ returncode == "241" ]; then
+			echo "$(date):  -> Disk "$1" is not finished yet..."
+			return 0
+		fi
+		return 1
+	}
+
+	function waitfinished {
+		finished=0
+		for each in $(ls /dev/sd?); do
+			isHDD "$each" || continue
+			isFinished "$each" || finished=1
+		done
+		if [ "$finished" == "0" ]; then
+			return 0
+		fi
+		echo "$(date):   -> Still waiting for all disks to be finished..."
+		sleep 60 && waitfinished
+	}
+
+	echo "$(date): Tests have been scheduled. Waiting until all disks are finished to pick up results..."
+	sleep 180
+	waitfinished
 
 	touch "$outfile"
 	chmod 600 "$outfile"
