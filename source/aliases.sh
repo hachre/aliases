@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.209.20251229.1
+hachreAliasesVersion=0.209.20260101.1
 
 #
 ### hachreAliases internal stuff
@@ -4325,7 +4325,8 @@ function smarttest {
 
 	function readSMART {
 		echo -n "$1: "
-		smartctl -l selftest "$1" | grep --color=none "# 1"
+		#smartctl -l selftest "$1" | grep --color=none "# 1"
+		smartctl -l selftest "$1" | awk '/^# 1 / {print; exit}'
 	}
 
 	datestamp=$(date +%Y-%m-%d--%H-%M)
