@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260101.3
+hachreAliasesVersion=0.210.20260101.4
 
 #
 ### hachreAliases internal stuff
@@ -4348,7 +4348,7 @@ function smarttest {
 
 	function isFinished {
 		returncode=$(smartctl -a "$1" | grep "Self-test execution status" | awk -F'[()]' '{print $2}' | tr -d ' ')
-		if [ returncode == "241" ]; then
+		if [ "$returncode" == "241" ]; then
 			echo "$(date):  -> Disk "$1" is not finished yet..."
 			return 0
 		fi
