@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260101.5
+hachreAliasesVersion=0.210.20260101.6
 
 #
 ### hachreAliases internal stuff
@@ -4308,7 +4308,7 @@ function smarttest {
 
 	if [ "$1" == "--show-last-results" ]; then
 		showlastresults
-		exit 0
+		return 0
 	fi
 
 	function cutoffend {
