@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260101.2
+hachreAliasesVersion=0.210.20260101.3
 
 #
 ### hachreAliases internal stuff
@@ -4312,9 +4312,11 @@ function smarttest {
 
 	function runSMART {
 		echo "Starting 'short' SMART test on '$1'..."
-		set -e
 		smartctl -t short "$1" 1>/dev/null 2>&1
-		set +e
+		if [ "$?" != "0" ]; then
+			echo "Error: Something went wrong while sending the test command to disk '$1'."
+			echo "       Please investigate."
+		fi
 	}
 
 	function infoSMART {
