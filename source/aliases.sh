@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260102.3
+hachreAliasesVersion=0.210.20260102.4
 
 #
 ### hachreAliases internal stuff
@@ -1079,6 +1079,10 @@ dyDetectDistro
 
 # Install Apt Proxy on suitable systems
 function _ha_installAPTCache {
+	if [ -f "/root/.nocache" ]; then
+		return 0
+	fi
+
 	if [ -f "/etc/apt/apt.conf.d/00aptproxy" ]; then
 		return
 	fi
@@ -1101,6 +1105,10 @@ fi
 
 # Install RPM Cache on suitable systems
 function _ha_installRPMCache {
+	if [ -f "/root/.nocache" ]; then
+		return 0
+	fi
+
 	cat /etc/dnf/dnf.conf | grep proxy 1>/dev/null 2>&1
 	if [ "$?" == "0" ]; then
 		return
