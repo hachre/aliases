@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260102.2
+hachreAliasesVersion=0.210.20260102.3
 
 #
 ### hachreAliases internal stuff
@@ -4285,11 +4285,15 @@ function smarttest {
 	# ProjectSmart 2024
 	#
 
-	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+	function usage {
 		echo "Usage: smarttest --run|--cancel|--show-last-results"
 		echo "  Autodetects all HDDs in the system, then runs 'short' SMART tests on them."
 		echo "  Will take >10 minutes to execute because we'll have to wait for the test results."
 		echo "  It is recommended not to put the disks under heavy load during these tests."
+	}
+
+	if [ -z "$1" ] || [ "$1" == "--help" ]; then
+		usage
 		return 127
 	fi
 
@@ -4317,6 +4321,11 @@ function smarttest {
 			smartctl -X "$each" 1>/dev/null 2>&1
 		done
 		return $?
+	fi
+
+	if [ "$1" != "--run" ]; then
+		usage
+		return 127
 	fi
 
 	function cutoffend {
