@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260102.4
+hachreAliasesVersion=0.210.20260105.1
 
 #
 ### hachreAliases internal stuff
@@ -1076,6 +1076,16 @@ function dyDetectDistro {
 	return 1
 }
 dyDetectDistro
+
+function _ha_installDocker {
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		curl -sSL https://get.docker.com/ | CHANNEL=stable sh
+		systemctl enable --now docker
+		return 0
+	fi
+
+	echo "This command is not supported on your system."
+}
 
 # Install Apt Proxy on suitable systems
 function _ha_installAPTCache {
