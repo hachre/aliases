@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.212.20260118.4
+hachreAliasesVersion=0.212.20260118.5
 
 #
 ### hachreAliases internal stuff
@@ -5068,9 +5068,9 @@ function _ha_installMooseClient {
 		return 1
 	fi
 
-	if [ "$dyDetectedDistro " == "debian" ]; then
+	if [ "$dyDetectedDistro" == "debian" ]; then
 		source /etc/os-release
-		if [ "$dyDistroName " == "Debian" ]; then
+		if [ "$dyDistroName" == "Debian" ]; then
 			mkdir -p /etc/apt/keyrings
 			curl https://repository.moosefs.com/moosefs.key | gpg -o /etc/apt/keyrings/moosefs.gpg --dearmor
 			if [ "$VERSION_ID" == "12" ]; then
