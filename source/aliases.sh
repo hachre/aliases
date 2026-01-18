@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260118.1
+hachreAliasesVersion=0.211.20260118.2
 
 #
 ### hachreAliases internal stuff
@@ -119,8 +119,9 @@ alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete --partial"
 function cpc {
 	source=$1 
-	dest=$2 
-	rclone copy --progress --transfers=16 --checkers=32 "$source" "$dest"
+	dest=$2
+	rclone sync -v --progress --modify-window 1s --no-update-modtime "$source" "$dest"
+
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
 	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
 }
