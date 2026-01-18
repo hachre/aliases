@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.211.20260118.2
+hachreAliasesVersion=0.212.20260118.3
 
 #
 ### hachreAliases internal stuff
@@ -5061,3 +5061,40 @@ function convmac {
 alias viewdate="exiftool -time:all"
 alias getdate=viewdate
 alias tmfast="sudo sysctl debug.lowpri_throttle_enabled=0"
+
+function _ha_installMooseClient {
+	if [ "$USER" != "root" ]; then
+		echo "Error: Must be run as root."
+		return 1
+	fi
+
+	if [ "$dyDetectedDistro " == "debian" ]; then
+		source /etc/os-release
+		if [ "$dyDistroName " == "Debian" ]; then
+			mkdir -p /etc/apt/keyrings
+			curl https://repository.moosefs.com/moosefs.key | gpg -o /etc/apt/keyrings/moosefs.gpg --dearmor
+			if [ "$VERSION_ID" == "12" ]; then
+				echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/moosefs.gpg] http://repository.moosefs.com/moosefs-4/apt/debian/bookworm bookworm main" > /etc/apt/sources.list.d/moosefs.list
+			fi
+			if [ "$VERSION_ID" == "13" ]; then
+				 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/moosefs.gpg] http://repository.moosefs.com/moosefs-4/apt/debian/trixie trixie main" > /etc/apt/sources.list.d/moosefs.list
+			fi
+		fi
+		if [ "$dyDistroName" == "Ubuntu Linux" ]; then
+			curl https://repository.moosefs.com/moosefs.key | gpg -o /etc/apt/keyrings/moosefs.gpg --dearmor
+			if [ "$VERSION_ID" == "24.04" ]; then
+				echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/moosefs.gpg] http://repository.moosefs.com/moosefs-4/apt/ubuntu/noble noble main" > /etc/apt/sources.list.d/moosefs.list
+			fi
+			if [ "$VERSION_ID" == "22.04" ]; then
+				echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/moosefs.gpg] http://repository.moosefs.com/moosefs-4/apt/ubuntu/jammy jammy main" > /etc/apt/sources.list.d/moosefs.list
+			fi
+		fi
+		apt update
+	fi
+
+	dyi -y moosefs-client
+
+	echo "Sorry. Your system isn't supported for automatic installation."
+	echo "Check https://moosefs.com/download/ for manual instructions."
+	return 1
+}
