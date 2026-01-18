@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.210.20260105.1
+hachreAliasesVersion=0.210.20260118.1
 
 #
 ### hachreAliases internal stuff
@@ -328,17 +328,9 @@ function echoerr() {
 alias flushdns="sudo discoveryutil mdnsflushcache;sudo discoveryutil udnsflushcaches;dscacheutil -flushcache"
 function psall() {
 	if [ -z "$1" ]; then
-		if [ "$dyDetectedDistro" != "macOS-brew" ]; then
-			ps au --pid=2 --ppid=2 --deselect
-		else
-			ps aux
-		fi
+		LIBPROC_HIDE_KERNEL=1 ps aux
 	else
-		if [ "$dyDetectedDistro" != "macOS-brew" ]; then
-			ps au --pid=2 --ppid=2 --deselect | grep -i "$1" | grep -v "grep"
-		else 
-			ps aux | grep -i "$1" | grep -v "grep"
-		fi
+		LIBPROC_HIDE_KERNEL=1 ps aux | grep -i "$1" | grep -v "grep"
 	fi
 }
 alias lsnet="ls /sys/class/net"
