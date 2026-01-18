@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.212.20260118.3
+hachreAliasesVersion=0.212.20260118.4
 
 #
 ### hachreAliases internal stuff
@@ -5090,9 +5090,10 @@ function _ha_installMooseClient {
 			fi
 		fi
 		apt update
+		dyi -y moosefs-client
+		return $?
 	fi
 
-	dyi -y moosefs-client
 
 	echo "Sorry. Your system isn't supported for automatic installation."
 	echo "Check https://moosefs.com/download/ for manual instructions."
