@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.212.20260118.5
+hachreAliasesVersion=0.212.20260118.6
 
 #
 ### hachreAliases internal stuff
@@ -1103,7 +1103,7 @@ function _ha_installAPTCache {
 	fi
 }
 if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
-	_ha_installAPTCache &
+	(&>/dev/null _ha_installAPTCache &)
 fi
 
 # Install RPM Cache on suitable systems
