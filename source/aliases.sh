@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.212.20260119.1
+hachreAliasesVersion=0.213.20260128.1
 
 #
 ### hachreAliases internal stuff
@@ -5094,6 +5094,30 @@ function _ha_installMooseClient {
 		return $?
 	fi
 
+
+	echo "Sorry. Your system isn't supported for automatic installation."
+	echo "Check https://moosefs.com/download/ for manual instructions."
+	return 1
+}
+
+function _ha_installSeaWeed {
+	if [ "$USER" != "root" ]; then
+		echo "Error: Must be run as root."
+		return 1
+	fi
+
+	version="latest"
+	if [ ! -z "$1" ]; then
+		version="$1"
+	fi
+
+	if [ "$dyDetectedDistro" == "debian" ]; then
+		dyi go
+		go install github.com/seaweedfs/seaweedfs/weed@$version
+		rm -f /sbin/weed
+		ln -s /root/go/bin/weed /sbin/weed
+		return 0
+	fi
 
 	echo "Sorry. Your system isn't supported for automatic installation."
 	echo "Check https://moosefs.com/download/ for manual instructions."
