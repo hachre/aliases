@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.213.20260128.1
+hachreAliasesVersion=0.213.20260128.2
 
 #
 ### hachreAliases internal stuff
@@ -5112,7 +5112,7 @@ function _ha_installSeaWeed {
 	fi
 
 	if [ "$dyDetectedDistro" == "debian" ]; then
-		dyi go
+		dyi -y golang
 		go install github.com/seaweedfs/seaweedfs/weed@$version
 		rm -f /sbin/weed
 		ln -s /root/go/bin/weed /sbin/weed
