@@ -120,7 +120,7 @@ alias cps="rsync -aHhP --numeric-ids --delete --partial"
 function cpc {
 	source=$1 
 	dest=$2
-	rclone sync -v --progress --modify-window 1s --no-update-modtime "$source" "$dest"
+	rclone sync -vP --transfers=16 --checkers=32 --modify-window 1s --no-update-modtime "$source" "$dest"
 
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
 	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
