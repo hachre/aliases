@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.213.20260129.1
+hachreAliasesVersion=0.213.20260211.1
 
 #
 ### hachreAliases internal stuff
@@ -120,21 +120,17 @@ alias cps="rsync -aHhP --numeric-ids --delete --partial"
 function cpc {
 	source=$1 
 	dest=$2
-	rclone sync -vP --transfers=16 --checkers=32 --modify-window 1s --no-update-modtime "$source" "$dest"
-
-	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
-	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
-}
-function cpc16 {
-	source=$1 
-	dest=$2
-	rclone sync -v --progress --modify-window 1s --no-update-modtime --transfers 16 --checkers 32 "$source" "$dest"
+	transfersp="$transfers"
+	if [ -z "$transfersp" ]; then
+		transfersp="16"
+	fi
+	let checkers=checkers*2
+	rclone sync -vP --transfers="$transfersp" --checkers="$checkers" --modify-window 1s --no-update-modtime "$source" "$dest"
 
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
 	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
 }
 alias cdc=cpc
-alias cdc16=cpc16
 alias cpsa="rsync -aHhP --numeric-ids --delete --partial --append"
 alias cpsnH="rsync -ahP --numeric-ids --delete --partial"
 alias cpsnd="rsync -aHhP --numeric-ids --partial"
