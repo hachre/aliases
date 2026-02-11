@@ -118,6 +118,7 @@ alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
 alias cps="rsync -aHhP --numeric-ids --delete --partial"
 function cpc {
+	# Can be called with custom transfers command: 'transfers=4; cpc ...'
 	source=$1 
 	dest=$2
 	transfersp="$transfers"
