@@ -125,7 +125,7 @@ function cpc {
 	if [ -z "$transfersp" ]; then
 		transfersp="16"
 	fi
-	let checkers=checkers*2
+	let checkers=transfersp*2
 	rclone sync -vP --transfers="$transfersp" --checkers="$checkers" --modify-window 1s --no-update-modtime "$source" "$dest"
 
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
