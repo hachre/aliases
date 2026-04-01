@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.213.20260211.1
+hachreAliasesVersion=0.213.20260401.1
 
 #
 ### hachreAliases internal stuff
@@ -1075,16 +1075,6 @@ function dyDetectDistro {
 	return 1
 }
 dyDetectDistro
-
-function _ha_installDocker {
-	if [ "$dyDetectedDistro" == "debian" ]; then
-		curl -sSL https://get.docker.com/ | CHANNEL=stable sh
-		systemctl enable --now docker
-		return 0
-	fi
-
-	echo "This command is not supported on your system."
-}
 
 # Install Apt Proxy on suitable systems
 function _ha_installAPTCache {
@@ -5129,3 +5119,11 @@ function _ha_installSeaWeed {
 	echo "Check https://moosefs.com/download/ for manual instructions."
 	return 1
 }
+
+function _ha_installDocker {
+	dyi -y curl
+	curl -sSL https://get.docker.com/ | CHANNEL=stable sh
+	systemctl enable --now docker
+	return 0
+}
+
