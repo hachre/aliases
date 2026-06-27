@@ -129,7 +129,7 @@ function cpc {
 	rclone sync -vP --transfers="$transfersp" --checkers="$checkers" --modify-window 1s --no-update-modtime "$source" "$dest"
 
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
-	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source" "$dest"
+	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source"/ "$dest"
 }
 alias cdc=cpc
 alias cpsa="rsync -aHhP --numeric-ids --delete --partial --append"
