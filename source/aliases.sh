@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.213.20260627.1
+hachreAliasesVersion=0.213.20260628.1
 
 #
 ### hachreAliases internal stuff
@@ -3723,6 +3723,9 @@ function zfs2 {
 }
 function zfs3 {
 	zpool iostat -v $@ 3
+}
+function zfs3b {
+	zpool iostat -v $@ 1
 }
 function zlspace {
 	location="$1"
