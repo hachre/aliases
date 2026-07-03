@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.213.20260628.1
+hachreAliasesVersion=0.214.20260703.1
 
 #
 ### hachreAliases internal stuff
@@ -5130,3 +5130,27 @@ function _ha_installDocker {
 	return 0
 }
 
+function writetest {
+	if [ -z "$1" ]; then
+		echo "Usage: $0 <file> [size]"
+		echo "Example: $0 /mnt/test/file-to-be-written.img 5G"
+		return 127
+	fi
+	size="4G"
+	if [ ! -z "$2" ]; then
+		size="$2"
+	fi
+	fio --name=write_test --filename="$1" --size=$size --bs=1M --rw=write --direct=1 --ioengine=libaio --iodepth=16 --numjobs=4 --group_reporting
+}
+function readtest {
+	if [ -z "$1" ]; then
+		echo "Usage: $0 <file> [size]"
+		echo "Example: $0 /mnt/test/existing-large-file.img 5G"
+		return 127
+	fi
+	size="4G"
+	if [ ! -z "$2" ]; then
+		size="$2"
+	fi
+	fio --name=read_test --filename="$1" --size=$size --bs=1M --rw=read --direct=1 --ioengine=libaio --iodepth=16 --numjobs=4 --group_reporting
+}
