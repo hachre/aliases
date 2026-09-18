@@ -342,6 +342,21 @@ function psall() {
 }
 alias lsnet="ls /sys/class/net"
 alias checkheaders="curl -I"
+function checkexpiry {
+	sni="$1"
+	host="$2"
+	if [ -z "$host" ]; then
+		host="$sni"
+	fi
+	if [ -z "$sni" ]; then
+		echo "Usage: $0 <sni> [host]"
+		echo " sni: the official domain name in the SSL certificate"
+		echo "host: the hostname / IP to query (optional, defaults to SNI)"
+		return 127
+	fi
+
+	echo | openssl s_client -connect $host:443 -servername $sni 2>/dev/null | openssl x509 -noout -enddate
+}
 function checkssl {
 	if [ -z "$1" ]; then
 		echo "Usage: checkssl <hostname>"
