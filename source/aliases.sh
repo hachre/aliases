@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.214.20260703.1
+hachreAliasesVersion=0.215.20261006.1
 
 #
 ### hachreAliases internal stuff
@@ -357,6 +357,9 @@ function checkexpiry {
 
 	echo | openssl s_client -connect $host:443 -servername $sni 2>/dev/null | openssl x509 -noout -enddate
 }
+alias checkcertexpiry=checkexpiry
+alias checkcert=checkexpiry
+alias checkcerts=checkexpiry
 function checkssl {
 	if [ -z "$1" ]; then
 		echo "Usage: checkssl <hostname>"
