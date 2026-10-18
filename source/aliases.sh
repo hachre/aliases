@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.215.20261006.1
+hachreAliasesVersion=0.215.20261019.1
 
 #
 ### hachreAliases internal stuff
@@ -116,7 +116,7 @@ function duhs {
 
 alias dfh="df -h | grep -vi docker"
 alias da="du -hd 0"
-alias cps="rsync -aHhP --numeric-ids --delete --partial"
+alias cps="rsync -aHhPX --numeric-ids --delete --partial"
 function cpc {
 	# Can be called with custom transfers command: 'transfers=4; cpc ...'
 	source=$1 
@@ -129,13 +129,13 @@ function cpc {
 	rclone sync -vP --transfers="$transfersp" --checkers="$checkers" --modify-window 1s --no-update-modtime "$source" "$dest"
 
 	echo "$(date): Now running rsync to finish up the copy (mostly fix permissions)..."
-	rsync -aHhP --numeric-ids --delete --no-compress --whole-file "$source"/ "$dest"
+	rsync -aHhPX --numeric-ids --delete --no-compress --whole-file "$source"/ "$dest"
 }
 alias cdc=cpc
-alias cpsa="rsync -aHhP --numeric-ids --delete --partial --append"
-alias cpsnH="rsync -ahP --numeric-ids --delete --partial"
-alias cpsnd="rsync -aHhP --numeric-ids --partial"
-alias cpsndH="rsync -ahP --numeric-ids --partial"
+alias cpsa="rsync -aHhPX --numeric-ids --delete --partial --append"
+alias cpsnH="rsync -ahPX --numeric-ids --delete --partial"
+alias cpsnd="rsync -aHhPX --numeric-ids --partial"
+alias cpsndH="rsync -ahPX --numeric-ids --partial"
 function cpss {
 	if [ -z "$1" ]; then
 		echo "Usage: cpss <sourcedir> <targetdir>"
@@ -148,7 +148,7 @@ function cpss {
 	fi
 	tar cpzf - -C "$1" . | tar xpzvf - -C "$2"
 }
-alias cpr="rsync -aHhP --numeric-ids --delete --partial --append-verify"
+alias cpr="rsync -aHhPX --numeric-ids --delete --partial --append-verify"
 unalias ls 2>/dev/null
 alias rls="$(which -a ls | head -n 1)"
 rls="$(which -a ls | head -n 1)"
@@ -883,7 +883,7 @@ function packageProjects() {
 	echo "Moving created packages into Archive..."
 	mv *xz "$destdir" > /dev/null 2>&1
 	if [ ! -z "$destdir2" ]; then
-		rsync -aHhP --numeric-ids --delete "$destdir"/* "$destdir2/"
+		rsync -aHhPX --numeric-ids --delete "$destdir"/* "$destdir2/"
 	fi
 }
 
