@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.216.20261021.1
+hachreAliasesVersion=0.216.20261021.2
 
 #
 ### hachreAliases internal stuff
@@ -1134,14 +1134,15 @@ _ha_aptCacheHosts=(
 # Write content ($3) to path ($1) with mode ($2), only if it differs.
 # Returns 0 if the file was changed, 1 if unchanged or the write failed.
 function __ha_writeIfChanged {
-    local path="$1" mode="$2" content="$3" tmp rc
+    # not "path": in zsh that is tied to $PATH, and a local one empties it
+    local dest="$1" mode="$2" content="$3" tmp rc
     tmp=$(mktemp) || return 1
     printf '%s\n' "$content" > "$tmp"
-    if cmp -s "$tmp" "$path"; then
+    if cmp -s "$tmp" "$dest"; then
         rm -f "$tmp"
         return 1
     fi
-    $hachreAliasesRoot install -m "$mode" -o root -g root "$tmp" "$path"
+    $hachreAliasesRoot install -m "$mode" -o root -g root "$tmp" "$dest"
     rc=$?
     rm -f "$tmp"
     [ $rc -eq 0 ]
@@ -1191,14 +1192,15 @@ function _ha_installAPTCache {
         return 0
     fi
 
-    local ip rc changed=0
+    # regex in a variable: zsh's sh emulation can't parse ( ) inside [[ =~ ]]
+    local ip rc changed=0 ipre='^([0-9]{1,3}\.){3}[0-9]{1,3}$'
     ip=$(__ha_resolveAPTCache)
     rc=$?
     case $rc in
         1) __ha_removeAPTCache; return 0 ;;   # aptcache gone from DNS
         2) return 0 ;;                       # DNS trouble: leave config as is
     esac
-    [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 0
+    [[ "$ip" =~ $ipre ]] || return 0
 
     # The cache host itself downloads directly
     if hostname -I 2>/dev/null | tr ' ' '\n' | grep -qx "$ip"; then
@@ -1242,9 +1244,11 @@ function _ha_ProxyRepoRewrite {
     command -v apt-get >/dev/null 2>&1 || return 0
 
     local files=() f h url host known sedexpr="" header=0
-    for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
-        [ -f "$f" ] && files+=("$f")
-    done
+    # find instead of globs: unmatched globs behave differently in bash and zsh
+    while IFS= read -r f; do
+        files+=("$f")
+    done < <(find /etc/apt/sources.list /etc/apt/sources.list.d -maxdepth 1 -type f \
+                  \( -name sources.list -o -name '*.list' -o -name '*.sources' \) 2>/dev/null | sort)
     [ ${#files[@]} -eq 0 ] && return 0
 
     # https://HOST followed by / , whitespace or end of line -> http://HOST
