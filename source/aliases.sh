@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.215.20261019.1
+hachreAliasesVersion=0.216.20261021.1
 
 #
 ### hachreAliases internal stuff
@@ -1094,8 +1094,10 @@ function dyDetectDistro {
 }
 dyDetectDistro
 
-# Install Apt Proxy on suitable systems
-function _ha_installAPTCache {
+# APT PROXY HANDLING NEW
+# 2026-10-21
+# old legacy version: 
+function __ha_installAPTCacheLEGACY {
 	if [ -f "/root/.nocache" ]; then
 		return 0
 	fi
@@ -1115,6 +1117,172 @@ function _ha_installAPTCache {
 		echo "Acquire::http { Proxy \"http://$ip:3142\"; };" > /etc/apt/apt.conf.d/00aptproxy
 		$hachreAliasesRoot apt update
 	fi
+}
+# --- APT cache (nginx proxy_cache on host "aptcache", port 3142) ------------
+# Replaces the old apt-cacher-ng setup. Drop these into hachreAliases in place
+# of the old _ha_installAPTCache.
+
+# Hosts the cache will proxy. KEEP IN SYNC with the allowlist map in
+# /etc/nginx/conf.d/aptcache.conf on aptcache.
+_ha_aptCacheHosts=(
+    deb.debian.org security.debian.org archive.debian.org
+    archive.ubuntu.com security.ubuntu.com old-releases.ubuntu.com de.archive.ubuntu.com
+    download.proxmox.com
+    download.docker.com pkgs.tailscale.com dl.cloudsmith.io
+    deb.nodesource.com deb.volian.org packagecloud.io
+)
+# Write content ($3) to path ($1) with mode ($2), only if it differs.
+# Returns 0 if the file was changed, 1 if unchanged or the write failed.
+function __ha_writeIfChanged {
+    local path="$1" mode="$2" content="$3" tmp rc
+    tmp=$(mktemp) || return 1
+    printf '%s\n' "$content" > "$tmp"
+    if cmp -s "$tmp" "$path"; then
+        rm -f "$tmp"
+        return 1
+    fi
+    $hachreAliasesRoot install -m "$mode" -o root -g root "$tmp" "$path"
+    rc=$?
+    rm -f "$tmp"
+    [ $rc -eq 0 ]
+}
+# Print the IPv4 address of "aptcache".
+# Returns 0 = found, 1 = definitively not found (NXDOMAIN), 2 = lookup trouble.
+function __ha_resolveAPTCache {
+    local out
+    if command -v host >/dev/null 2>&1; then
+        out=$(host -4 -t A -W 2 aptcache 2>&1)
+        if echo "$out" | grep -q 'has address'; then
+            echo "$out" | awk '/has address/ {print $4; exit}'
+            return 0
+        fi
+        echo "$out" | grep -qE 'NXDOMAIN|not found' && return 1
+        return 2
+    fi
+    # no 'host' binary: getent can't tell NXDOMAIN from a timeout
+    out=$(getent ahostsv4 aptcache 2>/dev/null | awk '{print $1; exit}')
+    if [ -n "$out" ]; then
+        echo "$out"
+        return 0
+    fi
+    return 1
+}
+# Remove every piece of the apt cache client config.
+function __ha_removeAPTCache {
+    local f removed=0
+    # hand-rolled config from the migration, only if it's ours
+    if grep -qs 'apt-proxy-detect' /etc/apt/apt.conf.d/01proxy; then
+        $hachreAliasesRoot rm -f /etc/apt/apt.conf.d/01proxy && removed=1
+    fi
+    for f in /etc/apt/apt.conf.d/00aptproxy /usr/local/bin/apt-proxy-detect; do
+        if [ -e "$f" ]; then
+            $hachreAliasesRoot rm -f "$f" && removed=1
+        fi
+    done
+    [ $removed -eq 1 ] && echo "hachreAliases: apt cache config removed"
+    return 0
+}
+# Install / update / remove the apt cache client config on apt-based systems.
+function _ha_installAPTCache {
+    command -v apt-get >/dev/null 2>&1 || return 0
+
+    if [ -f "/root/.nocache" ]; then
+        __ha_removeAPTCache
+        return 0
+    fi
+
+    local ip rc changed=0
+    ip=$(__ha_resolveAPTCache)
+    rc=$?
+    case $rc in
+        1) __ha_removeAPTCache; return 0 ;;   # aptcache gone from DNS
+        2) return 0 ;;                       # DNS trouble: leave config as is
+    esac
+    [[ "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]] || return 0
+
+    # The cache host itself downloads directly
+    if hostname -I 2>/dev/null | tr ' ' '\n' | grep -qx "$ip"; then
+        __ha_removeAPTCache
+        return 0
+    fi
+
+    __ha_writeIfChanged /usr/local/bin/apt-proxy-detect 0755 "#!/bin/bash
+# managed by hachreAliases (_ha_installAPTCache) - changes get overwritten
+if timeout 1 bash -c '</dev/tcp/$ip/3142' 2>/dev/null; then
+    echo \"http://$ip:3142\"
+else
+    echo \"DIRECT\"
+fi" && changed=1
+
+    __ha_writeIfChanged /etc/apt/apt.conf.d/00aptproxy 0644 "// managed by hachreAliases (_ha_installAPTCache) - changes get overwritten
+Acquire::http::Proxy-Auto-Detect \"/usr/local/bin/apt-proxy-detect\";
+// without this, https sources inherit the http proxy and CONNECT through nginx (400)
+Acquire::https::Proxy \"DIRECT\";" && changed=1
+
+    # duplicate from the manual migration
+    if grep -qs 'apt-proxy-detect' /etc/apt/apt.conf.d/01proxy; then
+        $hachreAliasesRoot rm -f /etc/apt/apt.conf.d/01proxy && changed=1
+    fi
+
+    if [ $changed -eq 1 ]; then
+        echo "hachreAliases: apt cache config set to $ip:3142"
+        # a fixed proxy line anywhere else silently disables Proxy-Auto-Detect
+        local others
+        others=$(grep -rlE 'Acquire::http(::| *\{ *)Proxy[[:space:]]*"' \
+                 /etc/apt/apt.conf /etc/apt/apt.conf.d/ 2>/dev/null)
+        if [ -n "$others" ]; then
+            echo "hachreAliases: WARNING - fixed Acquire::http::Proxy found, auto-detect is disabled by:"
+            echo "$others" | sed 's/^/    /'
+        fi
+    fi
+}
+# Downgrade known repos to http:// so they go through the cache, and list
+# every repo host the cache doesn't know.
+function _ha_ProxyRepoRewrite {
+    command -v apt-get >/dev/null 2>&1 || return 0
+
+    local files=() f h url host known sedexpr="" header=0
+    for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+        [ -f "$f" ] && files+=("$f")
+    done
+    [ ${#files[@]} -eq 0 ] && return 0
+
+    # https://HOST followed by / , whitespace or end of line -> http://HOST
+    for h in "${_ha_aptCacheHosts[@]}"; do
+        sedexpr+="s#https://${h//./\\.}([/[:space:]]|\$)#http://${h}\\1#g;"
+    done
+
+    for f in "${files[@]}"; do
+        grep -q 'https://' "$f" || continue
+        if ! cmp -s <(sed -E "$sedexpr" "$f") "$f"; then
+            $hachreAliasesRoot sed -i -E "$sedexpr" "$f" && echo "rewritten to http: $f"
+        fi
+    done
+
+    for f in "${files[@]}"; do
+        while read -r url; do
+            host=${url#*://}
+            host=${host##*@}
+            host=${host%%:*}
+            known=0
+            for h in "${_ha_aptCacheHosts[@]}"; do
+                if [ "$host" = "$h" ]; then known=1; break; fi
+            done
+            [ $known -eq 1 ] && continue
+            if [ $header -eq 0 ]; then
+                echo "Repos the cache doesn't know:"
+                header=1
+            fi
+            case "$url" in
+                http://*)  printf '  BLOCKED  %-45s %s\n' "$url" "$f" ;;
+                https://*) printf '  direct   %-45s %s\n' "$url" "$f" ;;
+            esac
+        done < <(grep -vE '^[[:space:]]*#' "$f" | grep -oE 'https?://[^/[:space:]]+' | sort -u)
+    done
+    if [ $header -eq 1 ]; then
+        echo "  BLOCKED = http source the cache answers with 403: add the host to the nginx map (and _ha_aptCacheHosts) or switch it to https"
+        echo "  direct  = https source, bypasses the cache: works, just uncached"
+    fi
 }
 if [ "$dyDetectedDistro" == "debian" ] || [ "$dyDetectedDistro" == "windows" ]; then
 	(&>/dev/null _ha_installAPTCache &)
