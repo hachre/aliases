@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.216.20261021.4
+hachreAliasesVersion=0.216.20261021.5
 
 #
 ### hachreAliases internal stuff
@@ -1124,10 +1124,11 @@ function __ha_installAPTCacheLEGACY {
 
 # Hosts the cache will proxy. KEEP IN SYNC with the allowlist map in
 # /etc/nginx/conf.d/aptcache.conf on aptcache.
+# ProxyMap
 _ha_aptCacheHosts=(
     deb.debian.org security.debian.org archive.debian.org
     archive.ubuntu.com security.ubuntu.com old-releases.ubuntu.com de.archive.ubuntu.com
-    download.proxmox.com nginx.org
+    download.proxmox.com nginx.org apt.syncthing.net
     download.docker.com pkgs.tailscale.com dl.cloudsmith.io
     deb.nodesource.com deb.volian.org packagecloud.io
 )
