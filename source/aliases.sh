@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.216.20261021.2
+hachreAliasesVersion=0.216.20261021.3
 
 #
 ### hachreAliases internal stuff
@@ -1202,11 +1202,12 @@ function _ha_installAPTCache {
     esac
     [[ "$ip" =~ $ipre ]] || return 0
 
-    # The cache host itself downloads directly
-    if hostname -I 2>/dev/null | tr ' ' '\n' | grep -qx "$ip"; then
-        __ha_removeAPTCache
-        return 0
-    fi
+	# Executive Decision: The cache host caches too
+    ## The cache host itself downloads directly
+    #if hostname -I 2>/dev/null | tr ' ' '\n' | grep -qx "$ip"; then
+    #    __ha_removeAPTCache
+    #    return 0
+    #fi
 
     __ha_writeIfChanged /usr/local/bin/apt-proxy-detect 0755 "#!/bin/bash
 # managed by hachreAliases (_ha_installAPTCache) - changes get overwritten
