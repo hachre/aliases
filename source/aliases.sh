@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.216.20261021.5
+hachreAliasesVersion=0.216.20261023.1
 
 #
 ### hachreAliases internal stuff
@@ -4508,6 +4508,10 @@ function smarttest {
 	IFS=$'\n'
 
 	function showlastresults {
+		ls -1 /*SMART*RESULTS 1>/dev/null 2>&1
+		if [ "$?" != "0" ];then
+			return 0
+		fi
 		latest=$(ls -1 /*SMART*RESULTS | sort -r | head -n 1)
 		awk '/--- Test Result Section ---/{flag=1;next}/--- Information Section ---/{if(flag)exit}flag && NF' "$latest"
 	}
