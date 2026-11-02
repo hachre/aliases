@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.216.20261023.1
+hachreAliasesVersion=0.217.20261102.1
 
 #
 ### hachreAliases internal stuff
@@ -1320,6 +1320,326 @@ function _ha_installRPMCache {
 if [ "$dyDetectedDistro" == "redhat" ]; then
 	(&>/dev/null _ha_installRPMCache &)
 fi
+
+
+__ha_installZFS_debian() (
+# __ha_installZFS_debian [-n|--dry-run] [-f|--force] [-h|--help]
+#
+# Idempotently install OpenZFS (zfs-dkms + zfsutils-linux) on Debian, pinned to
+# <codename>-backports. Works for any Debian stable release (bookworm, trixie,
+# forky, ...) by reading the codename from /etc/os-release. On testing/unstable
+# (no backports exist) it installs from the regular archive.
+#
+#   -n, --dry-run   only report what would be changed/installed (no root needed)
+#   -f, --force     run even if Proxmox VE is detected
+#
+# Environment overrides:
+#   ZFS_MIRROR=http://deb.debian.org/debian
+#   ZFS_HEADERS_PKG=linux-headers-<arch>   (kernel headers meta package)
+#
+# Returns: 0 = success / nothing to do, 1 = error, 2 = bad usage.
+#
+# Portability: plain POSIX sh (no arrays, mapfile, [[ ]], namerefs, $'..'),
+# and no variable names that zsh treats specially (path, status, ...), so it
+# works when sourced into bash, dash, or zsh (with or without "emulate sh").
+#
+# Isolation: the body runs in a subshell "( ... )", so its helper functions,
+# variables and shell options never leak into the calling script, and "exit"
+# inside only leaves the function. Errors are checked explicitly; errexit
+# inherited from the caller is switched off inside.
+
+  if [ -n "${ZSH_VERSION-}" ]; then emulate sh; fi
+  set +e
+  if [ -n "${BASH_VERSION-}${ZSH_VERSION-}" ]; then trap - ERR; fi
+
+  DRY_RUN=0
+  FORCE=0
+  MIRROR=${ZFS_MIRROR:-http://deb.debian.org/debian}
+  COMPONENTS='main contrib non-free-firmware'
+  PIN_PRIORITY=990
+  PIN_FILE=/etc/apt/preferences.d/90_zfs
+  BACKUP_DIR=/var/backups/zfs-backports.$(date +%Y%m%d-%H%M%S)
+  ZFS_PKGS='zfs-dkms zfsutils-linux'
+  NL='
+'
+
+  # ------------------------------------------------------------ output ----
+  if [ -t 1 ]; then
+    C_B=$(printf '\033[1;34m') C_G=$(printf '\033[1;32m')
+    C_Y=$(printf '\033[1;33m') C_R=$(printf '\033[1;31m') C_N=$(printf '\033[0m')
+  else
+    C_B='' C_G='' C_Y='' C_R='' C_N=''
+  fi
+  log()  { printf '%s==>%s %s\n' "$C_B" "$C_N" "$*"; }
+  ok()   { printf '%s ok%s %s\n' "$C_G" "$C_N" "$*"; }
+  warn() { printf '%swarn%s %s\n' "$C_Y" "$C_N" "$*" >&2; }
+  die()  { printf '%serror%s %s\n' "$C_R" "$C_N" "$*" >&2; exit 1; }
+
+  usage() {
+    cat <<'EOF'
+Usage: __ha_installZFS_debian [-n|--dry-run] [-f|--force] [-h|--help]
+  -n, --dry-run   only report what would be changed/installed (no root needed)
+  -f, --force     run even if Proxmox VE is detected
+EOF
+  }
+
+  while [ $# -gt 0 ]; do
+    case $1 in
+      -n|--dry-run) DRY_RUN=1 ;;
+      -f|--force)   FORCE=1 ;;
+      -h|--help)    usage; exit 0 ;;
+      *) warn "unknown argument: $1"; usage >&2; exit 2 ;;
+    esac
+    shift
+  done
+
+  # --------------------------------------------------------- preflight ----
+  if [ "$DRY_RUN" -eq 0 ] && [ "$(id -u)" -ne 0 ]; then
+    die "must be run as root (or use --dry-run)"
+  fi
+  [ -r /etc/os-release ] || die "/etc/os-release not found"
+
+  osr() { sed -n "s/^$1=//p" /etc/os-release | head -n 1 | sed 's/^"//; s/"$//'; }
+  OS_ID=$(osr ID)
+  OS_VERSION_ID=$(osr VERSION_ID)
+  CODENAME=$(osr VERSION_CODENAME)
+
+  [ "$OS_ID" = debian ] || die "this is not Debian (ID=${OS_ID:-unknown})"
+  if [ -z "$CODENAME" ] && command -v lsb_release >/dev/null 2>&1; then
+    CODENAME=$(lsb_release -sc 2>/dev/null)
+  fi
+  [ -n "$CODENAME" ] || die "could not determine the Debian codename"
+
+  if [ -d /etc/pve ] || dpkg-query -W -f='${db:Status-Abbrev}' proxmox-ve 2>/dev/null | grep -q '^ii'; then
+    [ "$FORCE" -eq 1 ] || die "Proxmox VE detected. PVE ships its own ZFS (kernel module + zfsutils); don't mix in Debian's zfs-dkms. Use --force to override."
+    warn "Proxmox VE detected, continuing because of --force"
+  fi
+
+  BPO="${CODENAME}-backports"
+  SRC_FILE="/etc/apt/sources.list.d/${BPO}.list"
+  USE_BACKPORTS=1
+  if [ -z "$OS_VERSION_ID" ]; then
+    USE_BACKPORTS=0
+    warn "'$CODENAME' looks like testing/unstable (no VERSION_ID); backports don't exist there."
+    warn "Installing from the regular archive instead (requires 'contrib' in your main sources)."
+  fi
+
+  ARCH=$(dpkg --print-architecture) || die "dpkg --print-architecture failed"
+  KREL=$(uname -r)
+  HEADERS_META=${ZFS_HEADERS_PKG:-linux-headers-$ARCH}
+
+  DRY_NOTE=''
+  [ "$DRY_RUN" -eq 1 ] && DRY_NOTE=', DRY RUN'
+  log "Debian ${OS_VERSION_ID:-testing/unstable} ($CODENAME), arch $ARCH, kernel $KREL$DRY_NOTE"
+
+  # ----------------------------------------------------------- helpers ----
+  CHANGED=0
+  ROLLBACK=''   # lines "file|backup" (backup empty = file was newly created)
+
+  rollback() {
+    printf '%s' "$ROLLBACK" | while IFS='|' read -r rb_file rb_bak; do
+      [ -n "$rb_file" ] || continue
+      if [ -n "$rb_bak" ]; then cp -p "$rb_bak" "$rb_file"; else rm -f "$rb_file"; fi
+      warn "rolled back $rb_file"
+    done
+  }
+
+  ensure_file() {  # ensure_file <file> <content>
+    local ef_file ef_content ef_bak
+    ef_file=$1 ef_content=$2 ef_bak=''
+    if [ -f "$ef_file" ] && [ "$(cat "$ef_file")" = "$ef_content" ]; then
+      ok "$ef_file already up to date"
+      return 0
+    fi
+    CHANGED=1
+    if [ "$DRY_RUN" -eq 1 ]; then
+      if [ -f "$ef_file" ]; then
+        log "would update $ef_file, current content:"
+        sed 's/^/      - /' "$ef_file"
+        log "new content:"
+      else
+        log "would create $ef_file:"
+      fi
+      printf '%s\n' "$ef_content" | sed 's/^/      /'
+      return 0
+    fi
+    if [ -f "$ef_file" ]; then
+      ef_bak="$BACKUP_DIR/${ef_file##*/}"
+      { mkdir -p "$BACKUP_DIR" && cp -p "$ef_file" "$ef_bak"; } || { rollback; die "could not back up $ef_file"; }
+      log "updating $ef_file (old version saved to $ef_bak)"
+    else
+      log "creating $ef_file"
+    fi
+    ROLLBACK="$ROLLBACK$ef_file|$ef_bak$NL"
+    printf '%s\n' "$ef_content" > "$ef_file" || { rollback; die "could not write $ef_file"; }
+  }
+
+  # Other files that already configure <codename>-backports (.list or deb822 .sources)
+  existing_bpo_sources() {
+    local eb_f eb_out
+    eb_out=''
+    for eb_f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+      [ -f "$eb_f" ] && [ "$eb_f" != "$SRC_FILE" ] || continue
+      if grep -qE "^[^#]*[[:space:]]${BPO}([[:space:]]|/|\$)" "$eb_f"; then
+        eb_out="${eb_out:+$eb_out }$eb_f"
+      fi
+    done
+    printf '%s' "$eb_out"
+  }
+
+  installed_ver() {
+    dpkg-query -W -f='${db:Status-Abbrev}|${Version}\n' "$1" 2>/dev/null \
+      | awk -F'|' '$1 ~ /^ii/ {print $2; exit}'
+  }
+  candidate_ver() {
+    apt-cache policy "$1" 2>/dev/null | awk '/Candidate:/ {print $2; exit}'
+  }
+
+  append() { eval "$1=\"\${$1:+\${$1} }\$2\""; }   # append <VARNAME> <word>
+
+  # check_pkg <VARNAME> <pkg> <required 1|0>: append pkg to $VARNAME if it needs install/upgrade
+  check_pkg() {
+    local cp_var cp_pkg cp_req cp_inst cp_cand
+    cp_var=$1 cp_pkg=$2 cp_req=$3
+    cp_inst=$(installed_ver "$cp_pkg")
+    cp_cand=$(candidate_ver "$cp_pkg")
+    if [ -z "$cp_cand" ] || [ "$cp_cand" = "(none)" ]; then
+      if [ -n "$cp_inst" ]; then ok "$cp_pkg $cp_inst installed (no newer candidate)"; return 0; fi
+      if [ "$cp_req" -eq 1 ] && [ "$DRY_RUN" -eq 1 ] && [ "$CHANGED" -eq 1 ]; then
+        log "$cp_pkg: install (expected from $BPO once it's added)"; append "$cp_var" "$cp_pkg"; return 0
+      fi
+      [ "$cp_req" -eq 1 ] && die "$cp_pkg is not available from any configured repository (is 'contrib' enabled?)"
+      warn "$cp_pkg is not available, skipping"
+      return 0
+    fi
+    if [ -n "$cp_inst" ] && dpkg --compare-versions "$cp_inst" ge "$cp_cand"; then
+      ok "$cp_pkg $cp_inst (up to date)"
+    elif [ -n "$cp_inst" ]; then
+      log "$cp_pkg: upgrade $cp_inst -> $cp_cand"; append "$cp_var" "$cp_pkg"
+    else
+      log "$cp_pkg: install $cp_cand"; append "$cp_var" "$cp_pkg"
+    fi
+  }
+
+  # -------------------------------------------- 1. apt source + pin ------
+  if [ "$USE_BACKPORTS" -eq 1 ]; then
+    OTHER_BPO=$(existing_bpo_sources)
+    if [ -n "$OTHER_BPO" ]; then
+      ok "$BPO already configured in: $OTHER_BPO (not adding $SRC_FILE)"
+      [ -f "$SRC_FILE" ] && warn "$SRC_FILE also exists, so you have duplicate backports entries"
+    else
+      ensure_file "$SRC_FILE" "deb ${MIRROR} ${BPO} ${COMPONENTS}
+deb-src ${MIRROR} ${BPO} ${COMPONENTS}"
+    fi
+
+    ensure_file "$PIN_FILE" "Package: src:zfs-linux
+Pin: release n=${BPO}
+Pin-Priority: ${PIN_PRIORITY}"
+  fi
+
+  # -------------------------------------------------- 2. apt update ------
+  if [ "$DRY_RUN" -eq 1 ]; then
+    log "skipping apt update (dry run); results below use the current package lists"
+  else
+    log "apt-get update"
+    if ! apt-get update -q; then
+      rollback
+      die "apt-get update failed (does ${MIRROR}/dists/${BPO} exist?). Changes rolled back."
+    fi
+  fi
+
+  if [ "$USE_BACKPORTS" -eq 1 ] && ! { [ "$DRY_RUN" -eq 1 ] && [ "$CHANGED" -eq 1 ]; }; then
+    ZFS_CAND=$(candidate_ver zfs-dkms)
+    if apt-cache madison zfs-dkms 2>/dev/null \
+         | awk -F'|' -v v="$ZFS_CAND" -v s="$BPO" '{gsub(/ /,"",$2)} $2==v && $3 ~ s {f=1} END{exit !f}'; then
+      ok "zfs-dkms candidate $ZFS_CAND comes from $BPO"
+    else
+      warn "zfs-dkms candidate (${ZFS_CAND:-none}) is NOT from $BPO; it may not be backported yet, or 'contrib' is missing from your backports entry"
+    fi
+  fi
+
+  # -------------------------------------------- 3. decide what to do -----
+  HDR_INSTALL=''
+  ZFS_INSTALL=''
+  check_pkg HDR_INSTALL "$HEADERS_META" 0
+  # Headers for the *running* kernel so DKMS can build the module without a
+  # reboot (also covers kernels running from backports).
+  if [ "linux-headers-$KREL" != "$HEADERS_META" ]; then
+    check_pkg HDR_INSTALL "linux-headers-$KREL" 0
+  fi
+  for zfs_pkg in $ZFS_PKGS; do check_pkg ZFS_INSTALL "$zfs_pkg" 1; done
+
+  NOTHING=0
+  if [ -z "$HDR_INSTALL$ZFS_INSTALL" ]; then
+    ok "nothing to install, ZFS is up to date"
+    NOTHING=1
+  fi
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    [ -n "$HDR_INSTALL" ] && log "would install: $HDR_INSTALL"
+    [ -n "$ZFS_INSTALL" ] && log "would install: $ZFS_INSTALL"
+    exit 0
+  fi
+
+  # -------------------------------------------------- 4. install ---------
+  # shellcheck disable=SC2086  # package lists are intentionally word-split
+  if [ -n "$HDR_INSTALL" ]; then
+    log "installing kernel headers: $HDR_INSTALL"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y $HDR_INSTALL || die "installing kernel headers failed"
+  fi
+  # shellcheck disable=SC2086
+  if [ -n "$ZFS_INSTALL" ]; then
+    log "installing ZFS: $ZFS_INSTALL"
+    DEBIAN_FRONTEND=noninteractive apt-get install -y $ZFS_INSTALL || die "installing ZFS failed"
+  fi
+
+  # -------------------------------------------------- 5. verify ----------
+  if [ "$NOTHING" -eq 1 ] && [ -d /sys/module/zfs ]; then exit 0; fi
+
+  if command -v dkms >/dev/null 2>&1; then
+    log "dkms status:"
+    dkms status zfs
+  fi
+
+  if [ ! -d /sys/module/zfs ]; then
+    if modprobe zfs 2>/dev/null; then
+      ok "zfs module loaded"
+    else
+      warn "could not load the zfs module for running kernel $KREL."
+      warn "Probably no headers/DKMS build for this kernel; reboot into the newest installed kernel."
+    fi
+  fi
+
+  if command -v zfs >/dev/null 2>&1; then
+    ZV=$(zfs version 2>/dev/null)
+    [ -n "$ZV" ] && printf '%s\n' "$ZV" | sed 's/^/      /'
+    ZV_USER=$(printf '%s\n' "$ZV" | sed -n '1s/^zfs-//p')
+    ZV_KMOD=$(printf '%s\n' "$ZV" | sed -n '2s/^zfs-kmod-//p')
+    if [ -n "$ZV_KMOD" ] && [ "$ZV_USER" != "$ZV_KMOD" ]; then
+      warn "userland ($ZV_USER) and loaded kernel module ($ZV_KMOD) differ; reboot to load the new module"
+    fi
+  fi
+
+  ok "done"
+  exit 0
+)
+
+function _ha_installZFS {
+	if [ "$dyDetectedDistro" != "debian" ]; then
+		echo "Not supported on your distro."
+		return 1
+	fi
+
+	if [ "$dyDistroName" == "Ubuntu" ]; then
+		dyi -y zfsutils-linux
+		return $?
+	fi
+
+	if [ "$dyDistroName" == "Debian" ]; then
+		__ha_installZFS_debian
+		return $?
+	fi
+}
 
 
 # Set up Nala
