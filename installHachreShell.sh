@@ -53,7 +53,7 @@ if [ "$cmd" != "--no-internet" ] && [ "$SHELL" != "/bin/sh" ]; then
 	. /tmp/aliases.sh || true
 	rm /tmp/aliases.sh
 fi
-rm -R /usr/local/hachre/aliases 2>/dev/null || true
+rm -Rf /usr/local/hachre/aliases 2>/dev/null
 
 # Automatic installation of prequisites
 installPrequisites() {

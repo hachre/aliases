@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.217.20261102.1
+hachreAliasesVersion=0.218.20261108.1
 
 #
 ### hachreAliases internal stuff
@@ -932,9 +932,21 @@ function dyDetectDistro {
 		return 0
 	fi
 
-	# Arch
+	# generic Arch test 
 	which -p pacman 1>/dev/null 2>&1
-	if [ "$?" == "0" ]; then
+	pacman="$?"
+
+	# Omarchy
+	if [ "$pacman" == "0" ] && [ -d /usr/share/omarchy ]; then
+		dyDetectedDistro="omarchy"
+		dyDistroName="Omarchy"
+		dyDistroInfo="\n * The native package manager for this distro is called 'omarchy pkg'.\n * There's also 'omarchy aur'."
+
+		return 0
+	fi
+
+	# Arch
+	if [ "$pacman" == "0" ]; then
 		dyDetectedDistro="arch"
 		dyDistroName="Arch Linux"
 		dyDistroInfo="\n * The native package manager for this distro is called 'pacman'.\n * You might also wanna look at 'yay'."
@@ -2479,6 +2491,11 @@ function dyi {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		omarchy pkg add $@
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "alpine" ]; then
 		apk add -i $*
 		return $?
@@ -2583,6 +2600,11 @@ function dyii {
 	if [ -z "$1" ]; then
 		echo "Usage: dyii <package name>"
 		return 1
+	fi
+
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		omarchy pkg aur add $@
+		return $?
 	fi
 
 	if [ "$dyDetectedDistro" == "sabayon" ]; then
@@ -2774,6 +2796,11 @@ function dyr {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		omarchy pkg drop $@
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "alpine" ]; then
 		apk del -i $*
 		return $?
@@ -2891,6 +2918,11 @@ function dys {
 		return $?
 	fi
 
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		pacman -Ss $@ | less -rEFXKn
+		return $?
+	fi
+
 	if [ "$dyDetectedDistro" == "macOS-brew" ]; then
 		brew search $* | less -rEFXKn
 		return $?
@@ -2960,6 +2992,11 @@ function dyss {
 		fi
 
 		$_ha_arch_pm -Ss $@ --aur | less -rEFXKn
+		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		yay -Ss $@ | less -rEFXKn
 		return $?
 	fi
 
