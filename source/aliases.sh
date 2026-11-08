@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.219.20261108.8
+hachreAliasesVersion=0.219.20261108.9
 
 #
 ### hachreAliases internal stuff
@@ -180,7 +180,7 @@ emulate sh -c "source /usr/local/hachre/aliases/source/aliases.sh"
 
 # We don't want nested Byobus and support for skipping bybou launch
 ps aux | grep --color=none "tmuxrc" | grep -v grep 1>/dev/null 2>&1
-if [[ "$?" = "0" ] && [ ! -z "\$SUDO_USER" ]] || "\$HOME"/.nobyobu; then
+if [[ "\$?" = "0" ] && [ ! -z "\$SUDO_USER" ]] || "\$HOME"/.nobyobu; then
     # Don't start byobu at all.
     alias byobu=/bin/false
 fi
