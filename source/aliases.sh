@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.218.20261108.3
+hachreAliasesVersion=0.219.20261108.4
 
 #
 ### hachreAliases internal stuff
@@ -5706,4 +5706,54 @@ function readtest {
 		size="$2"
 	fi
 	fio --name=read_test --filename="$1" --size=$size --bs=1M --rw=read --direct=1 --ioengine=libaio --iodepth=16 --numjobs=4 --group_reporting
+}
+
+function _ha_installHachreShellForUser {
+	if [ -z "$1" ]; then
+		echo "Usage: _ha_installHachreShellForUser <username>"
+		return 127
+	fi
+
+	if [ $(whoami) != "root" ]; then
+		echo "Error: This must be run as root."
+		return 1
+	fi
+
+	homedir=$(getent passwd "$1" | cut -d: -f6)
+	if [ ! -d "$homedir" ]; then
+		homedir=$(dscl . -read /Users/"$1" NFSHomeDirectory | awk '{print $2}')
+	fi
+	if [ ! -d "$homedir" ]; then
+		homedir="/home/$1"
+	fi
+	if [ ! -d "$homedir" ]; then
+		homedir="/Users/$1"
+	fi	
+	if [ ! -d "$homedir" ] || [ -d "$homedir/proc" ]; then
+		echo "Error: Couldn't find home dir for given user."
+		return 1
+	fi
+
+	echo "Warning: This script will overwrite anything touched by hachreShell in the homedir:"
+	echo " - homedir/.zshrc*"
+	echo " - homedir/.byobu"
+	echo " - homedir/.config/htop"
+	echo ""
+	echo " -> ENTER to proceed, CTRL+C to cancel..."
+	read
+
+	mkdir -p $homedir/.config/htop 2>/dev/null || true
+	rm -Rf $homedir/.byobu
+	cp -R /root/.byobu $homedir/
+	cp /root/.config/htop/htoprc $homedir/.config/htop
+	cp /root/.zshrc_grml $homedir
+	cp /root/.zshrc $homedir
+	touch $homedir/.zshrc_local
+	chown -R "$1":$(id -gn "$1") $homedir/.zshrc* $homedir/.config/htop $homedir/.byobu
+	chown "$1":$(id -gn "$1") $homedir/.config
+	chmod -R 750 $homedir/.zshrc* $homedir/.config/htop $homedir/.byobu
+	chmod 750 $homedir/.config
+
+	echo ""
+	echo "The hachreShell base files have been placed in the user's homedir."
 }
