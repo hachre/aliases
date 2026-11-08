@@ -63,6 +63,11 @@ installPrequisites() {
 		noconfirm="--noconfirm"
 	fi
 
+	if [ "$dyDetectedDistro" = "omarchy" ]; then
+		noconfirm=""
+	fi
+
+
 	# CentOS specific prequisities
 	if [ "$dyDetectedDistro" = "CentOS" ]; then
 		yum install -y epel-release || true
