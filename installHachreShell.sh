@@ -154,7 +154,7 @@ else
 fi
 
 # hachre's Default .zshrc
-installZSHrc
+__ha_installZSHrc
 
 # htop
 mkdir -p "$HOME"/.config/htop 2>/dev/null || true
