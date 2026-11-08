@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.219.20261108.4
+hachreAliasesVersion=0.219.20261108.5
 
 #
 ### hachreAliases internal stuff
@@ -5754,6 +5754,11 @@ function _ha_installHachreShellForUser {
 	chmod -R 750 $homedir/.zshrc* $homedir/.config/htop $homedir/.byobu
 	chmod 750 $homedir/.config
 
+	if [ "$dyDetectedDistro" != "macOS-brew" ]; then
+		chsh -s $(which zsh) "$1"
+	fi
+
 	echo ""
 	echo "The hachreShell base files have been placed in the user's homedir."
+	echo "If your shell wasn't already ZSH, a reboot might be required to get it working everywhere."
 }
