@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.220.20261109.1
+hachreAliasesVersion=0.220.20261109.2
 
 #
 ### hachreAliases internal stuff
@@ -2302,6 +2302,10 @@ function dyu {
 			$_ha_arch_pm -Yc $@
 		fi
 		return $?
+	fi
+
+	if [ "$dyDetectedDistro" == "omarchy" ]; then
+		omarchy update
 	fi
 
 	if [ "$dyDetectedDistro" == "alpine" ]; then
