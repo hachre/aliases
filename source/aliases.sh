@@ -4,7 +4,7 @@
 # Author: Harald Glatt, code at hach.re
 # URL: https://github.com/hachre/aliases
 # Version:
-hachreAliasesVersion=0.220.20261108.11
+hachreAliasesVersion=0.220.20261109.1
 
 #
 ### hachreAliases internal stuff
@@ -204,6 +204,7 @@ if [ -z "\$NIX_STORE" ] && [ -f "\$HOME/.nix" ] && [ -z "\$BYOBU_BACKEND" ] ; th
 	startNix --skip-startup-checks
 fi
 
+clear
 EDITOR="nano"
 source "\$HOME/.zshrc_grml"
 source "/usr/local/hachre/aliases/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
